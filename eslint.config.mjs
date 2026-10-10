@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Extrait du prototype, gardé tel quel comme référence de test.
+    "tests/fixtures/**",
   ]),
 ]);
 

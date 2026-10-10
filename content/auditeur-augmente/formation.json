@@ -1,0 +1,198 @@
+{
+  "formation": {
+    "slug": "auditeur-augmente-ia",
+    "title": "Auditeur augmenté par l'IA",
+    "domain": "Audit",
+    "audience": "Auditeurs juniors et seniors",
+    "promise": "Utilisez l'IA en audit sans exposer une donnée client.",
+    "summary": "Et rendez des feuilles de travail qu'un relecteur accepte. Cinq modules, une tâche réelle par module, sur des dossiers fictifs.",
+    "forWhom": [
+      "Vous êtes auditeur junior ou senior, avec 0 à 5 ans d'expérience.",
+      "Votre cabinet autorise l'IA, l'encadre ou l'interdit : la première leçon traite cette question.",
+      "Vous voulez pratiquer sur un cas, pas suivre une présentation générale de l'IA."
+    ],
+    "notThis": [
+      "Ce n'est pas une formation homologuée. Nous n'avons pas vérifié si elle peut entrer dans les obligations de formation continue de la profession : considérez que non.",
+      "L'attestation de fin de module est adossée à votre livrable. Elle n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle."
+    ],
+    "method": [
+      { "title": "Ai-je le droit ?", "text": "Je vérifie les règles de mon cabinet et je retire tout ce qui identifie le client." },
+      { "title": "Je fais", "text": "Je confie à l'IA le calcul et le premier tri." },
+      { "title": "Je vérifie", "text": "Je recalcule un échantillon et je confronte chaque idée de l'IA à ce que je sais du client." },
+      { "title": "Je trace", "text": "J'écris ce que j'ai fait, ce que l'IA a fait et ce qui reste à obtenir." }
+    ],
+    "tutorUrl": null,
+    "presale": { "label": "Préacheter la formation", "available": false },
+    "status": "published",
+    "position": 1
+  },
+  "modules": [
+    {
+      "slug": "revue-analytique",
+      "position": 1,
+      "title": "Revue analytique assistée par l'IA",
+      "summary": "Balance N/N-1 d'une PME fictive, 81 comptes, cinq anomalies cachées.",
+      "deliverable": "Une feuille de travail (variations significatives, hypothèses, éléments à obtenir, conclusion) et un journal d'usage de l'IA.",
+      "durationLabel": "environ 1 h 30",
+      "availability": "open",
+      "status": "published"
+    },
+    {
+      "slug": "tests-ecritures",
+      "position": 2,
+      "title": "Tests sur les écritures comptables",
+      "summary": "Un FEC d'environ 3 000 lignes.",
+      "deliverable": "Une note de sélection (critères, écritures retenues, travaux à mener).",
+      "durationLabel": null,
+      "availability": "coming_soon",
+      "status": "published"
+    },
+    {
+      "slug": "tests-de-detail",
+      "position": 3,
+      "title": "Tests de détail et sondage",
+      "summary": "Un journal des ventes et 25 factures.",
+      "deliverable": "Une feuille de test (échantillon, écarts, conclusion).",
+      "durationLabel": null,
+      "availability": "coming_soon",
+      "status": "published"
+    },
+    {
+      "slug": "circularisation",
+      "position": 4,
+      "title": "Circularisation",
+      "summary": "Une balance fournisseurs et 6 réponses de tiers.",
+      "deliverable": "Un dossier (sélection, lettre, suivi, rapprochements).",
+      "durationLabel": null,
+      "availability": "coming_soon",
+      "status": "published"
+    },
+    {
+      "slug": "synthese-de-mission",
+      "position": 5,
+      "title": "Synthèse de mission",
+      "summary": "Les quatre livrables précédents et un projet d'annexe.",
+      "deliverable": "Une note de synthèse au chef de mission, puis l'attestation.",
+      "durationLabel": null,
+      "availability": "coming_soon",
+      "status": "published"
+    }
+  ],
+  "diagnostic": {
+    "status": "published",
+    "config": {
+      "title": "Diagnostic",
+      "intro": "Le diagnostic estime la part de votre temps passée sur les tâches qu'une IA sait déjà commencer, et vous indique où entrer dans la formation.",
+      "durationLabel": "3 min",
+      "questions": [
+        { "id": "poste", "type": "single", "label": "Quel est votre poste actuel ?", "options": [
+          { "value": "assistant", "label": "Assistant ou auditeur junior" },
+          { "value": "confirme", "label": "Assistant confirmé" },
+          { "value": "senior", "label": "Senior" },
+          { "value": "chef", "label": "Chef de mission ou manager" },
+          { "value": "autre", "label": "Autre (stagiaire, étudiant, expert-comptable…)" }
+        ] },
+        { "id": "anciennete", "type": "single", "label": "Depuis combien de temps travaillez-vous en audit ?", "options": [
+          { "value": "0", "label": "Moins d'un an" },
+          { "value": "1-2", "label": "1 à 2 ans" },
+          { "value": "3-5", "label": "3 à 5 ans" },
+          { "value": "6+", "label": "Plus de 5 ans" }
+        ] },
+        { "id": "cabinet", "type": "single", "label": "Quelle est la taille de votre cabinet ?", "options": [
+          { "value": "petit", "label": "Moins de 20 personnes" },
+          { "value": "moyen", "label": "20 à 200 personnes" },
+          { "value": "grand", "label": "Plus de 200 personnes ou réseau international" },
+          { "value": "hors", "label": "Je ne travaille pas en cabinet" }
+        ] },
+        { "id": "temps", "type": "grid", "label": "Sur vos missions des 12 derniers mois, combien de temps avez-vous passé sur chaque tâche ?", "help": "Une estimation suffit. Laissez « Jamais » pour les tâches que vous ne faites pas.",
+          "levels": [ { "value": 0, "label": "Jamais" }, { "value": 1, "label": "Un peu" }, { "value": 2, "label": "Souvent" }, { "value": 4, "label": "Beaucoup" } ],
+          "rows": [
+            { "id": "1", "label": "Tests de détail", "detail": "pointage de pièces, rapprochements, séparation des exercices", "weight": 3, "aiCan": "extraire les données de factures, rapprocher pièces et journal, lister les écarts", "limit": "elle lit mal les scans, les pièces sont des données clients, et un écart manqué ne se voit pas", "modulePosition": 3 },
+            { "id": "2", "label": "Documentation", "detail": "feuilles de travail, notes de synthèse", "weight": 5, "aiCan": "structurer des notes brutes, rédiger une conclusion à partir de constats fournis", "limit": "elle peut écrire des travaux non faits, et un texte plausible masque un vide", "modulePosition": 5 },
+            { "id": "3", "label": "Revue analytique", "detail": "variations N/N-1, ratios", "weight": 5, "aiCan": "calculer les variations, isoler celles au-dessus d'un seuil, proposer hypothèses et questions", "limit": "elle ne connaît pas le client : une hypothèse n'est pas un élément probant", "modulePosition": 1 },
+            { "id": "4", "label": "Tests sur les écritures comptables", "detail": "à partir du FEC", "weight": 4, "aiCan": "filtrer sur critères (week-end, montants ronds, opérations diverses de clôture)", "limit": "la tâche est déjà outillée en cabinet, les fichiers sont gros et les faux positifs nombreux", "modulePosition": 2 },
+            { "id": "5", "label": "Collecte des documents", "detail": "demandes et relances du client", "weight": 2, "aiCan": "préparer la liste de pièces, les relances et le tableau de suivi", "limit": "le gain est réel mais la valeur perçue est faible" },
+            { "id": "6", "label": "Circularisation", "detail": "confirmations de tiers", "weight": 3, "aiCan": "aider à la sélection, aux lettres, au suivi et au rapprochement des réponses", "limit": "l'auditeur doit garder la maîtrise des envois, et les noms de tiers sont sensibles", "modulePosition": 4 },
+            { "id": "7", "label": "Prise de connaissance", "detail": "et contrôle interne", "weight": 3, "aiCan": "transformer des notes d'entretien en description de procédure", "limit": "les notes sont confidentielles et les risques proposés restent génériques" },
+            { "id": "8", "label": "Contrôle des comptes annuels", "detail": "et de l'annexe", "weight": 3, "aiCan": "cadrer annexe et balance, lister les informations obligatoires", "limit": "son référentiel n'est pas forcément à jour" },
+            { "id": "9", "label": "Recherche technique", "detail": "règle comptable, norme", "weight": 2, "aiCan": "dégrossir une question, proposer un plan de note", "limit": "elle peut citer des références inventées ou périmées" },
+            { "id": "10", "label": "Inventaire physique", "weight": 1, "aiCan": "préparer et exploiter la feuille de comptage", "limit": "la tâche est physique, l'apport est marginal" }
+          ] },
+        { "id": "freq", "type": "single", "label": "Le mois dernier, à quelle fréquence avez-vous utilisé une IA pour votre travail ?", "options": [
+          { "value": "jamais", "label": "Jamais", "points": 0 },
+          { "value": "mois", "label": "Quelques fois dans le mois", "points": 1 },
+          { "value": "semaine", "label": "Chaque semaine", "points": 2 },
+          { "value": "jour", "label": "Presque chaque jour", "points": 3 }
+        ] },
+        { "id": "usages", "type": "multi", "label": "Pour quelles tâches l'avez-vous déjà utilisée ?", "help": "Plusieurs réponses possibles.", "options": [
+          { "value": "redaction", "label": "Rédiger ou reformuler (mails, notes)" },
+          { "value": "calcul", "label": "Calculs, formules, tableur" },
+          { "value": "lecture", "label": "Résumer ou lire des documents" },
+          { "value": "technique", "label": "Recherche technique (norme, règle comptable)" },
+          { "value": "audit", "label": "Travaux d'audit sur un dossier", "points": 1 },
+          { "value": "aucun", "label": "Aucune" }
+        ] },
+        { "id": "regle", "type": "single", "label": "Que dit votre cabinet sur l'usage de l'IA ?", "options": [
+          { "value": "outil", "label": "Une règle écrite existe et un outil est fourni" },
+          { "value": "sansoutil", "label": "C'est autorisé, sans outil fourni" },
+          { "value": "interdit", "label": "C'est interdit" },
+          { "value": "aucune", "label": "Pas de règle à ma connaissance" }
+        ] },
+        { "id": "anonym", "type": "single", "label": "Avez-vous déjà anonymisé un fichier avant de l'envoyer à une IA ?", "options": [
+          { "value": "fait", "label": "Oui, je l'ai déjà fait", "points": 2 },
+          { "value": "saurais", "label": "Non, mais je saurais le faire", "points": 1 },
+          { "value": "non", "label": "Non, et je ne saurais pas comment", "points": 0 }
+        ] },
+        { "id": "verif", "type": "single", "label": "La dernière fois qu'une IA vous a donné un calcul ou un texte pour le travail, qu'en avez-vous fait ?", "options": [
+          { "value": "echantillon", "label": "J'ai vérifié un échantillon contre la source", "points": 2 },
+          { "value": "relis", "label": "Je l'ai relu avant de l'utiliser", "points": 1 },
+          { "value": "telquel", "label": "Je l'ai utilisé tel quel", "points": 0 },
+          { "value": "pas", "label": "Je n'en ai jamais utilisé pour le travail", "points": 0 }
+        ] },
+        { "id": "formation", "type": "multi", "label": "Quelles formations avez-vous suivies ces 12 derniers mois ?", "help": "Plusieurs réponses possibles.", "options": [
+          { "value": "ia", "label": "Une formation sur l'IA" },
+          { "value": "autre", "label": "Une autre formation professionnelle" },
+          { "value": "aucune", "label": "Aucune" }
+        ] },
+        { "id": "payeur", "type": "single", "label": "Qui a payé la dernière formation que vous avez suivie ?", "options": [
+          { "value": "cabinet", "label": "Mon cabinet" },
+          { "value": "moi", "label": "Moi" },
+          { "value": "financement", "label": "Un financement (CPF, OPCO…)" },
+          { "value": "so", "label": "Je n'ai pas suivi de formation" }
+        ] }
+      ],
+      "score": {
+        "gridQuestion": "temps",
+        "max": 5,
+        "label": "Score d'exposition",
+        "bands": [
+          { "min": 70, "label": "Exposition forte", "message": "Selon nos estimations, la majorité de votre temps porte sur les tâches les plus exposées de notre liste." },
+          { "min": 55, "label": "Exposition marquée", "message": "Selon nos estimations, une part importante de votre temps porte sur des tâches qu'une IA sait déjà commencer." },
+          { "min": 0, "label": "Exposition modérée", "message": "Selon nos estimations, l'essentiel de votre temps porte sur des tâches où une IA apporte encore peu." }
+        ],
+        "caveat": "Ce score ne mesure pas un risque de remplacement. Il indique où votre façon de travailler change en premier, donc par où commencer.",
+        "note": "C'est la moyenne des niveaux d'exposition de vos tâches (notés de 1 à 5), pondérée par le temps que vous déclarez y passer, ramenée sur 100. Ces niveaux sont nos estimations et n'ont pas été validés par des auditeurs. Repères : modérée sous 55, marquée de 55 à 69, forte à partir de 70."
+      },
+      "level": {
+        "label": "Votre pratique de l'IA",
+        "bands": [ { "min": 6, "label": "Avancé" }, { "min": 3, "label": "Intermédiaire" }, { "min": 0, "label": "Débutant" } ],
+        "note": "D'après votre fréquence d'usage, l'anonymisation et la vérification."
+      },
+      "entryRules": [
+        { "when": { "question": "regle", "in": ["interdit"] }, "entry": { "label": "Module 1, leçon 1", "moduleSlug": "revue-analytique", "stepSlug": "lecon-1" }, "reason": "Votre cabinet interdit l'IA : la leçon 1 pose les trois questions à régler avant tout usage, et l'exercice ne porte que sur des données fictives." },
+        { "when": { "question": "regle", "in": ["aucune"] }, "entry": { "label": "Module 1, leçon 1", "moduleSlug": "revue-analytique", "stepSlug": "lecon-1" }, "reason": "Vous ne connaissez pas de règle écrite dans votre cabinet : c'est la première question de la routine." },
+        { "when": { "question": "anonym", "in": ["non"] }, "entry": { "label": "Module 1, leçon 1", "moduleSlug": "revue-analytique", "stepSlug": "lecon-1" }, "reason": "Vous n'avez pas encore le geste d'anonymisation : la leçon 1 le montre en quatre étapes." },
+        { "when": { "level": "Débutant" }, "entry": { "label": "Module 1, leçon 1", "moduleSlug": "revue-analytique", "stepSlug": "lecon-1" }, "reason": "Vous utilisez peu l'IA au travail : commencez par le début. Les quatre leçons se lisent en 25 minutes environ." },
+        { "when": { "level": "Intermédiaire" }, "entry": { "label": "Module 1, leçon 2", "moduleSlug": "revue-analytique", "stepSlug": "lecon-2" }, "reason": "Vous avez déjà le cadre et le geste d'anonymisation. Lisez le « À retenir » de la leçon 1, puis commencez à la leçon 2 : faire calculer, puis contrôler." },
+        { "when": { "always": true }, "entry": { "label": "Module 1, exercice", "moduleSlug": "revue-analytique", "stepSlug": "exercice" }, "reason": "Vous pratiquez déjà et vous vérifiez sur échantillon. Allez directement à l'exercice Nordelia et gardez les leçons comme référence." }
+      ],
+      "advice": [
+        { "when": { "question": "regle", "in": ["outil"] }, "text": "Relisez la charte IA de votre cabinet et notez quels outils et quelles données elle autorise pour une revue analytique." },
+        { "when": { "question": "regle", "in": ["sansoutil"] }, "text": "Demandez par écrit à votre chef de mission quel outil utiliser, et avec quelles données." },
+        { "when": { "question": "regle", "in": ["interdit"] }, "text": "Gardez l'IA hors de tout dossier client. Avant l'exercice sur données fictives, vérifiez que votre charte n'interdit pas l'usage d'un outil personnel." },
+        { "when": { "question": "regle", "in": ["aucune"] }, "text": "Cette semaine, demandez par écrit à votre chef de mission la règle du cabinet sur l'IA." },
+        { "when": { "always": true }, "text": "Faites le module 1 à partir de ce point d'entrée ({entry}). Prévoyez 60 minutes pour l'exercice." }
+      ]
+    }
+  }
+}
