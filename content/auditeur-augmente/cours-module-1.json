@@ -1,0 +1,266 @@
+{
+ "modules": [
+  {
+   "id": "m1",
+   "titre": "Revue analytique assistée par l'IA",
+   "lecons": [
+    {
+     "id": "l1",
+     "titre": "Ai-je le droit ?",
+     "duree": "6 min de lecture",
+     "objectif": "Savoir décider si une IA peut être utilisée sur un fichier, et anonymiser une balance en deux minutes.",
+     "cartes": [
+      {
+       "titre": "La question à régler avant tout",
+       "html": "<p>Bonjour. Dans ce module, vous allez faire une revue analytique complète avec une IA, sur une balance de 81 comptes, en moins d'une heure. Mais avant de coller quoi que ce soit dans un assistant, il y a une question à régler. Est-ce que j'ai le droit ?</p><p>Commençons par ce qui ne se discute pas. Le secret professionnel ne concerne pas que l'associé qui signe. La loi y soumet les commissaires aux comptes, et aussi leurs collaborateurs et leurs experts. Si vous êtes assistant ou senior, <mark>c'est donc votre secret, à vous personnellement</mark>.</p><p>Or coller la balance d'un client dans un assistant grand public, c'est envoyer ces informations sur les serveurs d'un tiers. Que votre compte soit gratuit ou payant ne suffit pas à régler cette question.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Votre cabinet a peut-être déjà tranché",
+       "html": "<p><b>Deuxième point.</b> Votre cabinet a peut-être déjà tranché. D'après le baromètre 2026 de la CNCC, plus de 60 % des cabinets autorisent leurs collaborateurs à utiliser des outils d'IA, et l'encadrement se renforce. Mais autorisé ne veut pas dire tout autorisé. La règle précise souvent quels outils, pour quelles tâches et avec quelles données.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Trois questions, dans cet ordre",
+       "html": "<p>Voici donc la règle de ce parcours, en trois questions. Posez-les dans cet ordre, à chaque fois.</p><p><b>Question un :</b> que dit mon cabinet ? Cherchez la charte IA, la charte informatique ou la procédure qualité. S'il n'y a rien d'écrit, demandez à votre chef de mission, par écrit. <mark>Une réponse orale dans un couloir ne vous protège pas.</mark></p><p><b>Question deux :</b> cet outil est-il autorisé pour cette tâche ? Un outil fourni et paramétré par le cabinet n'est pas votre compte personnel.</p><p><b>Question trois :</b> mes données identifient-elles le client ? C'est là que vous avez la main. Si la réponse est oui, vous anonymisez, ou vous renoncez.</p><p>En mars 2026, lors de la journée de la CNCC sur la confiance numérique, la consigne donnée aux petits cabinets tenait en quelques gestes. Ne jamais laisser le nom d'un client dans un document envoyé à une IA. Pseudonymiser ou anonymiser les données. Vérifier où elles sont stockées et si le fournisseur les conserve. Et <mark>si on ne sait pas réduire le risque, on renonce</mark>.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Anonymiser en deux minutes",
+       "html": "<p>Passons à la pratique. Voici une balance générale. Regardez ce qui identifie une entreprise. Il y a le nom et le SIREN dans l'en-tête. Il y a aussi les libellés de comptes. Un emprunt qui cite la banque. Un compte courant au nom d'un associé. Un compte fournisseur au nom d'une société.</p><p>Le geste tient en quatre étapes, deux minutes en tout. Un : je travaille sur une copie, jamais sur le fichier reçu du client. Deux : je supprime l'en-tête, c'est-à-dire le nom, le SIREN et l'adresse. Trois : je relis la colonne des libellés et je remplace chaque nom propre par un libellé neutre. « Emprunt Banque X » devient « Emprunt bancaire ». Quatre : je garde les numéros de compte et les montants, ce sont eux qui servent à l'analyse.</p><p><b>Une précision honnête.</b> Une balance sans nom reste une balance réelle. Quelqu'un qui connaît le secteur peut parfois reconnaître l'entreprise à ses chiffres. C'est pour cela que <mark>l'anonymisation ne remplace pas l'autorisation du cabinet</mark>. Elle vient en plus.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Garder une trace",
+       "html": "<p><b>Dernier réflexe :</b> vous notez ce que vous faites. Dans ce parcours, chaque livrable se termine par un journal d'usage de l'IA. Quel outil, quelle date, quelles données envoyées, ce que vous avez vérifié. Quelques lignes suffisent. Le jour où un relecteur vous demande comment vous êtes arrivé à votre conclusion, vous avez la réponse.</p><p>Dans l'exercice de ce module, toutes les données sont fictives. La société Nordelia Distribution n'existe pas. Vous pouvez donc utiliser l'outil de votre choix. Mais vous ferez quand même les gestes, parce que c'est lundi, sur un vrai dossier, qu'ils compteront.</p>",
+       "prompt": false
+      }
+     ],
+     "quiz": [
+      {
+       "q": "Votre chef de mission vous dit à l'oral, entre deux réunions, que vous pouvez utiliser un assistant IA sur le dossier. Que faites-vous ?",
+       "opts": [
+        "J'utilise mon compte personnel, puisque c'est autorisé.",
+        "Je demande une réponse écrite et je vérifie quel outil est autorisé pour cette tâche.",
+        "J'anonymise le fichier : cela suffit."
+       ],
+       "ok": 1,
+       "exp": "Une réponse orale ne vous protège pas. Un outil fourni par le cabinet n'est pas votre compte personnel. Et l'anonymisation vient en plus de l'autorisation, elle ne la remplace pas."
+      },
+      {
+       "q": "Vous anonymisez une balance avant de l'envoyer à une IA. Que gardez-vous ?",
+       "opts": [
+        "L'en-tête, pour savoir de quel dossier il s'agit.",
+        "Les libellés d'origine, y compris les noms propres.",
+        "Les numéros de compte et les montants."
+       ],
+       "ok": 2,
+       "exp": "Les numéros de compte et les montants servent à l'analyse. L'en-tête disparaît, et chaque nom propre des libellés devient un libellé neutre."
+      }
+     ],
+     "retenir": "Trois questions : mon cabinet, l'outil, les données. Un geste : anonymiser sur une copie. Une trace : le journal d'usage. Dans la leçon suivante, on fait calculer les variations à l'IA, et on apprend à ne pas la croire sur parole.",
+     "suite": null,
+     "prompt": null,
+     "sources": "<ul class=\"plain small\">\n              <li>Fait sourcé : secret professionnel des commissaires aux comptes, de leurs collaborateurs et experts (<a href=\"https://www.legifrance.gouv.fr/codes/id/LEGIARTI000006242708/2003-08-02\" target=\"_blank\" rel=\"noopener\">ancien article L. 822-15 du code de commerce</a>). À relire : le numéro d'article en vigueur depuis 2024.</li>\n              <li>Fait sourcé : plus de 60 % des cabinets autorisent l'IA (<a href=\"https://www.echodumardi.com/juridique/audit-legal-stabilisation-du-marche-et-renouvellement-de-la-profession/\" target=\"_blank\" rel=\"noopener\">baromètre CNCC 2026, repris par L'Écho du Mardi</a>).</li>\n              <li>Fait sourcé : consignes de la journée CNCC du 9 mars 2026 (<a href=\"https://www.lemondeinformatique.fr/actualites/lire-les-commissaires-aux-comptes-se-preparent-aux-evolutions-de-l-ia-act-99667.html\" target=\"_blank\" rel=\"noopener\">Le Monde Informatique</a>).</li>\n              <li>Opinion à relire : « demandez par écrit » et « l'anonymisation ne remplace pas l'autorisation » sont nos formulations, pas une règle citée.</li>\n            </ul>"
+    },
+    {
+     "id": "l2",
+     "titre": "Faire calculer, puis contrôler",
+     "duree": "6 min de lecture",
+     "objectif": "Savoir obtenir de l'IA un tableau de variations et de ratios, et le contrôler en trois minutes.",
+     "cartes": [
+      {
+       "titre": "Variations et corrélations",
+       "html": "<p>Dans la leçon précédente, vous avez anonymisé votre balance. Maintenant, on fait travailler l'IA. Et on la contrôle.</p><p>D'abord, de quoi parle-t-on. La norme d'exercice professionnel 520 définit les procédures analytiques comme des techniques de contrôle. Elles consistent à apprécier des informations financières à partir de leurs corrélations avec d'autres informations, et de l'analyse des variations significatives ou des tendances inattendues. Le commissaire aux comptes les met en œuvre lors de la prise de connaissance de l'entité, puis en fin d'audit pour la revue de cohérence d'ensemble.</p><p>Retenez deux mots : variations et corrélations. Une variation, c'est un compte comparé à lui-même d'une année sur l'autre. Une corrélation, c'est un compte comparé à un autre. Les créances au chiffre d'affaires. Le stock aux achats. Une IA fait très bien le premier travail. Le second, il faut le lui demander.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Une demande en quatre parties",
+       "html": "<p>Voici la demande que je lui adresse. Elle a quatre parties, et chacune a une raison.</p><p>Un, je décris les colonnes et je demande le solde net, la variation en euros et en pourcentage. Et j'ajoute : <mark>utilise ton outil de calcul, ne calcule pas de tête</mark>. Un assistant qui traite quatre-vingts lignes sans outil peut se tromper sans rien signaler.</p><p>Deux, je donne ma règle de tri. Ici, plus de 10 % et plus de 30 000 euros. Ces seuils viennent du chef de mission. Ce n'est ni à l'IA ni à vous de les inventer.</p><p>Trois, je demande les ratios, avec la formule utilisée. Taux de marge, délai de règlement des clients, rotation des stocks. Si je ne vois pas la formule, je ne peux pas contrôler.</p><p>Quatre, je lui interdis d'expliquer. Pas d'hypothèse à cette étape. Sinon elle mélange le calcul et l'interprétation, et vous ne savez plus ce que vous vérifiez.</p>",
+       "prompt": true
+      },
+      {
+       "titre": "Trois contrôles, trois minutes",
+       "html": "<p>La réponse arrive en quelques secondes. C'est le moment où l'on a envie de passer à la suite. Ne le faites pas. Trois contrôles, trois minutes.</p><p><b>Premier contrôle :</b> a-t-elle tout lu ? Je lui ai demandé le nombre de comptes et les totaux. Je les compare à mon fichier. Quatre-vingt-un comptes, et des totaux débit et crédit égaux pour chaque exercice. Si un chiffre diffère, elle a perdu des lignes, et tout le reste est faux.</p><p><b>Deuxième contrôle :</b> je recalcule cinq lignes moi-même, dans mon tableur. Les trois plus grosses variations et deux lignes prises au hasard. Cinq lignes justes ne prouvent pas que tout est juste. Mais <mark>une seule ligne fausse prouve qu'il faut tout refaire</mark>.</p><p><b>Troisième contrôle :</b> les pièges de signe. Regardez trois types de lignes. Les comptes créditeurs : une dette qui passe de 200 000 à 50 000 euros a baissé de 75 %, elle n'a pas augmenté. Les comptes partis de zéro : le pourcentage n'a pas de sens, seul le montant compte. Et les comptes qui changent de sens, débiteurs une année, créditeurs la suivante.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Ce que le filtre voit, et ce qu'il ne voit pas",
+       "html": "<p>Une fois ces contrôles passés, regardez la liste filtrée. Sur notre balance, la règle fait sortir seize comptes sur quatre-vingt-un. Seize lignes, ce n'est pas seize anomalies. Certaines s'expliquent toutes seules. Quand une entreprise emprunte pour investir, l'emprunt et les immobilisations montent ensemble, et c'est normal.</p><p>L'inverse est vrai aussi. Un compte qui n'a pas bougé peut cacher un problème. Imaginez un chiffre d'affaires en hausse de 20 % et des commissions de commerciaux parfaitement stables. Le filtre ne vous dira rien. C'est la limite d'un tri mécanique. <mark>Il voit ce qui bouge. Il ne voit pas ce qui aurait dû bouger.</mark></p><p>C'est pour cela que les ratios comptent. Un délai de règlement qui s'allonge ne correspond à aucune ligne de la balance. Il n'apparaît que lorsqu'on rapproche deux comptes.</p>",
+       "prompt": false
+      }
+     ],
+     "quiz": [
+      {
+       "q": "L'IA annonce 79 comptes traités. Votre fichier en compte 81. Que faites-vous ?",
+       "opts": [
+        "Je continue : deux comptes sur 81, l'écart est faible.",
+        "Je m'arrête : elle a perdu des lignes, tout le reste est à refaire.",
+        "Je lui demande d'expliquer les variations pour voir si cela change quelque chose."
+       ],
+       "ok": 1,
+       "exp": "Si le nombre de comptes ou un total diffère, l'IA a perdu des lignes et tout le reste est faux. C'est le premier des trois contrôles."
+      },
+      {
+       "q": "Une dette fournisseurs (solde créditeur) passe de 200 000 à 50 000 euros. Comment lisez-vous cette variation ?",
+       "opts": [
+        "Une hausse de 75 %.",
+        "Une baisse de 75 %.",
+        "Le pourcentage n'a pas de sens ici."
+       ],
+       "ok": 1,
+       "exp": "C'est le piège de signe des comptes créditeurs : la dette a baissé de 75 %, elle n'a pas augmenté. Le pourcentage perd son sens pour les comptes partis de zéro."
+      }
+     ],
+     "retenir": "L'IA calcule, vous contrôlez : le nombre de lignes, cinq recalculs, les signes. Le filtre donne une liste de questions, pas une liste de réponses. Dans la leçon suivante, on transforme ces seize lignes en hypothèses, et on apprend à repérer celles que l'IA invente.",
+     "suite": null,
+     "prompt": {
+      "n": 1,
+      "titre": "Prompt 1 · calcul et tri",
+      "note": "<b>Points de contrôle.</b> 81 comptes, total de 19 666 000 euros en 2025 et de 17 643 500 euros en 2024, seize comptes au-dessus des seuils.",
+      "texte": "Tu m'aides à préparer une revue analytique d'audit. Je te donne une balance générale anonymisée sur deux exercices, en euros. Colonnes : compte, libellé, solde débiteur 2025, solde créditeur 2025, solde débiteur 2024, solde créditeur 2024.\n\n1. Pour chaque compte, calcule le solde net de chaque exercice (débit moins crédit), la variation en euros et la variation en pourcentage. Utilise ton outil de calcul, ne calcule pas de tête.\n2. Liste les comptes dont la variation dépasse à la fois 10 % et 30 000 euros en valeur absolue.\n3. Calcule pour les deux exercices, en donnant la formule utilisée : le taux de marge commerciale global et par famille de produits, le délai de règlement des clients en jours, la durée de rotation des stocks par famille en jours.\n4. Ne propose aucune explication pour l'instant. Indique le nombre de comptes traités et les totaux débit et crédit de chaque exercice."
+     },
+     "sources": "<ul class=\"plain small\">\n              <li>Fait sourcé : définition et moments de mise en œuvre des procédures analytiques (<a href=\"https://h2a-france.org/normes/procedures-analytiques/\" target=\"_blank\" rel=\"noopener\">NEP 520, site de la H2A</a>, homologuée par arrêté du 13 novembre 2024).</li>\n              <li>Estimation : le risque d'erreur de calcul d'un assistant sans outil est une connaissance générale, non mesurée ici.</li>\n              <li>À relire : « les seuils viennent du chef de mission » et la règle 10 % et 30 000 euros sont des simplifications pédagogiques.</li>\n            </ul>"
+    },
+    {
+     "id": "l3",
+     "titre": "Des variations aux hypothèses",
+     "duree": "7 min de lecture",
+     "objectif": "Savoir trier les réponses de l'IA et faire repartir chaque hypothèse avec un document à obtenir.",
+     "cartes": [
+      {
+       "titre": "Une hypothèse n'est pas un élément probant",
+       "html": "<p>Vous avez seize lignes et quelques ratios. La tentation, maintenant, c'est de demander à l'IA : explique-moi ces variations. Elle le fera. Elle vous donnera seize explications fluides, bien écrites, plausibles. Et c'est exactement le danger.</p><p>Posons la règle de cette leçon. <mark>Ce que l'IA vous donne, ce sont des hypothèses. Ce que votre dossier exige, ce sont des éléments probants.</mark> Entre les deux, il y a votre travail.</p><p>Que dit la norme ? Quand les procédures analytiques mettent en évidence des variations ou des incohérences significatives, le commissaire aux comptes détermine les procédures d'audit nécessaires pour les élucider. Élucider. Pas commenter.</p><p>Pourquoi l'IA ne peut-elle pas élucider ? Parce qu'elle ne connaît pas votre client. Elle a une balance et ce que vous lui avez dit. Rien d'autre. Elle n'a pas vu l'entrepôt, elle n'a pas parlé au directeur financier, elle n'a ouvert aucune facture.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Trois sortes de phrases",
+       "html": "<p>Dans ses réponses, vous allez donc trouver trois sortes de phrases. Apprenez à les trier.</p><p>La première, c'est la reformulation. « Les créances clients ont augmenté en raison d'une hausse des ventes à crédit. » Cette phrase ne dit rien. Elle répète le constat avec d'autres mots. Vous la supprimez.</p><p>La deuxième, c'est l'hypothèse testable. « Des ventes de janvier ont peut-être été comptabilisées en décembre. » Celle-là est utile, parce qu'un document permet de la vérifier.</p><p>La troisième, c'est le fait inventé. « Cette hausse est cohérente avec l'inflation de 12 % du secteur en 2025. » D'où vient ce chiffre ? Ni de votre balance, ni de votre contexte. Le test est simple : <mark>tout fait qui ne figure pas dans ce que vous avez fourni est suspect</mark>. Demandez la source. S'il n'y en a pas, supprimez.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Donner le contexte et une consigne précise",
+       "html": "<p>Pour obtenir surtout des phrases de la deuxième sorte, donnez deux choses à l'IA.</p><p>D'abord, le contexte. Ce que vous savez de l'exercice : les faits marquants, les investissements, les conditions de règlement. Attention, vos notes d'entretien sont aussi confidentielles que la balance. Même règle : pas de nom, pas de lieu.</p><p>Ensuite, une consigne précise. Regardez le prompt 2. Pour chaque ligne, je demande le constat chiffré, puis si le contexte l'explique, en citant la phrase. Puis deux ou trois hypothèses, dont une d'erreur et une d'explication normale. Et pour chacune, le document qui permettrait de trancher.</p><p>J'ajoute deux questions que le filtre ne pose pas. Quels comptes auraient dû bouger, d'après le contexte, et n'ont pas bougé ? Et quelles lignes pourraient avoir une cause commune ? <mark>Trois variations peuvent venir d'une seule erreur.</mark></p><p>Et je termine par une interdiction : n'utilise que ce que je t'ai fourni. S'il te manque une information, écris-le.</p>",
+       "prompt": true
+      },
+      {
+       "titre": "Un exemple complet",
+       "html": "<p>Prenons un exemple complet. Les ventes de consommables informatiques augmentent de 15,6 %, soit 350 000 euros. C'est au-dessus des seuils.</p><p>Que dit le contexte ? Le directeur financier parle d'un nouveau catalogue lancé en février. C'est une explication. Est-ce une preuve ? Non. C'est une déclaration du client.</p><p>Je cherche donc les corrélations. Les achats de consommables augmentent de 17,4 %. Le taux de marge de la famille reste proche de 36 %. La rotation du stock reste autour de cinquante jours. Tout bouge ensemble, dans le même sens.</p><p>Ma conclusion pour cette ligne : variation cohérente avec le contexte et avec les comptes liés. Élément à obtenir : les ventes mensuelles par famille, pour voir si la hausse démarre bien en février. Une ligne dans ma feuille de travail, et je passe à la suivante.</p><p>Remarquez ce que j'ai fait. Je n'ai pas demandé à l'IA si c'était normal. Je lui ai fait rassembler les chiffres, et j'ai conclu moi-même, avec trois corrélations et un document à demander.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Toutes les lignes ne se valent pas",
+       "html": "<p><b>Dernier point :</b> toutes les lignes ne se valent pas. Votre chef de mission a fixé un seuil de signification. Classez vos hypothèses d'erreur par montant possible. Et gardez en tête que plusieurs anomalies sous le seuil peuvent, cumulées, l'atteindre.</p>",
+       "prompt": false
+      }
+     ],
+     "quiz": [
+      {
+       "q": "« Les créances clients ont augmenté en raison d'une hausse des ventes à crédit. » De quelle sorte de phrase s'agit-il ?",
+       "opts": [
+        "Une reformulation",
+        "Une hypothèse testable",
+        "Un fait inventé"
+       ],
+       "ok": 0,
+       "exp": "Elle répète le constat avec d'autres mots. Elle ne dit rien : vous la supprimez."
+      },
+      {
+       "q": "« Des ventes de janvier ont peut-être été comptabilisées en décembre. »",
+       "opts": [
+        "Une reformulation",
+        "Une hypothèse testable",
+        "Un fait inventé"
+       ],
+       "ok": 1,
+       "exp": "Elle est utile, parce qu'un document permet de la vérifier. Elle repart avec un document à obtenir."
+      },
+      {
+       "q": "« Cette hausse est cohérente avec l'inflation de 12 % du secteur en 2025. »",
+       "opts": [
+        "Une reformulation",
+        "Une hypothèse testable",
+        "Un fait inventé"
+       ],
+       "ok": 2,
+       "exp": "Ce chiffre ne vient ni de la balance ni du contexte. Demandez la source. S'il n'y en a pas, supprimez."
+      }
+     ],
+     "retenir": "L'IA propose, vous triez : reformulation, hypothèse testable, fait inventé. Chaque hypothèse retenue repart avec un document à obtenir. Et vous posez les deux questions que le filtre oublie : qu'est-ce qui aurait dû bouger, et qu'est-ce qui va ensemble. Dans la dernière leçon, on met tout cela dans une feuille de travail qu'un relecteur peut suivre.",
+     "suite": null,
+     "prompt": {
+      "n": 2,
+      "titre": "Prompt 2 · hypothèses et documents",
+      "note": null,
+      "texte": "Voici le contexte de l'entité, anonymisé : [coller la fiche contexte].\n\nPour chaque compte au-dessus des seuils et pour chaque ratio qui a varié :\n1. Rappelle le constat chiffré.\n2. Dis si le contexte fourni l'explique, et cite la phrase du contexte.\n3. Propose deux ou trois hypothèses, dont au moins une hypothèse d'erreur ou d'omission comptable et une hypothèse d'explication normale.\n4. Pour chaque hypothèse, indique le document ou le contrôle qui permettrait de trancher.\n\nEnsuite :\n5. Liste les comptes qui, d'après le contexte, auraient dû varier et n'ont pas varié.\n6. Indique les lignes qui pourraient avoir une cause commune.\n\nRègles : n'utilise que la balance et le contexte fournis. N'invente aucun fait sur l'entité ou son secteur. Si une information te manque, écris « information manquante » et dis laquelle."
+     },
+     "sources": "<ul class=\"plain small\">\n              <li>Fait sourcé : en cas de variations ou d'incohérences significatives, le commissaire aux comptes détermine les procédures nécessaires pour les élucider (<a href=\"https://h2a-france.org/normes/procedures-analytiques/\" target=\"_blank\" rel=\"noopener\">NEP 520, site de la H2A</a>).</li>\n              <li>Fait sourcé, version à vérifier : des anomalies inférieures au seuil de signification peuvent l'atteindre une fois cumulées (<a href=\"https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000820872\" target=\"_blank\" rel=\"noopener\">norme sur les anomalies significatives et le seuil de signification, version de 2006 sur Légifrance</a>).</li>\n              <li>Opinion à relire : « la déclaration du client n'est pas une preuve, on la corrobore ». La NEP 520 telle que nous l'avons lue ne traite pas des réponses de la direction.</li>\n              <li>À relire : l'exemple des consommables et le vocabulaire (« élément probant », « comptes liés »).</li>\n            </ul>"
+    },
+    {
+     "id": "l4",
+     "titre": "Écrire la feuille de travail et tracer",
+     "duree": "6 min de lecture",
+     "objectif": "Savoir faire rédiger sa feuille de travail par l'IA sans qu'elle ajoute ni travaux ni conclusions, et tenir un journal d'usage.",
+     "cartes": [
+      {
+       "titre": "Pour qui écrit-on ?",
+       "html": "<p>Vous avez vos constats, vos hypothèses et vos documents à obtenir. Il reste à écrire. Et c'est souvent là que le temps part : une heure d'analyse, deux heures de rédaction.</p><p>Pour qui écrit-on ? La norme sur la documentation de l'audit donne un critère très concret. Le dossier doit permettre à une personne qui a l'expérience de l'audit, mais qui n'a pas participé à la mission, de comprendre ce qui a été fait. Elle demande aussi que chaque élément mentionne qui a réalisé les travaux, à quelle date, et qui les a revus.</p><p>Votre lecteur est donc <mark>un inconnu compétent et pressé</mark>. Votre chef de mission aujourd'hui. Un contrôleur dans trois ans.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Six rubriques",
+       "html": "<p>La feuille de ce parcours a six rubriques. L'en-tête : l'exercice, l'objet, qui a préparé, qui a revu, les dates. L'objectif et l'étendue : quels comptes, quels seuils, quelles sources. Les travaux réalisés : ce que vous avez calculé et contrôlé. Les constats : votre tableau, une ligne par variation. La conclusion. Et le journal d'usage de l'IA.</p><p>L'IA rédige très bien les quatre rubriques du milieu, à une condition. Vous lui donnez votre tableau validé, pas la balance. À cette étape, elle met en forme. Elle n'analyse plus.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Trois défauts, trois règles",
+       "html": "<p>Regardez les trois règles du prompt 3. Chacune répond à un défaut que vous rencontrerez.</p><p><b>Premier défaut :</b> elle ajoute. Un constat de plus, un chiffre arrondi autrement, un commentaire sur le secteur. Règle : n'ajoute rien qui ne figure pas dans mon tableau.</p><p><b>Deuxième défaut, le plus dangereux :</b> elle écrit au passé des travaux que vous n'avez pas faits. « Nous avons obtenu les factures et vérifié la date de livraison. » Non. Vous avez prévu de les demander. Dans un dossier d'audit, cette phrase affirme un contrôle qui n'existe pas. Règle : <mark>au passé ce que j'ai fait, « à obtenir » pour le reste</mark>.</p><p><b>Troisième défaut :</b> elle conclut trop. « La revue analytique n'a révélé aucune anomalie significative. » Une revue analytique menée en début de mission ne permet pas d'écrire cela. Elle repère des risques et oriente les travaux. Règle : la conclusion liste les risques et ce qu'il reste à faire.</p>",
+       "prompt": true
+      },
+      {
+       "titre": "Relire phrase par phrase",
+       "html": "<p>Ensuite vous relisez. Pas pour le style. Phrase par phrase, avec deux questions. <mark>Est-ce que je l'ai fait ? Est-ce que je peux le montrer ?</mark> Si la réponse est non à l'une des deux, la phrase sort, ou passe en « à obtenir ».</p><p>Puis vous reportez le texte dans le dossier du cabinet. C'est là, et seulement là, que vous rétablissez le nom du client et les libellés réels. Jamais dans l'assistant.</p>",
+       "prompt": false
+      },
+      {
+       "titre": "Le journal d'usage de l'IA",
+       "html": "<p>Reste la sixième rubrique : le journal d'usage de l'IA. La norme sur la documentation ne parle pas d'intelligence artificielle. C'est une pratique que ce parcours vous propose, parce qu'elle répond à la question que tout relecteur posera : comment êtes-vous arrivé là ?</p><p>Cinq lignes. L'outil et la date. Les données transmises, et comment vous les avez anonymisées. Les tâches confiées : calcul, tri, rédaction. Les contrôles que vous avez faits : nombre de lignes, recalculs, relecture. Et ce que vous avez écarté : les faits inventés, les phrases au passé.</p><p>Vérifiez avec votre cabinet où cette trace doit figurer. Certains la voudront dans la feuille, d'autres dans une note à part.</p>",
+       "prompt": false
+      }
+     ],
+     "quiz": [
+      {
+       "q": "L'IA a écrit : « Nous avons obtenu les factures et vérifié la date de livraison. » Vous aviez seulement prévu de les demander. Que faites-vous ?",
+       "opts": [
+        "Je garde la phrase : c'est ce qui sera fait.",
+        "Je la passe en « à obtenir ».",
+        "Je supprime toute la ligne de constat."
+       ],
+       "ok": 1,
+       "exp": "Dans un dossier d'audit, cette phrase affirme un contrôle qui n'existe pas. Au passé ce que vous avez fait, « à obtenir » pour le reste."
+      },
+      {
+       "q": "Votre conclusion contient : « La revue analytique n'a révélé aucune anomalie significative. » Que faites-vous ?",
+       "opts": [
+        "Je la garde si aucune variation ne dépasse le seuil de signification.",
+        "Je la retire : la conclusion liste les risques identifiés et les travaux à mener.",
+        "Je la garde en ajoutant « à ce stade »."
+       ],
+       "ok": 1,
+       "exp": "Une revue analytique repère des risques et oriente les travaux. Elle ne permet pas de conclure à l'absence d'anomalie."
+      }
+     ],
+     "retenir": "Vous écrivez pour un inconnu compétent. L'IA met en forme votre tableau, elle n'ajoute rien. Vous relisez avec deux questions : l'ai-je fait, puis-je le montrer. Et vous laissez une trace de l'usage de l'IA.",
+     "suite": "Vous avez maintenant toute la méthode. À vous : la balance de Nordelia vous attend, avec cinq anomalies à trouver et quelques fausses pistes. Le tuteur est là si vous bloquez. Il ne vous donnera pas les réponses.",
+     "prompt": {
+      "n": 3,
+      "titre": "Prompt 3 · rédaction",
+      "note": null,
+      "texte": "Voici mon tableau de constats validé : [coller le tableau].\n\nRédige une feuille de travail de revue analytique avec ces rubriques : objectif et étendue, travaux réalisés, constats, conclusion, points à remonter au chef de mission.\n\nRègles :\n- N'ajoute aucun constat, aucun chiffre et aucun travail qui ne figure pas dans mon tableau.\n- Écris au passé uniquement ce que j'ai réellement fait. Écris « à obtenir » ou « à réaliser » pour tout le reste.\n- La conclusion ne se prononce pas sur la régularité des comptes. Elle liste les risques identifiés et les travaux à mener.\n- Style : phrases courtes, un constat par ligne, montants en euros."
+     },
+     "sources": "<ul class=\"plain small\">\n              <li>Fait sourcé : contenu du dossier, critère du lecteur expérimenté n'ayant pas participé à la mission, mention de qui a réalisé et revu les travaux, absence de mention de l'IA (<a href=\"https://h2a-france.org/normes/documentation-de-laudit-des-comptes/\" target=\"_blank\" rel=\"noopener\">NEP 230, site de la H2A</a>, homologuée par arrêté du 28 décembre 2023).</li>\n              <li>Opinion à relire : le journal d'usage de l'IA est une proposition du parcours, pas une exigence normative que nous ayons trouvée.</li>\n              <li>À relire : les six rubriques de la feuille, et la phrase « une revue analytique en début de mission ne permet pas de conclure à l'absence d'anomalie ».</li>\n            </ul>"
+    }
+   ]
+  }
+ ]
+}
