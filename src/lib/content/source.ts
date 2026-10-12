@@ -2,7 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { hasSupabase } from "@/lib/supabase/env";
+import { contentFromDb } from "@/lib/supabase/env";
 import { createPublicClient } from "@/lib/supabase/server";
 import type {
   Diagnostic,
@@ -15,8 +15,8 @@ import type {
 } from "./types";
 
 // Point d'accès unique au contenu.
-// - Avec Supabase configuré : tout est lu dans la base de données.
-// - Sans Supabase (phase actuelle, sans backend) : lecture des fichiers du dossier content/.
+// - Avec CONTENT_SOURCE=supabase : tout est lu dans la base de données.
+// - Sinon (phase actuelle) : lecture des fichiers du dossier content/. Voir contentFromDb.
 
 /* ---------------- Base de données ---------------- */
 
@@ -179,7 +179,7 @@ export async function listFormations(): Promise<FormationWithModules[]> {
   "use cache";
   cacheLife("hours");
   cacheTag(CONTENT_TAG);
-  if (hasSupabase) return dbListFormations();
+  if (contentFromDb) return dbListFormations();
   const all = (await readLocalPackages()).map(localFormation);
   return all.filter((f) => f.status === "published").sort((a, b) => a.position - b.position);
 }
@@ -188,7 +188,7 @@ export async function getFormation(slug: string): Promise<FormationWithModules |
   "use cache";
   cacheLife("hours");
   cacheTag(CONTENT_TAG);
-  if (hasSupabase) return dbGetFormation(slug);
+  if (contentFromDb) return dbGetFormation(slug);
   const p = (await readLocalPackages()).find((x) => x.formation.slug === slug);
   return p && p.formation.status === "published" ? localFormation(p) : null;
 }
@@ -199,7 +199,7 @@ export async function getDiagnostic(formationSlug: string): Promise<Diagnostic |
   cacheTag(CONTENT_TAG);
   const formation = await getFormation(formationSlug);
   if (!formation) return null;
-  if (hasSupabase) return dbGetDiagnostic(formation.id);
+  if (contentFromDb) return dbGetDiagnostic(formation.id);
   const p = (await readLocalPackages()).find((x) => x.formation.slug === formationSlug);
   if (!p?.diagnostic) return null;
   return { id: `${formation.id}-diagnostic`, formationId: formation.id, ...p.diagnostic };
@@ -209,7 +209,7 @@ export async function getModule(formationSlug: string, moduleSlug: string): Prom
   "use cache";
   cacheLife("hours");
   cacheTag(CONTENT_TAG);
-  if (hasSupabase) return dbGetModule(formationSlug, moduleSlug);
+  if (contentFromDb) return dbGetModule(formationSlug, moduleSlug);
   const p = (await readLocalPackages()).find((x) => x.formation.slug === formationSlug);
   if (!p || p.formation.status !== "published") return null;
   const raw = p.modules.find((m) => m.slug === moduleSlug);

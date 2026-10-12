@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { WhereSaved } from "@/components/auth/where-saved";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -238,7 +239,7 @@ export function LessonReader({
                 )}
                 <p className="text-caption text-muted-foreground">
                   Leçon terminée : {textScreens} écrans et {content.questions.length} question
-                  {content.questions.length > 1 ? "s" : ""}. Votre progression est enregistrée sur cet appareil.
+                  {content.questions.length > 1 ? "s" : ""}. <WhereSaved invite={false} />
                 </p>
               </div>
             )}

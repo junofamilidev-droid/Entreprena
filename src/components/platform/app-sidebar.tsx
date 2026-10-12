@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CompassIcon, HomeIcon, LibraryIcon, LockIcon, MessageSquareTextIcon } from "lucide-react";
+import { CompassIcon, HomeIcon, LibraryIcon, LockIcon, LogInIcon, MessageSquareTextIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +21,8 @@ import {
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { site } from "@/lib/site";
 import { useProgress } from "@/lib/progress/store";
+import { displayName, useAuth } from "@/lib/auth/session";
+import { hasSupabase } from "@/lib/supabase/env";
 import type { FormationWithModules } from "@/lib/content/types";
 
 // La barre latérale reste courte quel que soit le nombre de formations :
@@ -143,14 +145,56 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
           <SidebarMenuItem>
             <ThemeToggle />
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <p className="px-2 py-1.5 text-xs leading-snug text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
-              Pas encore de compte : votre progression reste sur cet appareil.
-            </p>
-          </SidebarMenuItem>
+          <AccountItem />
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
+  );
+}
+
+// Bas de la barre : l'apprenant connecté (vers son compte), ou le lien de connexion.
+function AccountItem() {
+  const pathname = usePathname();
+  const auth = useAuth();
+  if (!hasSupabase) {
+    return (
+      <SidebarMenuItem>
+        <p className="px-2 py-1.5 text-xs leading-snug text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
+          Pas encore de compte : votre progression reste sur cet appareil.
+        </p>
+      </SidebarMenuItem>
+    );
+  }
+  if (auth.status === "loading") return <SidebarMenuItem className="h-12" />;
+  if (auth.status === "anon") {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={pathname === "/connexion"} tooltip="Se connecter">
+          <Link href={`/connexion?next=${encodeURIComponent(pathname)}`}>
+            <LogInIcon /> <span>Se connecter</span>
+          </Link>
+        </SidebarMenuButton>
+        <p className="px-2 pt-1 pb-1.5 text-xs leading-snug text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
+          Sans compte, votre progression reste sur cet appareil.
+        </p>
+      </SidebarMenuItem>
+    );
+  }
+  const name = displayName(auth.user);
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild size="lg" isActive={pathname === "/compte"} tooltip="Mon compte">
+        <Link href="/compte">
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-sidebar-accent text-xs font-semibold uppercase">
+            {name.charAt(0)}
+          </span>
+          <span className="grid min-w-0 leading-tight">
+            <span className="truncate font-medium">{name}</span>
+            <span className="truncate text-xs text-sidebar-foreground/60">Mon compte</span>
+          </span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }

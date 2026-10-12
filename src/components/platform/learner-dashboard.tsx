@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { WhereSaved } from "@/components/auth/where-saved";
 import { ExternalLinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -156,8 +157,8 @@ export function LearnerDashboard({
       <Separator className="mt-14" />
       <div className="mt-6 max-w-3xl space-y-2 text-caption text-muted-foreground">
         <p>
-          Version de test : votre progression est enregistrée sur cet appareil, dans ce navigateur. Les
-          contenus sont en cours de relecture par des professionnels.
+          Version de test : <WhereSaved invite={false} /> Les contenus sont en cours de relecture par des
+          professionnels.
         </p>
         <p>{site.certificateNotice}</p>
         <p>{site.emailNotice}</p>

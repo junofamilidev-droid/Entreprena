@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { WhereSaved } from "@/components/auth/where-saved";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -148,7 +149,7 @@ export function ExerciseRunner({
                   <ExerciseBlockView key={i} block={b} ctx={ctx} />
                 ))}
                 <p className="text-caption text-muted-foreground">
-                  Vos saisies sont enregistrées sur cet appareil, dans ce navigateur, au fur et à mesure.
+                  Au fur et à mesure : <WhereSaved subject="vos saisies sont" />
                 </p>
               </>
             ) : (

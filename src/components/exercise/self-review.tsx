@@ -270,7 +270,7 @@ export function SelfReviewRunner({
                   </p>
                   <p className="text-body">
                     {score.passed
-                      ? "Votre note est enregistrée sur cet appareil. Vous pouvez obtenir votre attestation."
+                      ? "Votre note est enregistrée. Vous pouvez obtenir votre attestation."
                       : score.eliminated
                         ? "Un critère éliminatoire est coché : la copie revient à vous, quelle que soit la note. Corrigez la phrase en cause dans l'exercice, puis refaites l'auto-correction."
                         : `Il faut ${content.passMark} sur ${content.total}. Complétez votre feuille de travail dans l'exercice, puis refaites l'auto-correction.`}

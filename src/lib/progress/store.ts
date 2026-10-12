@@ -1,8 +1,8 @@
 "use client";
 
 // Progression de l'apprenant, enregistrée dans le navigateur (localStorage).
-// Elle sera remplacée par la base de données quand les comptes seront ouverts ;
-// l'interface (useProgress, saveStep) restera la même.
+// Quand l'apprenant est connecté, chaque modification est aussi envoyée à son compte
+// (voir sync.ts) : le navigateur sert alors de copie locale.
 
 import { useSyncExternalStore } from "react";
 import type { ExerciseInputs } from "@/lib/content/types";
@@ -74,10 +74,32 @@ export function useProgressReady(): boolean {
   return useSyncExternalStore(subscribe, () => true, () => false);
 }
 
+/** Envoi au compte de l'apprenant, branché par la synchronisation quand il est connecté. */
+export interface RemoteWriter {
+  save: (key: string, value: StepProgress) => void;
+  remove: (keys: string[]) => void;
+}
+let remote: RemoteWriter | null = null;
+
+export function setRemote(writer: RemoteWriter | null) {
+  remote = writer;
+}
+
+/** Remplace toute la progression locale (fusion avec le compte, ou déconnexion). */
+export function replaceProgress(next: ProgressState) {
+  write(next);
+}
+
+export function readProgress(): ProgressState {
+  return read();
+}
+
 export function saveStep(key: string, patch: Partial<StepProgress>) {
   const state = read();
   const prev = state[key] ?? { screen: 0, done: false, updatedAt: 0 };
-  write({ ...state, [key]: { ...prev, ...patch, updatedAt: Date.now() } });
+  const value = { ...prev, ...patch, updatedAt: Date.now() };
+  write({ ...state, [key]: value });
+  remote?.save(key, value);
 }
 
 /** Enregistre une saisie d'exercice sans toucher aux autres. */
@@ -88,7 +110,26 @@ export function saveInput(key: string, id: string, value: ExerciseInputs[string]
 
 export function resetProgress(prefix: string) {
   const state = read();
+  const removed = Object.keys(state).filter((k) => k.startsWith(prefix));
   write(Object.fromEntries(Object.entries(state).filter(([k]) => !k.startsWith(prefix))));
+  if (removed.length) remote?.remove(removed);
+}
+
+/**
+ * Fusion de la copie locale et du compte : pour chaque étape, la version la plus récente gagne.
+ * `toPush` liste les étapes plus récentes sur l'appareil, à envoyer au compte.
+ */
+export function mergeProgress(local: ProgressState, account: ProgressState) {
+  const merged: ProgressState = { ...account };
+  const toPush: string[] = [];
+  for (const [key, value] of Object.entries(local)) {
+    const other = account[key];
+    if (!other || value.updatedAt > other.updatedAt) {
+      merged[key] = value;
+      toPush.push(key);
+    }
+  }
+  return { merged, toPush };
 }
 
 /** Étape à reprendre dans une liste ordonnée : la première non terminée. */

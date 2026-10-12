@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { WhereSaved } from "@/components/auth/where-saved";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/platform/page-header";
 import { ResumePanel, StepList } from "@/components/platform/module-progress";
@@ -65,8 +66,7 @@ export default async function ModulePage(props: Props) {
                 <section className="space-y-2 border-t pt-6">
                   <h2 className="text-sm font-semibold">Votre progression</h2>
                   <p className="text-sm text-muted-foreground">
-                    Elle est enregistrée sur cet appareil, dans ce navigateur. Les comptes permettront de la
-                    retrouver partout.
+                    <WhereSaved subject="Elle est" />
                   </p>
                 </section>
               </aside>

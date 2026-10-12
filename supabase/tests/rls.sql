@@ -40,11 +40,12 @@ reset role;
 -- Alice : ses données uniquement
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000b', false);
-insert into step_progress (step_id, screen_index) values ('30000000-0000-0000-0000-000000000001', 3);
-insert into exercise_answers (step_id, data) values ('30000000-0000-0000-0000-000000000001', '{"x":1}');
+insert into learner_progress (step_key, data) values ('publiee/m1/s1', '{"screen":3,"inputs":{"x":"1"}}');
 do $$ begin
-  begin insert into step_progress (user_id, step_id) values ('00000000-0000-0000-0000-00000000000c', '30000000-0000-0000-0000-000000000001'); raise exception 'alice écrit pour bob';
+  begin insert into learner_progress (user_id, step_key) values ('00000000-0000-0000-0000-00000000000c', 'publiee/m1/s2'); raise exception 'alice écrit pour bob';
   exception when insufficient_privilege then null; end;
+  begin insert into learner_progress (step_key) values ('pas une clé'); raise exception 'clé invalide acceptée';
+  exception when check_violation then null; end;
 end $$;
 do $$ begin
   begin update formations set title = 'piraté'; exception when insufficient_privilege then null; end;
@@ -55,9 +56,9 @@ end $$;
 -- Bob ne voit rien d'Alice
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000c', false);
 do $$ begin
-  assert (select count(*) from step_progress) = 0, 'bob voit la progression d''alice';
-  assert (select count(*) from exercise_answers) = 0, 'bob voit les saisies d''alice';
-  update exercise_answers set data = '{}';
+  assert (select count(*) from learner_progress) = 0, 'bob voit la progression d''alice';
+  update learner_progress set data = '{}';
+  delete from learner_progress;
 end $$;
 
 -- Admin : voit les brouillons et les retours, peut écrire
@@ -66,9 +67,9 @@ do $$ begin
   assert (select count(*) from formations) = 2, 'admin: formations';
   assert (select count(*) from steps) = 2, 'admin: steps';
   assert (select count(*) from feedback) = 1, 'admin: retours';
-  assert (select count(*) from step_progress) = 0, 'admin voit la progression des apprenants';
+  assert (select count(*) from learner_progress) = 0, 'admin voit la progression des apprenants';
 end $$;
 update formations set title = 'Publiée (modifiée)' where slug = 'publiee';
 reset role;
-do $$ begin assert (select data from exercise_answers) = '{"x":1}', 'bob a modifié alice'; end $$;
+do $$ begin assert (select data->'inputs'->>'x' from learner_progress) = '1', 'bob a modifié ou supprimé alice'; end $$;
 select 'RLS OK' as resultat;

@@ -9,7 +9,6 @@ create extension if not exists pgcrypto;
 create type public.publication_status as enum ('draft', 'published');
 create type public.module_availability as enum ('open', 'coming_soon');
 create type public.step_kind as enum ('lesson', 'quiz', 'exercise', 'self_review', 'module_end');
-create type public.step_progress_status as enum ('started', 'completed');
 
 create or replace function public.touch_updated_at() returns trigger
 language plpgsql as $$
@@ -159,21 +158,16 @@ end $$;
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
-create table public.step_progress (
+-- Progression et saisies d'exercice, une ligne par étape. La clé d'étape est
+-- « formation/module/étape » (les slugs), ce qui la rend indépendante du stockage du contenu.
+-- `data` reprend tel quel l'état enregistré dans le navigateur (écran, réponses, saisies).
+create table public.learner_progress (
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
-  step_id uuid not null references public.steps (id) on delete cascade,
-  status public.step_progress_status not null default 'started',
-  screen_index int not null default 0 check (screen_index >= 0),
-  updated_at timestamptz not null default now(),
-  primary key (user_id, step_id)
-);
-
-create table public.exercise_answers (
-  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
-  step_id uuid not null references public.steps (id) on delete cascade,
+  step_key text not null check (step_key ~ '^[a-z0-9-]+/[a-z0-9-]+/[a-z0-9-]+$'),
   data jsonb not null default '{}',
   updated_at timestamptz not null default now(),
-  primary key (user_id, step_id)
+  primary key (user_id, step_key),
+  check (pg_column_size(data) < 200000)
 );
 
 create table public.diagnostic_results (
@@ -185,20 +179,15 @@ create table public.diagnostic_results (
   created_at timestamptz not null default now()
 );
 
-create trigger step_progress_touch before update on public.step_progress for each row execute function public.touch_updated_at();
-create trigger exercise_answers_touch before update on public.exercise_answers for each row execute function public.touch_updated_at();
 
 alter table public.profiles enable row level security;
-alter table public.step_progress enable row level security;
-alter table public.exercise_answers enable row level security;
+alter table public.learner_progress enable row level security;
 alter table public.diagnostic_results enable row level security;
 
 create policy "lire mon profil" on public.profiles for select using (id = auth.uid());
 create policy "modifier mon profil" on public.profiles for update using (id = auth.uid()) with check (id = auth.uid());
 
-create policy "mes données" on public.step_progress for all
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy "mes données" on public.exercise_answers for all
+create policy "mes données" on public.learner_progress for all
   using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "mes données" on public.diagnostic_results for all
   using (user_id = auth.uid()) with check (user_id = auth.uid());
