@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LessonReader } from "@/components/reader/lesson-reader";
-import { ExerciseRunner } from "@/components/exercise/exercise-runner";
-import { ModuleEnd } from "@/components/exercise/module-end";
-import { SelfReviewRunner } from "@/components/exercise/self-review";
-import { StepPlaceholder } from "@/components/reader/step-placeholder";
+import { StepView } from "@/components/reader/step-view";
 import { getFormation, getModule, listFormations } from "@/lib/content/source";
-import type { ExerciseContent, LessonContent, ModuleEndContent, SelfReviewContent } from "@/lib/content/types";
 
 type Props = PageProps<"/formations/[slug]/[module]/[step]">;
+
+// Les formations, modules et étapes publiés après la mise en ligne n'ont pas de page préparée à
+// l'avance : elles sont rendues à la demande (puis mises en cache), sans bloquer la construction.
+export const instant = false;
 
 export async function generateStaticParams() {
   const params: { slug: string; module: string; step: string }[] = [];
@@ -35,69 +34,16 @@ export default async function StepPage(props: Props) {
   const i = mod.steps.findIndex((s) => s.slug === step);
   if (i === -1) notFound();
 
-  const current = mod.steps[i];
-  const after = mod.steps[i + 1];
   const moduleHref = `/formations/${slug}/${module}`;
-  const next = after ? { href: `${moduleHref}/${after.slug}`, title: after.title } : null;
-  const moduleLabel = `Module ${mod.position} : ${mod.title}`;
-
-  if (current.kind === "lesson") {
-    return (
-      <LessonReader
-        progressKey={`${slug}/${module}/${current.slug}`}
-        stepTitle={current.title}
-        moduleLabel={moduleLabel}
-        content={current.content as unknown as LessonContent}
-        exitHref={moduleHref}
-        next={next}
-      />
-    );
-  }
-  const exercise = current.content as unknown as Partial<ExerciseContent>;
-  if (current.kind === "exercise" && exercise.parts?.length) {
-    return (
-      <ExerciseRunner
-        progressKey={`${slug}/${module}/${current.slug}`}
-        stepTitle={current.title}
-        moduleLabel={moduleLabel}
-        content={exercise as ExerciseContent}
-        exitHref={moduleHref}
-        next={next}
-        tutorUrl={formation.tutorUrl}
-      />
-    );
-  }
-  const keyOf = (stepSlug: string) => `${slug}/${module}/${stepSlug}`;
-  const review = current.content as unknown as Partial<SelfReviewContent>;
-  const reviewed = review.exerciseStep ? mod.steps.find((s) => s.slug === review.exerciseStep) : undefined;
-  if (current.kind === "self_review" && review.criteria && reviewed) {
-    return (
-      <SelfReviewRunner
-        progressKey={keyOf(current.slug)}
-        exerciseKey={keyOf(reviewed.slug)}
-        exerciseHref={`${moduleHref}/${reviewed.slug}`}
-        stepTitle={current.title}
-        moduleLabel={moduleLabel}
-        content={review as SelfReviewContent}
-        exercise={reviewed.content as unknown as ExerciseContent}
-        exitHref={moduleHref}
-        next={next}
-      />
-    );
-  }
-  const end = current.content as unknown as Partial<ModuleEndContent>;
-  if (current.kind === "module_end" && end.template && end.reviewStep) {
-    return (
-      <ModuleEnd
-        progressKey={keyOf(current.slug)}
-        reviewKey={keyOf(end.reviewStep)}
-        reviewHref={`${moduleHref}/${end.reviewStep}`}
-        stepTitle={current.title}
-        moduleLabel={moduleLabel}
-        content={end as ModuleEndContent}
-        exitHref={moduleHref}
-      />
-    );
-  }
-  return <StepPlaceholder stepTitle={current.title} moduleLabel={moduleLabel} exitHref={moduleHref} next={next} />;
+  return (
+    <StepView
+      steps={mod.steps}
+      index={i}
+      moduleLabel={`Module ${mod.position} : ${mod.title}`}
+      tutorUrl={formation.tutorUrl}
+      keyPrefix={`${slug}/${module}`}
+      hrefOf={(s) => `${moduleHref}/${s.slug}`}
+      exitHref={moduleHref}
+    />
+  );
 }

@@ -9,6 +9,10 @@ import { PageHeader } from "@/components/platform/page-header";
 import { getFormation, listFormations } from "@/lib/content/source";
 import { site } from "@/lib/site";
 
+// Les formations, modules et étapes publiés après la mise en ligne n'ont pas de page préparée à
+// l'avance : elles sont rendues à la demande (puis mises en cache), sans bloquer la construction.
+export const instant = false;
+
 export async function generateStaticParams() {
   return (await listFormations()).map((f) => ({ slug: f.slug }));
 }

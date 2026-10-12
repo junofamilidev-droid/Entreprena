@@ -15,7 +15,10 @@ Priorité actuelle : l'interface (pas de backend pour l'instant).
 - Auto-correction (grille sur 20, corrigé ouvert après dépôt, critères éliminatoires) et attestation de fin de module
 - Comptes apprenants (Supabase) : inscription, connexion, mot de passe oublié, page « Mon compte » ;
   la progression et les saisies d'exercice suivent l'apprenant sur tous ses appareils
-- À venir : espace réservé, retours des testeurs
+- Espace réservé (`/admin`, comptes inscrits dans la table `admins`) : formations, modules et étapes,
+  éditeur de texte (TipTap) pour les leçons, mode avancé JSON pour les autres étapes, brouillon et publication,
+  aperçu, import du contenu des fichiers dans la base
+- À venir : retours des testeurs
 
 La plateforme accueille des formations pour tous les métiers : aucun écran n'est propre à l'audit.
 
@@ -27,8 +30,11 @@ Next.js, TypeScript, Tailwind CSS, shadcn/ui, Motion, Supabase (comptes), Vercel
 - Serveurs MCP : shadcn et 21st.dev, déclarés dans `.mcp.json` (la clé 21st.dev est lue dans la variable `API_KEY_21ST`, jamais écrite dans le dépôt)
 - Compétences de design pour Claude : `.claude/skills/` (frontend-design, ui-ux-pro-max)
 - Réglages : voir `.env.example`. Sans Supabase, le site fonctionne sans comptes (progression sur l'appareil).
-- Contenu : chaque formation a un dossier dans `content/`. Le site lit ces fichiers tant que `CONTENT_SOURCE`
-  ne vaut pas `supabase` (bascule prévue avec l'espace réservé).
+- Contenu : dès que la base contient une formation publiée (import depuis l'espace réservé), le site lit la base ;
+  sinon, les fichiers du dossier `content/` (`CONTENT_SOURCE=files` force les fichiers). Attention : un nouvel import
+  remplace, pour les éléments communs, les modifications faites dans l'espace réservé.
+- Donner l'accès administrateur : dans l'éditeur SQL de Supabase,
+  `insert into public.admins (user_id) select id from auth.users where email = '…';`
 - Comptes : la progression est copiée dans le navigateur et dans la table `learner_progress`
   (`src/lib/progress/sync.ts`) ; la session est rafraîchie par `src/proxy.ts`.
 - Base de données : `supabase/migrations/` (tables et règles d'accès). Tests des règles sur un PostgreSQL local :

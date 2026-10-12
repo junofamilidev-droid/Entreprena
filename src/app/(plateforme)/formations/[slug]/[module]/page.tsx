@@ -8,6 +8,10 @@ import { moduleRef } from "@/lib/content/refs";
 
 type Props = PageProps<"/formations/[slug]/[module]">;
 
+// Les formations, modules et étapes publiés après la mise en ligne n'ont pas de page préparée à
+// l'avance : elles sont rendues à la demande (puis mises en cache), sans bloquer la construction.
+export const instant = false;
+
 export async function generateStaticParams() {
   return (await listFormations()).flatMap((f) => f.modules.map((m) => ({ slug: f.slug, module: m.slug })));
 }

@@ -3,7 +3,7 @@
 // Session de l'apprenant côté navigateur : un seul abonnement aux changements de Supabase,
 // partagé par tous les composants (useAuth).
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { hasSupabase } from "@/lib/supabase/env";
@@ -47,4 +47,22 @@ export function useAuth(): AuthState {
 export function displayName(user: User) {
   const name = (user.user_metadata?.display_name as string | undefined)?.trim();
   return name || (user.email ?? "").split("@")[0];
+}
+
+/** Le compte connecté est-il administrateur ? (affichage seulement : la base vérifie elle-même) */
+export function useIsAdmin(): boolean {
+  const auth = useAuth();
+  const id = auth.status === "user" ? auth.user.id : null;
+  const [admin, setAdmin] = useState<{ id: string; value: boolean } | null>(null);
+  useEffect(() => {
+    if (!id) return;
+    let alive = true;
+    supabase()
+      .rpc("is_admin")
+      .then(({ data }) => alive && setAdmin({ id, value: data === true }));
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+  return Boolean(id && admin?.id === id && admin.value);
 }

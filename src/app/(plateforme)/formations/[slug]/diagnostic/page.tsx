@@ -5,6 +5,10 @@ import { DiagnosticRunner } from "@/components/diagnostic/diagnostic-runner";
 import { getDiagnostic, getFormation, listFormations } from "@/lib/content/source";
 
 
+// Les formations, modules et étapes publiés après la mise en ligne n'ont pas de page préparée à
+// l'avance : elles sont rendues à la demande (puis mises en cache), sans bloquer la construction.
+export const instant = false;
+
 export async function generateStaticParams() {
   return (await listFormations()).filter((f) => f.hasDiagnostic).map((f) => ({ slug: f.slug }));
 }

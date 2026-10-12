@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CompassIcon, HomeIcon, LibraryIcon, LockIcon, LogInIcon, MessageSquareTextIcon } from "lucide-react";
+import { CompassIcon, HomeIcon, LibraryIcon, LockIcon, LogInIcon, MessageSquareTextIcon, PencilRulerIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +21,7 @@ import {
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { site } from "@/lib/site";
 import { useProgress } from "@/lib/progress/store";
-import { displayName, useAuth } from "@/lib/auth/session";
+import { displayName, useAuth, useIsAdmin } from "@/lib/auth/session";
 import { hasSupabase } from "@/lib/supabase/env";
 import type { FormationWithModules } from "@/lib/content/types";
 
@@ -145,6 +145,7 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
           <SidebarMenuItem>
             <ThemeToggle />
           </SidebarMenuItem>
+          <AdminItem />
           <AccountItem />
         </SidebarMenu>
       </SidebarFooter>
@@ -193,6 +194,20 @@ function AccountItem() {
             <span className="truncate font-medium">{name}</span>
             <span className="truncate text-xs text-sidebar-foreground/60">Mon compte</span>
           </span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
+function AdminItem() {
+  const admin = useIsAdmin();
+  if (!admin) return null;
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild tooltip="Espace réservé">
+        <Link href="/admin">
+          <PencilRulerIcon /> <span>Espace réservé</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
