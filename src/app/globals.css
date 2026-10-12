@@ -7,90 +7,98 @@
 /*
  * Charte graphique
  * - Une seule couleur de marque : bleu pétrole (--brand). Tout le reste est neutre.
- * - Typographies : Source Serif 4 (titres), Inter (texte), JetBrains Mono (chiffres, prompts).
- * - Échelle typographique : voir les utilitaires text-display … text-kicker plus bas.
+ * - Typographies : Source Serif 4 (titres), Inter (texte). JetBrains Mono est réservé aux prompts à copier.
+ * - Échelle typographique : utilitaires text-display à text-caption plus bas.
  */
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --body-font: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --heading-font: "Source Serif 4 Variable", ui-serif, Georgia, serif;
-  --heading-weight: 560;
+  --heading-weight: 580;
   --heading-tracking: -0.015em;
 
-  --brand: oklch(0.43 0.085 222);
-  --brand-foreground: oklch(0.985 0.004 222);
-  --brand-soft: oklch(0.955 0.02 222);
+  /* Thème clair : papier neutre, encre bleu nuit, bleu pétrole. */
+  --brand: oklch(0.43 0.075 220);
+  --brand-foreground: oklch(0.985 0.004 220);
+  --brand-soft: oklch(0.955 0.018 220);
 
-  --background: oklch(0.993 0.002 90);
-  --foreground: oklch(0.2 0.012 250);
+  --background: oklch(0.985 0.002 100);
+  --foreground: oklch(0.22 0.025 255);
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
-  --secondary: oklch(0.965 0.004 250);
-  --secondary-foreground: oklch(0.25 0.012 250);
-  --muted: oklch(0.965 0.004 250);
-  --muted-foreground: oklch(0.5 0.012 250);
+  --secondary: oklch(0.955 0.004 255);
+  --secondary-foreground: oklch(0.26 0.02 255);
+  --muted: oklch(0.955 0.004 255);
+  --muted-foreground: oklch(0.5 0.015 255);
   --accent: var(--brand-soft);
-  --accent-foreground: oklch(0.32 0.07 222);
+  --accent-foreground: oklch(0.33 0.065 220);
   --destructive: oklch(0.55 0.2 27);
-  --success: oklch(0.52 0.11 155);
+  --success: oklch(0.5 0.1 155);
   --warning: oklch(0.72 0.14 75);
-  --border: oklch(0.91 0.005 250);
-  --input: oklch(0.88 0.006 250);
-  --ring: oklch(0.55 0.08 222);
+  --border: oklch(0.905 0.005 255);
+  --input: oklch(0.88 0.006 255);
+  --ring: oklch(0.55 0.075 220);
 
   --chart-1: var(--brand);
-  --chart-2: oklch(0.62 0.07 222);
-  --chart-3: oklch(0.78 0.045 222);
-  --chart-4: oklch(0.55 0.012 250);
-  --chart-5: oklch(0.8 0.008 250);
+  --chart-2: oklch(0.62 0.065 220);
+  --chart-3: oklch(0.78 0.04 220);
+  --chart-4: oklch(0.55 0.012 255);
+  --chart-5: oklch(0.8 0.008 255);
 
-  --sidebar: oklch(0.982 0.003 250);
+  --sidebar: oklch(0.97 0.003 255);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--brand);
   --sidebar-primary-foreground: var(--brand-foreground);
-  --sidebar-accent: var(--brand-soft);
-  --sidebar-accent-foreground: oklch(0.32 0.07 222);
+  --sidebar-accent: oklch(0.925 0.008 240);
+  --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 }
 
+/* Thème sombre : ardoise bleutée (pas de noir pur), pétrole éclairci. */
 .dark {
-  --brand: oklch(0.72 0.08 222);
-  --brand-foreground: oklch(0.18 0.03 222);
-  --brand-soft: oklch(0.28 0.035 222);
+  --brand: oklch(0.74 0.085 212);
+  --brand-foreground: oklch(0.2 0.03 220);
+  --brand-soft: oklch(0.29 0.04 220);
 
-  --background: oklch(0.16 0.008 250);
-  --foreground: oklch(0.96 0.004 250);
-  --card: oklch(0.2 0.009 250);
+  --background: oklch(0.185 0.014 250);
+  --foreground: oklch(0.94 0.006 250);
+  --card: oklch(0.215 0.015 250);
   --card-foreground: var(--foreground);
-  --popover: oklch(0.2 0.009 250);
+  --popover: oklch(0.225 0.015 250);
   --popover-foreground: var(--foreground);
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
-  --secondary: oklch(0.25 0.01 250);
+  --secondary: oklch(0.26 0.015 250);
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.25 0.01 250);
-  --muted-foreground: oklch(0.7 0.01 250);
+  --muted: oklch(0.255 0.014 250);
+  --muted-foreground: oklch(0.7 0.015 250);
   --accent: var(--brand-soft);
-  --accent-foreground: oklch(0.9 0.03 222);
+  --accent-foreground: oklch(0.9 0.04 212);
   --destructive: oklch(0.68 0.18 25);
-  --success: oklch(0.72 0.12 155);
+  --success: oklch(0.74 0.11 155);
   --warning: oklch(0.8 0.13 75);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.6 0.07 222);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.62 0.07 212);
 
-  --sidebar: oklch(0.19 0.009 250);
+  --chart-1: var(--brand);
+  --chart-2: oklch(0.6 0.06 212);
+  --chart-3: oklch(0.45 0.04 212);
+  --chart-4: oklch(0.6 0.012 250);
+  --chart-5: oklch(0.4 0.01 250);
+
+  --sidebar: oklch(0.165 0.014 250);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--brand);
   --sidebar-primary-foreground: var(--brand-foreground);
-  --sidebar-accent: var(--brand-soft);
+  --sidebar-accent: oklch(0.24 0.016 250);
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: var(--border);
+  --sidebar-border: oklch(1 0 0 / 7%);
   --sidebar-ring: var(--ring);
 }
 
@@ -155,7 +163,7 @@
   }
 }
 
-/* Échelle typographique : sept rôles, pas un de plus. */
+/* Échelle typographique : six rôles, pas un de plus. */
 @utility text-display {
   font-family: var(--heading-font);
   font-size: clamp(2.25rem, 1.6rem + 3vw, 3.75rem);
@@ -190,14 +198,6 @@
   line-height: 1.45;
   letter-spacing: 0.01em;
 }
-@utility text-kicker {
-  font-size: 0.75rem;
-  line-height: 1.3;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
 /* Texte riche des leçons (il viendra de la base de données) */
 @utility prose-lesson {
   font-size: 1.0625rem;
@@ -219,125 +219,4 @@
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-}
-
-/*
- * Ambiances à comparer (page /ambiances). Chacune redéfinit les mêmes jetons :
- * couleurs, typographies, arrondis. Une seule sera gardée.
- */
-[data-ambiance] {
-  font-family: var(--body-font);
-  /* Jetons dérivés : recalculés à partir des valeurs propres à chaque ambiance. */
-  --card-foreground: var(--foreground);
-  --popover-foreground: var(--foreground);
-  --primary: var(--brand);
-  --primary-foreground: var(--brand-foreground);
-  --accent: var(--brand-soft);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-primary: var(--brand);
-  --sidebar-primary-foreground: var(--brand-foreground);
-  --sidebar-border: var(--border);
-  --chart-1: var(--brand);
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
-[data-ambiance="editorial"] {
-  --radius: 0.5rem;
-  --background: oklch(0.99 0.004 85);
-  --card: oklch(1 0 0);
-  --sidebar: oklch(0.975 0.006 85);
-  --border: oklch(0.91 0.008 85);
-}
-
-[data-ambiance="tech"] {
-  --radius: 0.5rem;
-  --body-font: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
-  --heading-font: "Inter Tight Variable", ui-sans-serif, system-ui, sans-serif;
-  --heading-weight: 600;
-  --heading-tracking: -0.03em;
-  --brand: oklch(0.66 0.17 278);
-  --brand-foreground: oklch(0.99 0 0);
-  --brand-soft: oklch(0.27 0.06 278);
-  --background: oklch(0.145 0.006 275);
-  --foreground: oklch(0.965 0.003 275);
-  --card: oklch(0.18 0.008 275);
-  --popover: oklch(0.18 0.008 275);
-  --primary: var(--brand);
-  --primary-foreground: var(--brand-foreground);
-  --secondary: oklch(0.23 0.008 275);
-  --secondary-foreground: var(--foreground);
-  --muted: oklch(0.23 0.008 275);
-  --muted-foreground: oklch(0.68 0.012 275);
-  --accent: oklch(0.24 0.02 278);
-  --accent-foreground: oklch(0.9 0.04 278);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 13%);
-  --ring: oklch(0.6 0.15 278);
-  --sidebar: oklch(0.125 0.006 275);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-accent: oklch(0.21 0.01 275);
-  --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: oklch(1 0 0 / 7%);
-}
-
-[data-ambiance="warm"] {
-  --radius: 1rem;
-  --body-font: "Nunito Variable", ui-sans-serif, system-ui, sans-serif;
-  --heading-font: "Nunito Variable", ui-sans-serif, system-ui, sans-serif;
-  --heading-weight: 780;
-  --heading-tracking: -0.015em;
-  --brand: oklch(0.57 0.13 42);
-  --brand-foreground: oklch(0.99 0.005 60);
-  --brand-soft: oklch(0.94 0.035 55);
-  --background: oklch(0.972 0.014 80);
-  --foreground: oklch(0.27 0.025 50);
-  --card: oklch(0.995 0.006 80);
-  --popover: oklch(0.995 0.006 80);
-  --primary: var(--brand);
-  --primary-foreground: var(--brand-foreground);
-  --secondary: oklch(0.94 0.018 75);
-  --secondary-foreground: var(--foreground);
-  --muted: oklch(0.945 0.016 75);
-  --muted-foreground: oklch(0.5 0.025 55);
-  --accent: var(--brand-soft);
-  --accent-foreground: oklch(0.42 0.11 42);
-  --border: oklch(0.9 0.018 70);
-  --input: oklch(0.87 0.02 70);
-  --ring: oklch(0.65 0.11 42);
-  --sidebar: oklch(0.955 0.02 78);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-accent: oklch(0.92 0.03 70);
-  --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: oklch(0.9 0.018 70);
-}
-
-[data-ambiance="premium"] {
-  --radius: 0.125rem;
-  --body-font: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --heading-font: "Fraunces Variable", ui-serif, Georgia, serif;
-  --heading-weight: 480;
-  --heading-tracking: -0.02em;
-  --brand: oklch(0.29 0.075 262);
-  --brand-foreground: oklch(0.99 0 0);
-  --brand-soft: oklch(0.95 0.014 262);
-  --background: oklch(0.995 0 0);
-  --foreground: oklch(0.19 0.03 262);
-  --card: oklch(1 0 0);
-  --primary: var(--brand);
-  --primary-foreground: var(--brand-foreground);
-  --muted: oklch(0.965 0.006 262);
-  --muted-foreground: oklch(0.48 0.025 262);
-  --accent: var(--brand-soft);
-  --accent-foreground: var(--brand);
-  --border: oklch(0.89 0.012 262);
-  --ring: oklch(0.45 0.08 262);
-  --sidebar: oklch(0.24 0.065 262);
-  --sidebar-foreground: oklch(0.93 0.015 262);
-  --sidebar-primary: oklch(0.99 0 0);
-  --sidebar-primary-foreground: var(--brand);
-  --sidebar-accent: oklch(0.31 0.07 262);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.7 0.05 262);
 }

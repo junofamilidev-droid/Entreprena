@@ -1,48 +1,12 @@
-"use client";
-
-import {
-  ArrowRightIcon,
-  BookOpenTextIcon,
-  CheckIcon,
-  ClipboardListIcon,
-  ExternalLinkIcon,
-  FileCheck2Icon,
-  FlagIcon,
-  ListChecksIcon,
-  LockIcon,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { CheckIcon, ExternalLinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { cn } from "@/lib/utils";
+import { site } from "@/lib/site";
 import type { FormationWithModules, StepKind } from "@/lib/content/types";
-import type { DemoStep } from "./types";
-
-const kindIcon: Record<StepKind, typeof BookOpenTextIcon> = {
-  lesson: BookOpenTextIcon,
-  quiz: ListChecksIcon,
-  exercise: ClipboardListIcon,
-  self_review: FileCheck2Icon,
-  module_end: FlagIcon,
-};
+import type { DemoStep, Enrollment } from "@/lib/demo/progress";
 
 const kindLabel: Record<StepKind, string> = {
   lesson: "Leçon",
@@ -52,185 +16,225 @@ const kindLabel: Record<StepKind, string> = {
   module_end: "Fin du module",
 };
 
+// Ligne de pointage : une case par étape du module, cochée quand elle est faite.
+function TickLine({ steps }: { steps: DemoStep[] }) {
+  return (
+    <ol className="flex gap-1.5" aria-label="Étapes du module">
+      {steps.map((s, i) => (
+        <li
+          key={s.slug}
+          title={s.title}
+          className={cn(
+            "grid h-7 flex-1 place-items-center rounded-[5px] border text-xs",
+            s.state === "done" && "border-primary bg-primary text-primary-foreground",
+            s.state === "current" && "border-primary text-primary ring-2 ring-primary/20",
+            s.state === "todo" && "border-dashed text-muted-foreground",
+          )}
+        >
+          {s.state === "done" ? <CheckIcon className="size-3.5" strokeWidth={3} aria-label="fait" /> : i + 1}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function AsideSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-2 py-5 first:pt-0">
+      <h2 className="text-sm font-semibold">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function progressOf(e: Enrollment) {
+  const done = e.steps.filter((s) => s.state === "done").length;
+  return e.steps.length ? Math.round((done / e.steps.length) * 100) : 0;
+}
+
 export function LearnerDashboard({
-  formation,
-  steps,
+  enrollments,
+  others,
 }: {
-  formation: FormationWithModules;
-  steps: DemoStep[];
+  enrollments: Enrollment[];
+  others: FormationWithModules[];
 }) {
-  const mod = formation.modules.find((m) => m.availability === "open")!;
-  const others = formation.modules.filter((m) => m.id !== mod.id);
-  const done = steps.filter((s) => s.state === "done").length;
+  const active = enrollments[0];
+  if (!active) {
+    return (
+      <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-8">
+        <h1 className="text-title">Choisissez une première formation</h1>
+        <p className="mt-2 text-body text-muted-foreground">Le catalogue rassemble les formations ouvertes, métier par métier.</p>
+        <Button asChild className="mt-6"><Link href="/catalogue">Voir le catalogue</Link></Button>
+      </div>
+    );
+  }
+  const { formation, steps } = active;
+  const mod = formation.modules.find((m) => m.slug === active.moduleSlug);
+  const base = `/formations/${formation.slug}`;
   const current = steps.find((s) => s.state === "current") ?? steps[0];
-  const currentIndex = steps.indexOf(current);
-  const pct = Math.round((done / steps.length) * 100);
+  const done = steps.filter((s) => s.state === "done").length;
 
   return (
-    <>
-      <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background/90 px-4 backdrop-blur">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">{formation.title}</BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Tableau de bord</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <Badge variant="outline" className="ml-auto font-normal text-muted-foreground">
-          Version de test
-        </Badge>
-      </header>
-
-      <div className="mx-auto w-full max-w-5xl space-y-8 px-4 py-8 sm:px-6 md:py-10">
-        <div className="space-y-1">
-          <h1 className="text-title">Bonjour</h1>
-          <p className="text-body text-muted-foreground">Reprenez là où vous vous êtes arrêté.</p>
-        </div>
-
-        {/* Reprendre */}
-        <Card className="gap-0 overflow-hidden p-0">
-          <div className="grid md:grid-cols-[1fr_15rem]">
-            <div className="space-y-5 p-6">
-              <div className="space-y-1">
-                <p className="text-caption text-muted-foreground">
-                  Module {mod.position} · {mod.title}
-                </p>
-                <h2 className="text-heading">{current.title}</h2>
-                <p className="text-caption text-muted-foreground">
-                  {kindLabel[current.kind]} · {current.meta}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <Button size="lg">
-                  Reprendre <ArrowRightIcon />
-                </Button>
-                <Button size="lg" variant="ghost">
-                  Voir le sommaire
-                </Button>
-              </div>
-            </div>
-            <div className="flex flex-col justify-center gap-3 border-t bg-muted/40 p-6 md:border-t-0 md:border-l">
-              <div className="flex items-baseline justify-between">
-                <span className="text-caption text-muted-foreground">Avancement du module</span>
-                <span className="font-mono text-sm tabular-nums">{pct}&nbsp;%</span>
-              </div>
-              <Progress value={pct} className="h-2 bg-muted" />
-              <p className="text-caption text-muted-foreground">
-                Étape {currentIndex + 1} sur {steps.length}
-              </p>
-            </div>
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
+      {mod && current && (
+        <section aria-labelledby="reprendre" className="rounded-xl border bg-card p-6 sm:p-8">
+          <p className="text-sm text-muted-foreground">
+            {formation.title}, module {mod.position} : {mod.title}
+          </p>
+          <h1 id="reprendre" className="mt-3 text-title text-balance">
+            {current.title}
+          </h1>
+          {current.objective && (
+            <p className="mt-3 max-w-[62ch] text-lead text-muted-foreground">{current.objective}</p>
+          )}
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Button asChild size="lg">
+              <Link href={`${base}/${mod.slug}?etape=${current.slug}`}>Reprendre la leçon</Link>
+            </Button>
+            <span className="text-sm text-muted-foreground">{current.duration}</span>
           </div>
-        </Card>
-
-        <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
-          {/* Sommaire du module */}
-          <Card className="gap-0 pb-2">
-            <CardHeader className="border-b pb-4">
-              <CardTitle>Sommaire du module {mod.position}</CardTitle>
-              <CardDescription>{mod.durationLabel}</CardDescription>
-            </CardHeader>
-            <ol className="divide-y">
-              {steps.map((s, i) => {
-                const Icon = kindIcon[s.kind];
-                return (
-                  <li
-                    key={s.title}
-                    className={cn(
-                      "flex items-center gap-4 px-6 py-3.5",
-                      s.state === "current" && "bg-accent/60",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "grid size-7 shrink-0 place-items-center rounded-full border text-xs",
-                        s.state === "done" && "border-primary bg-primary text-primary-foreground",
-                        s.state === "current" && "border-primary text-primary",
-                        s.state === "todo" && "text-muted-foreground",
-                      )}
-                    >
-                      {s.state === "done" ? <CheckIcon className="size-3.5" /> : i + 1}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className={cn("truncate text-sm", s.state === "current" ? "font-medium" : s.state === "todo" && "text-muted-foreground")}>
-                        {s.title}
-                      </p>
-                      <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
-                        <Icon className="size-3.5" aria-hidden /> {kindLabel[s.kind]} · {s.meta}
-                      </p>
-                    </div>
-                    {s.state === "current" && <Badge>En cours</Badge>}
-                  </li>
-                );
-              })}
-            </ol>
-          </Card>
-
-          <div className="space-y-6">
-            <Card className="gap-3">
-              <CardHeader>
-                <CardDescription>Votre diagnostic</CardDescription>
-                <CardTitle className="font-serif text-3xl tabular-nums">
-                  84 <span className="text-base font-normal text-muted-foreground">/ 100</span>
-                </CardTitle>
-                <CardAction>
-                  <Badge variant="outline" className="font-normal">Estimation</Badge>
-                </CardAction>
-              </CardHeader>
-              <CardContent className="text-caption text-muted-foreground">
-                Exposition forte. Point d&apos;entrée conseillé : module 1, exercice.
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" size="sm" className="w-full">Revoir mon résultat</Button>
-              </CardFooter>
-            </Card>
-
-            <Card className="gap-3">
-              <CardHeader>
-                <CardDescription>Votre livrable</CardDescription>
-                <CardTitle>Feuille de travail</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Progress value={0} className="h-1.5 bg-muted" />
-                <p className="text-caption text-muted-foreground">0 rubrique sur 6 remplie · se construit pendant l&apos;exercice</p>
-              </CardContent>
-            </Card>
-
-            <Card className="gap-3">
-              <CardHeader>
-                <CardTitle>Tuteur IA</CardTitle>
-                <CardDescription>Un assistant externe, pour un indice si vous bloquez. Il ne donne pas les réponses.</CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Button variant="outline" size="sm" className="w-full">
-                  Ouvrir le tuteur <ExternalLinkIcon />
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
-
-        {/* Suite de la formation */}
-        <section className="space-y-4">
-          <h2 className="text-heading">Suite de la formation</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {others.map((m) => (
-              <Card key={m.id} className="gap-2 py-5 shadow-none">
-                <CardHeader className="px-5">
-                  <CardDescription className="flex items-center gap-1.5">
-                    <LockIcon className="size-3.5" /> Module {m.position} · à venir
-                  </CardDescription>
-                  <CardTitle className="text-base">{m.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="px-5 text-caption text-muted-foreground">{m.deliverable}</CardContent>
-              </Card>
-            ))}
+          <div className="mt-8 space-y-2">
+            <TickLine steps={steps} />
+            <p className="text-caption text-muted-foreground">
+              {done} étape{done > 1 ? "s" : ""} faite{done > 1 ? "s" : ""} sur {steps.length}
+            </p>
           </div>
         </section>
+      )}
+
+      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-14">
+        {mod && (
+          <section aria-labelledby="sommaire" className="min-w-0">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 id="sommaire" className="text-heading">Dans ce module</h2>
+              {mod.durationLabel && <span className="text-sm text-muted-foreground">{mod.durationLabel}</span>}
+            </div>
+            <ol className="mt-4 divide-y border-y">
+              {steps.map((s, i) => (
+                <li key={s.slug}>
+                  <Link
+                    href={`${base}/${mod.slug}?etape=${s.slug}`}
+                    className={cn(
+                      "grid grid-cols-[1.75rem_1fr_auto] items-baseline gap-x-3 py-3.5 outline-offset-2 transition-colors hover:bg-muted/50 sm:px-2",
+                      s.state === "current" && "bg-accent/50 hover:bg-accent/70",
+                    )}
+                  >
+                    <span className="text-sm tabular-nums text-muted-foreground">
+                      {s.state === "done" ? <CheckIcon className="inline size-4 text-primary" strokeWidth={2.5} aria-label="fait" /> : `${i + 1}.`}
+                    </span>
+                    <span className="min-w-0">
+                      <span className={cn("block", s.state === "current" && "font-medium")}>{s.title}</span>
+                      {kindLabel[s.kind] !== s.title && (
+                        <span className="block text-caption text-muted-foreground">{kindLabel[s.kind]}</span>
+                      )}
+                    </span>
+                    <span className="text-right text-caption text-muted-foreground">
+                      {s.state === "current" ? <span className="font-medium text-primary">En cours</span> : s.duration}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        <aside className="divide-y">
+          {formation.hasDiagnostic && (
+            <AsideSection title="Diagnostic">
+              <p className="text-sm text-muted-foreground">
+                Pas encore fait. Il estime votre exposition à l&apos;IA et indique où commencer.
+              </p>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`${base}/diagnostic`}>Faire le diagnostic</Link>
+              </Button>
+            </AsideSection>
+          )}
+          {mod && (
+            <AsideSection title="Votre livrable">
+              <p className="text-sm text-muted-foreground">{mod.deliverable}</p>
+              <p className="text-caption text-muted-foreground">Il se remplit pendant l&apos;exercice.</p>
+            </AsideSection>
+          )}
+          <AsideSection title="Tuteur IA">
+            <p className="text-sm text-muted-foreground">
+              Un assistant externe pour obtenir un indice. Il ne donne pas les réponses. N&apos;y collez
+              jamais de données confidentielles réelles.
+            </p>
+            {formation.tutorUrl ? (
+              <Button asChild variant="outline" size="sm">
+                <a href={formation.tutorUrl} target="_blank" rel="noopener noreferrer">
+                  Ouvrir le tuteur <ExternalLinkIcon />
+                </a>
+              </Button>
+            ) : (
+              <p className="text-caption text-muted-foreground">Lien pas encore branché.</p>
+            )}
+          </AsideSection>
+        </aside>
       </div>
-    </>
+
+      <section aria-labelledby="mes-formations" className="mt-12">
+        <h2 id="mes-formations" className="text-heading">Mes formations</h2>
+        <ul className="mt-4 divide-y border-y">
+          {enrollments.map((e) => {
+            const pct = progressOf(e);
+            return (
+              <li key={e.formation.id}>
+                <Link
+                  href={`/formations/${e.formation.slug}`}
+                  className="grid gap-x-6 gap-y-2 py-4 transition-colors hover:bg-muted/50 sm:grid-cols-[1fr_12rem] sm:items-center sm:px-2"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-caption text-muted-foreground">{e.formation.domain}</span>
+                    <span className="block font-medium">{e.formation.title}</span>
+                  </span>
+                  <span className="flex items-center gap-3">
+                    <Progress value={pct} className="h-1.5 bg-muted" aria-label={`Avancement : ${pct} %`} />
+                    <span className="w-10 shrink-0 text-right text-sm tabular-nums text-muted-foreground">{pct}&nbsp;%</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section aria-labelledby="autres" className="mt-12">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id="autres" className="text-heading">Autres formations</h2>
+          <Link href="/catalogue" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            Voir le catalogue
+          </Link>
+        </div>
+        {others.length > 0 ? (
+          <ul className="mt-4 divide-y border-y">
+            {others.slice(0, 4).map((f) => (
+              <li key={f.id}>
+                <Link href={`/formations/${f.slug}`} className="block py-4 transition-colors hover:bg-muted/50 sm:px-2">
+                  <span className="block text-caption text-muted-foreground">{f.domain}</span>
+                  <span className="block font-medium">{f.title}</span>
+                  <span className="block text-sm text-muted-foreground">{f.promise}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-3 text-body text-muted-foreground">
+            De nouvelles formations, pour d&apos;autres métiers, seront ajoutées au fil du temps.
+          </p>
+        )}
+      </section>
+
+      <Separator className="mt-14" />
+      <div className="mt-6 max-w-3xl space-y-2 text-caption text-muted-foreground">
+        <p>
+          Version de test : l&apos;avancement affiché ici est fictif tant que les comptes ne sont pas
+          ouverts. Les contenus sont en cours de relecture par des professionnels.
+        </p>
+        <p>{site.certificateNotice}</p>
+        <p>{site.emailNotice}</p>
+      </div>
+    </div>
   );
 }

@@ -1,17 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BookOpenIcon,
-  CheckCircle2Icon,
-  CircleDotIcon,
-  CircleIcon,
-  CompassIcon,
-  LayoutDashboardIcon,
-  LibraryIcon,
-  LockIcon,
-  MessageSquareTextIcon,
-} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { CompassIcon, HomeIcon, LibraryIcon, LockIcon, MessageSquareTextIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -28,31 +19,29 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import type { FormationWithModules } from "@/lib/content/types";
-import type { DemoStep } from "./types";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { site } from "@/lib/site";
+import type { FormationWithModules } from "@/lib/content/types";
 
-const stateIcon = {
-  done: CheckCircle2Icon,
-  current: CircleDotIcon,
-  todo: CircleIcon,
-} as const;
-
+// La barre latérale reste courte quel que soit le nombre de formations :
+// seules les formations suivies y figurent, et le détail des modules n'apparaît
+// que pour la formation ouverte.
 export function AppSidebar({
-  formation,
-  steps,
+  followed,
+  learner,
 }: {
-  formation: FormationWithModules;
-  steps: DemoStep[];
+  followed: FormationWithModules[];
+  learner: { name: string; email: string; initials: string };
 }) {
-  const current = formation.modules.find((m) => m.availability === "open");
+  const pathname = usePathname();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="#">
+              <Link href="/">
                 <span className="grid size-8 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
                   <span className="font-serif text-base font-semibold leading-none">E</span>
                 </span>
@@ -70,53 +59,76 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton isActive tooltip="Tableau de bord">
-                <LayoutDashboardIcon /> <span>Tableau de bord</span>
+              <SidebarMenuButton asChild isActive={pathname === "/"} tooltip="Tableau de bord">
+                <Link href="/">
+                  <HomeIcon /> <span>Tableau de bord</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Catalogue">
-                <LibraryIcon /> <span>Catalogue</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Mon diagnostic">
-                <CompassIcon /> <span>Mon diagnostic</span>
+              <SidebarMenuButton asChild isActive={pathname === "/catalogue"} tooltip="Catalogue">
+                <Link href="/catalogue">
+                  <LibraryIcon /> <span>Catalogue</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>{formation.title}</SidebarGroupLabel>
-          <SidebarMenu>
-            {formation.modules.map((m) => (
-              <SidebarMenuItem key={m.id}>
-                <SidebarMenuButton tooltip={m.title} disabled={m.availability !== "open"} className="disabled:opacity-60">
-                  {m.availability === "open" ? <BookOpenIcon /> : <LockIcon />}
-                  <span>
-                    {m.position}. {m.title}
-                  </span>
-                </SidebarMenuButton>
-                {m.id === current?.id && (
-                  <SidebarMenuSub>
-                    {steps.map((s) => {
-                      const Icon = stateIcon[s.state];
-                      return (
-                        <SidebarMenuSubItem key={s.title}>
-                          <SidebarMenuSubButton isActive={s.state === "current"}>
-                            <Icon className={s.state === "done" ? "text-sidebar-primary" : undefined} />
-                            <span>{s.title}</span>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      );
-                    })}
-                  </SidebarMenuSub>
-                )}
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        {followed.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Mes formations</SidebarGroupLabel>
+            <SidebarMenu>
+              {followed.map((f) => {
+                const base = `/formations/${f.slug}`;
+                const inside = pathname === base || pathname.startsWith(`${base}/`);
+                return (
+                  <SidebarMenuItem key={f.id}>
+                    <SidebarMenuButton asChild isActive={pathname === base} tooltip={f.title}>
+                      <Link href={base}>
+                        <span className="grid size-4 shrink-0 place-items-center rounded-[4px] bg-sidebar-primary/15 text-[10px] font-semibold text-sidebar-primary">
+                          {f.domain.charAt(0)}
+                        </span>
+                        <span>{f.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    {inside && (
+                      <SidebarMenuSub>
+                        {f.hasDiagnostic && (
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton asChild isActive={pathname === `${base}/diagnostic`}>
+                              <Link href={`${base}/diagnostic`}>
+                                <CompassIcon /> <span>Diagnostic</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        )}
+                        {f.modules.map((m) =>
+                          m.availability === "open" ? (
+                            <SidebarMenuSubItem key={m.id}>
+                              <SidebarMenuSubButton asChild isActive={pathname === `${base}/${m.slug}`}>
+                                <Link href={`${base}/${m.slug}`}>
+                                  <span className="tabular-nums text-sidebar-foreground/60">{m.position}.</span>
+                                  <span>{m.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ) : (
+                            <SidebarMenuSubItem key={m.id}>
+                              <SidebarMenuSubButton aria-disabled className="text-sidebar-foreground/50 hover:bg-transparent">
+                                <LockIcon /> <span>{m.title}</span>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ),
+                        )}
+                      </SidebarMenuSub>
+                    )}
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
@@ -127,13 +139,16 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
+            <ThemeToggle />
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <SidebarMenuButton size="lg">
               <Avatar className="size-8 rounded-md">
-                <AvatarFallback className="rounded-md bg-sidebar-accent text-xs">CD</AvatarFallback>
+                <AvatarFallback className="rounded-md bg-sidebar-accent text-xs">{learner.initials}</AvatarFallback>
               </Avatar>
               <span className="grid leading-tight">
-                <span className="truncate font-medium">Compte de démonstration</span>
-                <span className="truncate text-xs text-sidebar-foreground/60">demo@exemple.fr</span>
+                <span className="truncate font-medium">{learner.name}</span>
+                <span className="truncate text-xs text-sidebar-foreground/60">{learner.email}</span>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>

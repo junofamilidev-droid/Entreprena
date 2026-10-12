@@ -7,19 +7,21 @@ Première formation : « Auditeur augmenté par l'IA ».
 
 ## Avancement
 
-1. Charte graphique : page `/style` (validée)
-2. Accueil, page de formation et diagnostic (en attente de validation)
-3. Lecteur de module, avec le module 1 importé
-4. Comptes et progression
-5. Espace réservé
-6. Mise en ligne
+Priorité actuelle : l'interface (pas de backend pour l'instant).
+
+- Plateforme : tableau de bord, catalogue, page de formation, diagnostic, thème clair et sombre
+- À venir : lecteur de module, exercice guidé, auto-correction, espace réservé
+- L'avancement affiché est fictif (`src/lib/demo/progress.ts`) tant que les comptes ne sont pas ouverts
+
+La plateforme accueille des formations pour tous les métiers : aucun écran n'est propre à l'audit.
 
 ## Technique
 
 Next.js, TypeScript, Tailwind CSS, shadcn/ui, Motion. À venir : Supabase, TipTap, Vercel.
 
-- Lancer en local : `npm install` puis `npm run dev`, puis ouvrir http://localhost:3000/style
-- Serveur MCP shadcn : déclaré dans `.mcp.json`
+- Lancer en local : `npm install` puis `npm run dev`, puis ouvrir http://localhost:3000
+- Serveurs MCP : shadcn et 21st.dev, déclarés dans `.mcp.json` (la clé 21st.dev est lue dans la variable `API_KEY_21ST`, jamais écrite dans le dépôt)
+- Compétences de design pour Claude : `.claude/skills/` (frontend-design, ui-ux-pro-max)
 - Contenu : chaque formation a un dossier dans `content/` (fichiers d'import). En ligne, tout est lu dans Supabase ;
   sans Supabase, en local uniquement, le site lit directement ces fichiers pour l'aperçu.
 - Base de données : `supabase/migrations/` (tables et règles d'accès). Tests des règles sur un PostgreSQL local :

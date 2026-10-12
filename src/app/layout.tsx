@@ -4,6 +4,7 @@ import "@fontsource-variable/source-serif-4";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -13,10 +14,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">
-        {children}
-        <Toaster />
+    <html lang="fr" className="h-full antialiased" suppressHydrationWarning>
+      <body className="min-h-full">
+        <ThemeProvider>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

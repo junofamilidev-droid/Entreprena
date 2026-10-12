@@ -3,10 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, RotateCcwIcon } from "lucide-react";
+import { ArrowLeftIcon, CopyIcon, RotateCcwIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -229,8 +228,7 @@ function ResultView({
   return (
     <div className="space-y-14">
       <section className="space-y-8" aria-labelledby="resultat">
-        <p className="text-kicker text-brand">Votre résultat</p>
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
+                <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
           <ScoreRing score={r.score} label={config.score.label} />
           <div className="space-y-3">
             <h2 id="resultat" className="text-title">{r.band.label}</h2>
@@ -267,7 +265,7 @@ function ResultView({
         <ol className="space-y-4">
           {[...r.advice, ...(r.topTask ? [r.topTask.text] : [])].map((t, i) => (
             <li key={i} className="flex gap-4 text-body">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-soft font-mono text-caption text-brand">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-soft text-caption tabular-nums text-accent-foreground">
                 {i + 1}
               </span>
               <span className="pt-0.5">{t}</span>
@@ -282,7 +280,7 @@ function ResultView({
         )}
         <Button asChild size="lg">
           <Link href={entryHref}>
-            Commencer : {r.entry.label} <ArrowRightIcon />
+            Commencer : {r.entry.label}
           </Link>
         </Button>
       </section>
@@ -305,7 +303,7 @@ function ResultView({
                     <span className="text-caption font-normal text-muted-foreground"> · module {p.row.modulePosition}</span>
                   )}
                 </p>
-                <p className="shrink-0 font-mono text-sm tabular-nums">{Math.round(p.share * 100)} %</p>
+                <p className="shrink-0 text-sm tabular-nums">{Math.round(p.share * 100)}&nbsp;%</p>
               </div>
               <Progress value={p.share * 100} className="h-1.5 bg-muted" aria-label={`Part du temps : ${Math.round(p.share * 100)} %`} />
               <p className="text-caption text-muted-foreground">
@@ -431,7 +429,7 @@ export function DiagnosticRunner({
           <span>
             Question {index + 1} sur {config.questions.length}
           </span>
-          <Badge variant="outline" className="font-normal">Résultat : une estimation</Badge>
+          <span>Le résultat est une estimation</span>
         </div>
         <Progress value={(index / config.questions.length) * 100} className="h-1 bg-muted" aria-label="Avancement du diagnostic" />
       </div>
