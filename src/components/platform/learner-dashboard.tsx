@@ -1,42 +1,14 @@
+"use client";
+
 import Link from "next/link";
-import { CheckIcon, ExternalLinkIcon } from "lucide-react";
+import { ExternalLinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
-import type { FormationWithModules, StepKind } from "@/lib/content/types";
-import type { DemoStep, Enrollment } from "@/lib/demo/progress";
-
-const kindLabel: Record<StepKind, string> = {
-  lesson: "Leçon",
-  quiz: "Questions",
-  exercise: "Exercice guidé",
-  self_review: "Auto-correction",
-  module_end: "Fin du module",
-};
-
-// Ligne de pointage : une case par étape du module, cochée quand elle est faite.
-function TickLine({ steps }: { steps: DemoStep[] }) {
-  return (
-    <ol className="flex gap-1.5" aria-label="Étapes du module">
-      {steps.map((s, i) => (
-        <li
-          key={s.slug}
-          title={s.title}
-          className={cn(
-            "grid h-7 flex-1 place-items-center rounded-[5px] border text-xs",
-            s.state === "done" && "border-primary bg-primary text-primary-foreground",
-            s.state === "current" && "border-primary text-primary ring-2 ring-primary/20",
-            s.state === "todo" && "border-dashed text-muted-foreground",
-          )}
-        >
-          {s.state === "done" ? <CheckIcon className="size-3.5" strokeWidth={3} aria-label="fait" /> : i + 1}
-        </li>
-      ))}
-    </ol>
-  );
-}
+import { useProgress } from "@/lib/progress/store";
+import type { FormationWithModules } from "@/lib/content/types";
+import { moduleState, ResumePanel, StepList, type ModuleRef } from "./module-progress";
 
 function AsideSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -47,20 +19,26 @@ function AsideSection({ title, children }: { title: string; children: React.Reac
   );
 }
 
-function progressOf(e: Enrollment) {
-  const done = e.steps.filter((s) => s.state === "done").length;
-  return e.steps.length ? Math.round((done / e.steps.length) * 100) : 0;
-}
-
 export function LearnerDashboard({
-  enrollments,
-  others,
+  formations,
+  refs,
 }: {
-  enrollments: Enrollment[];
-  others: FormationWithModules[];
+  formations: FormationWithModules[];
+  refs: ModuleRef[];
 }) {
-  const active = enrollments[0];
-  if (!active) {
+  const progress = useProgress();
+
+  // Formations commencées, de la plus récemment ouverte à la plus ancienne.
+  const started = refs
+    .map((r) => ({ ref: r, st: moduleState(progress, r) }))
+    .filter((x) => x.st.started)
+    .sort((a, b) => b.st.lastActivity - a.st.lastActivity);
+  const active = started[0]?.ref ?? refs[0];
+  const formation = formations.find((f) => f.slug === active?.formationSlug);
+  const startedSlugs = new Set(started.map((x) => x.ref.formationSlug));
+  const others = formations.filter((f) => !startedSlugs.has(f.slug) && f.slug !== active?.formationSlug);
+
+  if (!active || !formation) {
     return (
       <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-8">
         <h1 className="text-title">Choisissez une première formation</h1>
@@ -69,82 +47,28 @@ export function LearnerDashboard({
       </div>
     );
   }
-  const { formation, steps } = active;
-  const mod = formation.modules.find((m) => m.slug === active.moduleSlug);
+  const mod = formation.modules.find((m) => m.slug === active.module.slug);
   const base = `/formations/${formation.slug}`;
-  const current = steps.find((s) => s.state === "current") ?? steps[0];
-  const done = steps.filter((s) => s.state === "done").length;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
-      {mod && current && (
-        <section aria-labelledby="reprendre" className="rounded-xl border bg-card p-6 sm:p-8">
-          <p className="text-sm text-muted-foreground">
-            {formation.title}, module {mod.position} : {mod.title}
-          </p>
-          <h1 id="reprendre" className="mt-3 text-title text-balance">
-            {current.title}
-          </h1>
-          {current.objective && (
-            <p className="mt-3 max-w-[62ch] text-lead text-muted-foreground">{current.objective}</p>
-          )}
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Button asChild size="lg">
-              <Link href={`${base}/${mod.slug}?etape=${current.slug}`}>Reprendre la leçon</Link>
-            </Button>
-            <span className="text-sm text-muted-foreground">{current.duration}</span>
-          </div>
-          <div className="mt-8 space-y-2">
-            <TickLine steps={steps} />
-            <p className="text-caption text-muted-foreground">
-              {done} étape{done > 1 ? "s" : ""} faite{done > 1 ? "s" : ""} sur {steps.length}
-            </p>
-          </div>
-        </section>
-      )}
+      <ResumePanel refData={active} />
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-14">
-        {mod && (
-          <section aria-labelledby="sommaire" className="min-w-0">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 id="sommaire" className="text-heading">Dans ce module</h2>
-              {mod.durationLabel && <span className="text-sm text-muted-foreground">{mod.durationLabel}</span>}
-            </div>
-            <ol className="mt-4 divide-y border-y">
-              {steps.map((s, i) => (
-                <li key={s.slug}>
-                  <Link
-                    href={`${base}/${mod.slug}?etape=${s.slug}`}
-                    className={cn(
-                      "grid grid-cols-[1.75rem_1fr_auto] items-baseline gap-x-3 py-3.5 outline-offset-2 transition-colors hover:bg-muted/50 sm:px-2",
-                      s.state === "current" && "bg-accent/50 hover:bg-accent/70",
-                    )}
-                  >
-                    <span className="text-sm tabular-nums text-muted-foreground">
-                      {s.state === "done" ? <CheckIcon className="inline size-4 text-primary" strokeWidth={2.5} aria-label="fait" /> : `${i + 1}.`}
-                    </span>
-                    <span className="min-w-0">
-                      <span className={cn("block", s.state === "current" && "font-medium")}>{s.title}</span>
-                      {kindLabel[s.kind] !== s.title && (
-                        <span className="block text-caption text-muted-foreground">{kindLabel[s.kind]}</span>
-                      )}
-                    </span>
-                    <span className="text-right text-caption text-muted-foreground">
-                      {s.state === "current" ? <span className="font-medium text-primary">En cours</span> : s.duration}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </section>
-        )}
+        <section aria-labelledby="sommaire" className="min-w-0">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 id="sommaire" className="text-heading">Dans ce module</h2>
+            {active.module.durationLabel && <span className="text-sm text-muted-foreground">{active.module.durationLabel}</span>}
+          </div>
+          <div className="mt-4">
+            <StepList refData={active} />
+          </div>
+        </section>
 
         <aside className="divide-y">
           {formation.hasDiagnostic && (
             <AsideSection title="Diagnostic">
-              <p className="text-sm text-muted-foreground">
-                Pas encore fait. Il estime votre exposition à l&apos;IA et indique où commencer.
-              </p>
+              <p className="text-sm text-muted-foreground">Il estime votre exposition à l&apos;IA et indique où commencer.</p>
               <Button asChild variant="outline" size="sm">
                 <Link href={`${base}/diagnostic`}>Faire le diagnostic</Link>
               </Button>
@@ -174,31 +98,34 @@ export function LearnerDashboard({
         </aside>
       </div>
 
-      <section aria-labelledby="mes-formations" className="mt-12">
-        <h2 id="mes-formations" className="text-heading">Mes formations</h2>
-        <ul className="mt-4 divide-y border-y">
-          {enrollments.map((e) => {
-            const pct = progressOf(e);
-            return (
-              <li key={e.formation.id}>
-                <Link
-                  href={`/formations/${e.formation.slug}`}
-                  className="grid gap-x-6 gap-y-2 py-4 transition-colors hover:bg-muted/50 sm:grid-cols-[1fr_12rem] sm:items-center sm:px-2"
-                >
-                  <span className="min-w-0">
-                    <span className="block text-caption text-muted-foreground">{e.formation.domain}</span>
-                    <span className="block font-medium">{e.formation.title}</span>
-                  </span>
-                  <span className="flex items-center gap-3">
-                    <Progress value={pct} className="h-1.5 bg-muted" aria-label={`Avancement : ${pct} %`} />
-                    <span className="w-10 shrink-0 text-right text-sm tabular-nums text-muted-foreground">{pct}&nbsp;%</span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      {started.length > 0 && (
+        <section aria-labelledby="mes-formations" className="mt-12">
+          <h2 id="mes-formations" className="text-heading">Mes formations</h2>
+          <ul className="mt-4 divide-y border-y">
+            {started.map(({ ref, st }) => {
+              const pct = Math.round((st.doneCount / ref.steps.length) * 100);
+              const f = formations.find((x) => x.slug === ref.formationSlug);
+              return (
+                <li key={ref.formationSlug}>
+                  <Link
+                    href={`/formations/${ref.formationSlug}/${ref.module.slug}`}
+                    className="grid gap-x-6 gap-y-2 py-4 transition-colors hover:bg-muted/50 sm:grid-cols-[1fr_12rem] sm:items-center sm:px-2"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-caption text-muted-foreground">{f?.domain}</span>
+                      <span className="block font-medium">{ref.formationTitle}</span>
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <Progress value={pct} className="h-1.5 bg-muted" aria-label={`Avancement : ${pct} %`} />
+                      <span className="w-10 shrink-0 text-right text-sm tabular-nums text-muted-foreground">{pct}&nbsp;%</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="autres" className="mt-12">
         <div className="flex items-baseline justify-between gap-4">
@@ -229,8 +156,8 @@ export function LearnerDashboard({
       <Separator className="mt-14" />
       <div className="mt-6 max-w-3xl space-y-2 text-caption text-muted-foreground">
         <p>
-          Version de test : l&apos;avancement affiché ici est fictif tant que les comptes ne sont pas
-          ouverts. Les contenus sont en cours de relecture par des professionnels.
+          Version de test : votre progression est enregistrée sur cet appareil, dans ce navigateur. Les
+          contenus sont en cours de relecture par des professionnels.
         </p>
         <p>{site.certificateNotice}</p>
         <p>{site.emailNotice}</p>

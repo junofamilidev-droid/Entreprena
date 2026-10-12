@@ -1,19 +1,15 @@
 import { PageHeader } from "@/components/platform/page-header";
 import { LearnerDashboard } from "@/components/platform/learner-dashboard";
 import { listFormations } from "@/lib/content/source";
-import { demoEnrollments } from "@/lib/demo/progress";
+import { openModuleRefs } from "@/lib/content/refs";
 
 export default async function DashboardPage() {
   const formations = await listFormations();
-  const enrollments = demoEnrollments(formations);
-  const followedIds = new Set(enrollments.map((e) => e.formation.id));
+  const refs = await openModuleRefs(formations);
   return (
     <>
       <PageHeader crumbs={[{ label: "Tableau de bord" }]} />
-      <LearnerDashboard
-        enrollments={enrollments}
-        others={formations.filter((f) => !followedIds.has(f.id))}
-      />
+      <LearnerDashboard formations={formations} refs={refs} />
     </>
   );
 }

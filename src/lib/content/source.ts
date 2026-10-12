@@ -10,11 +10,13 @@ import type {
   Formation,
   FormationWithModules,
   Module,
+  ModuleWithSteps,
+  Step,
 } from "./types";
 
 // Point d'accès unique au contenu.
 // - Avec Supabase configuré : tout est lu dans la base de données.
-// - Sans Supabase (aperçu en local uniquement) : lecture des fichiers d'import du dossier content/.
+// - Sans Supabase (phase actuelle, sans backend) : lecture des fichiers du dossier content/.
 
 /* ---------------- Base de données ---------------- */
 
@@ -101,11 +103,39 @@ async function dbGetDiagnostic(formationId: string): Promise<Diagnostic | null> 
   };
 }
 
-/* ---------------- Fichiers d'import (aperçu local) ---------------- */
+function mapStep(r: Row): ModuleWithSteps["steps"][number] {
+  return {
+    id: r.id as string,
+    moduleId: r.module_id as string,
+    slug: r.slug as string,
+    position: r.position as number,
+    kind: r.kind as Step["kind"],
+    title: r.title as string,
+    content: (r.content as ModuleWithSteps["steps"][number]["content"]) ?? {},
+    status: r.status as Step["status"],
+  };
+}
+
+async function dbGetModule(formationSlug: string, moduleSlug: string): Promise<ModuleWithSteps | null> {
+  const formation = await dbGetFormation(formationSlug);
+  const mod = formation?.modules.find((m) => m.slug === moduleSlug);
+  if (!mod) return null;
+  const { data, error } = await createPublicClient()
+    .from("steps")
+    .select("*")
+    .eq("module_id", mod.id)
+    .order("position");
+  if (error) throw error;
+  return { ...mod, steps: (data ?? []).map(mapStep) };
+}
+
+/* ---------------- Fichiers de contenu ---------------- */
 
 export interface ContentPackage {
   formation: Omit<Formation, "id">;
-  modules: Omit<Module, "id" | "formationId">[];
+  modules: (Omit<Module, "id" | "formationId"> & {
+    steps?: Omit<ModuleWithSteps["steps"][number], "id" | "moduleId">[];
+  })[];
   diagnostic?: { status: Diagnostic["status"]; config: DiagnosticConfig };
 }
 
@@ -133,7 +163,8 @@ function localFormation(p: ContentPackage): FormationWithModules {
     id,
     hasDiagnostic: Boolean(p.diagnostic),
     modules: p.modules
-      .map((m) => ({ ...m, id: `${id}-${m.slug}`, formationId: id }))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ steps, ...m }) => ({ ...m, id: `${id}-${m.slug}`, formationId: id }))
       .sort((a, b) => a.position - b.position),
   };
 }
@@ -144,17 +175,10 @@ function localFormation(p: ContentPackage): FormationWithModules {
 
 export const CONTENT_TAG = "content";
 
-function assertSource() {
-  if (!hasSupabase && process.env.VERCEL) {
-    throw new Error("Supabase n'est pas configuré : ajoutez les variables d'environnement dans Vercel.");
-  }
-}
-
 export async function listFormations(): Promise<FormationWithModules[]> {
   "use cache";
   cacheLife("hours");
   cacheTag(CONTENT_TAG);
-  assertSource();
   if (hasSupabase) return dbListFormations();
   const all = (await readLocalPackages()).map(localFormation);
   return all.filter((f) => f.status === "published").sort((a, b) => a.position - b.position);
@@ -164,7 +188,6 @@ export async function getFormation(slug: string): Promise<FormationWithModules |
   "use cache";
   cacheLife("hours");
   cacheTag(CONTENT_TAG);
-  assertSource();
   if (hasSupabase) return dbGetFormation(slug);
   const p = (await readLocalPackages()).find((x) => x.formation.slug === slug);
   return p && p.formation.status === "published" ? localFormation(p) : null;
@@ -180,4 +203,27 @@ export async function getDiagnostic(formationSlug: string): Promise<Diagnostic |
   const p = (await readLocalPackages()).find((x) => x.formation.slug === formationSlug);
   if (!p?.diagnostic) return null;
   return { id: `${formation.id}-diagnostic`, formationId: formation.id, ...p.diagnostic };
+}
+
+export async function getModule(formationSlug: string, moduleSlug: string): Promise<ModuleWithSteps | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CONTENT_TAG);
+  if (hasSupabase) return dbGetModule(formationSlug, moduleSlug);
+  const p = (await readLocalPackages()).find((x) => x.formation.slug === formationSlug);
+  if (!p || p.formation.status !== "published") return null;
+  const raw = p.modules.find((m) => m.slug === moduleSlug);
+  if (!raw || raw.status !== "published") return null;
+  const formationId = `local-${formationSlug}`;
+  const id = `${formationId}-${raw.slug}`;
+  const { steps = [], ...mod } = raw;
+  return {
+    ...mod,
+    id,
+    formationId,
+    steps: steps
+      .filter((s) => s.status === "published")
+      .sort((a, b) => a.position - b.position)
+      .map((s) => ({ ...s, id: `${id}-${s.slug}`, moduleId: id })),
+  };
 }

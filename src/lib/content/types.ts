@@ -138,3 +138,47 @@ export interface FormationWithModules extends Formation {
   modules: Module[];
   hasDiagnostic: boolean;
 }
+
+/* ---------------- Contenu des étapes ---------------- */
+
+export interface LessonScreen {
+  title: string;
+  /** Texte riche (HTML produit par l'éditeur). */
+  html: string;
+  /** Affiche le prompt de la leçon sous cet écran. */
+  showPrompt?: boolean;
+}
+
+export interface CheckQuestion {
+  question: string;
+  options: string[];
+  /** Index de la bonne réponse. */
+  answer: number;
+  explanation: string;
+}
+
+export interface LessonContent {
+  objective: string;
+  duration: string;
+  screens: LessonScreen[];
+  prompt: { title: string; note: string | null; text: string } | null;
+  questions: CheckQuestion[];
+  recap: string;
+  /** Phrase de transition vers l'étape suivante. */
+  next: string | null;
+  sourcesHtml: string | null;
+}
+
+export interface QuizContent {
+  duration?: string;
+  questions: CheckQuestion[];
+}
+
+/** Contenu commun minimal : toute étape peut annoncer sa durée. */
+export interface StepMeta {
+  duration?: string;
+}
+
+export interface ModuleWithSteps extends Module {
+  steps: Step<StepMeta & Record<string, unknown>>[];
+}

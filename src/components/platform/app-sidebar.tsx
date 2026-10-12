@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CompassIcon, HomeIcon, LibraryIcon, LockIcon, MessageSquareTextIcon } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -21,19 +20,22 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { site } from "@/lib/site";
+import { useProgress } from "@/lib/progress/store";
 import type { FormationWithModules } from "@/lib/content/types";
 
 // La barre latérale reste courte quel que soit le nombre de formations :
-// seules les formations suivies y figurent, et le détail des modules n'apparaît
-// que pour la formation ouverte.
-export function AppSidebar({
-  followed,
-  learner,
-}: {
-  followed: FormationWithModules[];
-  learner: { name: string; email: string; initials: string };
-}) {
+// seules les formations commencées (ou celle qu'on consulte) y figurent, et le
+// détail des modules n'apparaît que pour la formation ouverte.
+export function AppSidebar({ formations }: { formations: FormationWithModules[] }) {
   const pathname = usePathname();
+  const progress = useProgress();
+  const keys = Object.keys(progress);
+  const followed = formations.filter(
+    (f) =>
+      keys.some((k) => k.startsWith(`${f.slug}/`)) ||
+      pathname === `/formations/${f.slug}` ||
+      pathname.startsWith(`/formations/${f.slug}/`),
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -142,15 +144,9 @@ export function AppSidebar({
             <ThemeToggle />
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg">
-              <Avatar className="size-8 rounded-md">
-                <AvatarFallback className="rounded-md bg-sidebar-accent text-xs">{learner.initials}</AvatarFallback>
-              </Avatar>
-              <span className="grid leading-tight">
-                <span className="truncate font-medium">{learner.name}</span>
-                <span className="truncate text-xs text-sidebar-foreground/60">{learner.email}</span>
-              </span>
-            </SidebarMenuButton>
+            <p className="px-2 py-1.5 text-xs leading-snug text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
+              Pas encore de compte : votre progression reste sur cet appareil.
+            </p>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
