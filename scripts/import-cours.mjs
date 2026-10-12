@@ -41,7 +41,13 @@ const later = [
   { slug: "exercice", kind: "exercise", title: "Exercice : Nordelia Distribution", content: { duration: "60 min en 5 étapes" } },
   { slug: "auto-correction", kind: "self_review", title: "Auto-correction", content: { duration: "grille sur 20 et corrigé" } },
   { slug: "fin", kind: "module_end", title: "Fin du module", content: { duration: "attestation" } },
-].map((s, i) => ({ ...s, position: lessons.length + i + 1, status: "published" }));
+].map((s, i) => ({
+  ...s,
+  // Un contenu déjà importé (exercice, auto-correction…) est conservé.
+  content: mod.steps?.find((x) => x.slug === s.slug)?.content ?? s.content,
+  position: lessons.length + i + 1,
+  status: "published",
+}));
 
 mod.steps = [...lessons, ...later];
 writeFileSync(formationPath, JSON.stringify(pkg, null, 2) + "\n");

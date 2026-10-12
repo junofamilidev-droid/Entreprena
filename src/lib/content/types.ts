@@ -182,3 +182,95 @@ export interface StepMeta {
 export interface ModuleWithSteps extends Module {
   steps: Step<StepMeta & Record<string, unknown>>[];
 }
+
+/* ---------------- Exercice guidé ---------------- */
+// Un exercice est une suite de parties ; chaque partie empile des blocs réutilisables.
+// Les blocs qui recueillent une saisie portent un `id`, clé de la saisie enregistrée.
+
+export interface DataColumn {
+  label: string;
+  align?: "left" | "right";
+}
+
+export interface TableColumn {
+  id: string;
+  label: string;
+  placeholder?: string;
+  multiline?: boolean;
+  /** Valeurs proposées (l'apprenant peut en écrire une autre). */
+  suggestions?: string[];
+}
+
+export interface ValueCheck {
+  id: string;
+  label: string;
+  expected: number;
+  /** Écart toléré, en valeur absolue (0 par défaut). */
+  tolerance?: number;
+  /** Message affiché quand la valeur saisie ne correspond pas. */
+  mismatch: string;
+}
+
+export interface ReviewRule {
+  id: string;
+  label: string;
+  /** Expressions régulières, appliquées au texte sans accents et en minuscules. */
+  patterns: string[];
+  message: string;
+}
+
+export type ExerciseBlock =
+  | { type: "text"; html: string }
+  | {
+      type: "data";
+      title: string;
+      note?: string;
+      copyLabel: string;
+      /** Données en tableau (copiées avec des tabulations, pour un tableur)… */
+      columns?: DataColumn[];
+      rows?: string[][];
+      /** Valeurs brutes copiées dans le tableur (sinon `rows`). */
+      copyRows?: string[][];
+      /** …ou en texte. */
+      text?: string;
+    }
+  | { type: "prompt"; title: string; text: string; note?: string; insertTable?: { tableId: string; placeholder: string } }
+  | { type: "input"; id: string; label: string; help?: string; placeholder?: string; multiline?: boolean; defaultValue?: string }
+  | { type: "checks"; id: string; title: string; help?: string; items: ValueCheck[] }
+  | {
+      type: "table";
+      id: string;
+      title: string;
+      help?: string;
+      columns: TableColumn[];
+      /** Nombre de lignes visé (affiché, non bloquant). */
+      target?: number;
+      example?: { title: string; values: Record<string, string> };
+    }
+  | { type: "review"; title: string; help?: string; sources: string[]; rules?: ReviewRule[] }
+  | {
+      type: "deliverable";
+      title: string;
+      help?: string;
+      sections: { title: string; sources: string[] }[];
+    };
+
+export interface ExercisePart {
+  title: string;
+  duration?: string;
+  lead?: string;
+  blocks: ExerciseBlock[];
+}
+
+export interface ExerciseContent {
+  duration?: string;
+  /** Écran d'accueil : la mission. */
+  intro: { title: string; blocks: ExerciseBlock[] };
+  parts: ExercisePart[];
+  /** Relecture automatique : règles partagées par les blocs `review` qui n'en déclarent pas. */
+  reviewRules?: ReviewRule[];
+}
+
+/** Saisies d'un exercice : texte, tableau (lignes) ou contrôles (valeurs par identifiant). */
+export type ExerciseValue = string | Record<string, string>[] | Record<string, string>;
+export type ExerciseInputs = Record<string, ExerciseValue>;

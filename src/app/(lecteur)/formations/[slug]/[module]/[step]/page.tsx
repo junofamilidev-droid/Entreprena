@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LessonReader } from "@/components/reader/lesson-reader";
+import { ExerciseRunner } from "@/components/exercise/exercise-runner";
 import { StepPlaceholder } from "@/components/reader/step-placeholder";
 import { getFormation, getModule, listFormations } from "@/lib/content/source";
-import type { LessonContent } from "@/lib/content/types";
+import type { ExerciseContent, LessonContent } from "@/lib/content/types";
 
 type Props = PageProps<"/formations/[slug]/[module]/[step]">;
 
@@ -47,6 +48,20 @@ export default async function StepPage(props: Props) {
         content={current.content as unknown as LessonContent}
         exitHref={moduleHref}
         next={next}
+      />
+    );
+  }
+  const exercise = current.content as unknown as Partial<ExerciseContent>;
+  if (current.kind === "exercise" && exercise.parts?.length) {
+    return (
+      <ExerciseRunner
+        progressKey={`${slug}/${module}/${current.slug}`}
+        stepTitle={current.title}
+        moduleLabel={moduleLabel}
+        content={exercise as ExerciseContent}
+        exitHref={moduleHref}
+        next={next}
+        tutorUrl={formation.tutorUrl}
       />
     );
   }

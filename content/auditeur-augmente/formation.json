@@ -330,7 +330,1712 @@
           "kind": "exercise",
           "title": "Exercice : Nordelia Distribution",
           "content": {
-            "duration": "60 min en 5 étapes"
+            "duration": "60 min en 5 étapes",
+            "intro": {
+              "title": "Votre mission : la revue analytique de Nordelia Distribution",
+              "blocks": [
+                {
+                  "type": "text",
+                  "html": "<p>Vous êtes auditeur dans l'équipe chargée de l'audit des comptes 2025 de Nordelia Distribution SAS. Votre chef de mission vous demande la revue analytique de la balance avant l'intervention finale.</p><p>La balance contient <mark>cinq anomalies</mark> et plusieurs variations qui s'expliquent très bien. On n'attend pas de vous « la » cause de chaque anomalie. On attend des constats chiffrés, des hypothèses et les documents à obtenir pour trancher.</p><p>Tout se fait ici. Vous utilisez l'assistant IA de votre choix dans un autre onglet, et vous notez votre travail dans cette page. À la fin, elle assemble votre feuille de travail. Toutes les données sont fictives : la société n'existe pas.</p>"
+                },
+                {
+                  "type": "text",
+                  "html": "<h3>La société</h3><p>Nordelia Distribution SAS est un négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Elle a un entrepôt et 46 salariés. Ses ventes de marchandises nettes de remises atteignent environ 12,4 millions d'euros en 2025 (d'après la balance).</p><h3>Les seuils fixés par votre chef de mission</h3><p>Seuil de signification de 100 000 euros. Investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue.</p>"
+                }
+              ]
+            },
+            "parts": [
+              {
+                "title": "Anonymisez",
+                "duration": "5 min",
+                "lead": "Travaillez sur une copie. Retirez tout ce qui identifie l'entité, dans la balance et dans la fiche contexte. Les deux documents sont livrés tels que le client les a donnés.",
+                "blocks": [
+                  {
+                    "type": "data",
+                    "title": "Balance au 31/12/2025 et au 31/12/2024 · 81 comptes",
+                    "note": "Collez-la dans un tableur. Soldes avant affectation du résultat, en euros.",
+                    "copyLabel": "Copier la balance",
+                    "columns": [
+                      {
+                        "label": "Compte"
+                      },
+                      {
+                        "label": "Libellé"
+                      },
+                      {
+                        "label": "Débit 2025",
+                        "align": "right"
+                      },
+                      {
+                        "label": "Crédit 2025",
+                        "align": "right"
+                      },
+                      {
+                        "label": "Débit 2024",
+                        "align": "right"
+                      },
+                      {
+                        "label": "Crédit 2024",
+                        "align": "right"
+                      }
+                    ],
+                    "rows": [
+                      [
+                        "101300",
+                        "Capital souscrit, appelé, versé",
+                        "",
+                        "500 000",
+                        "",
+                        "500 000"
+                      ],
+                      [
+                        "106100",
+                        "Réserve légale",
+                        "",
+                        "50 000",
+                        "",
+                        "50 000"
+                      ],
+                      [
+                        "106800",
+                        "Autres réserves",
+                        "",
+                        "1 707 600",
+                        "",
+                        "1 550 000"
+                      ],
+                      [
+                        "151100",
+                        "Provisions pour litiges",
+                        "",
+                        "45 000",
+                        "",
+                        "45 000"
+                      ],
+                      [
+                        "164000",
+                        "Emprunt Banque Littorale des Flandres n° 4471",
+                        "",
+                        "880 000",
+                        "",
+                        "380 000"
+                      ],
+                      [
+                        "168840",
+                        "Intérêts courus sur emprunts",
+                        "",
+                        "4 600",
+                        "",
+                        "2 100"
+                      ],
+                      [
+                        "213500",
+                        "Installations générales, agencements",
+                        "410 000",
+                        "",
+                        "410 000",
+                        ""
+                      ],
+                      [
+                        "215400",
+                        "Matériel industriel (rayonnages, chariots)",
+                        "1 140 000",
+                        "",
+                        "520 000",
+                        ""
+                      ],
+                      [
+                        "218200",
+                        "Matériel de transport",
+                        "286 000",
+                        "",
+                        "286 000",
+                        ""
+                      ],
+                      [
+                        "218300",
+                        "Matériel de bureau et informatique",
+                        "163 000",
+                        "",
+                        "148 000",
+                        ""
+                      ],
+                      [
+                        "275000",
+                        "Dépôts et cautionnements versés",
+                        "42 000",
+                        "",
+                        "42 000",
+                        ""
+                      ],
+                      [
+                        "281350",
+                        "Amortissements des agencements",
+                        "",
+                        "287 000",
+                        "",
+                        "246 000"
+                      ],
+                      [
+                        "281540",
+                        "Amortissements du matériel industriel",
+                        "",
+                        "377 000",
+                        "",
+                        "312 000"
+                      ],
+                      [
+                        "281820",
+                        "Amortissements du matériel de transport",
+                        "",
+                        "171 600",
+                        "",
+                        "114 400"
+                      ],
+                      [
+                        "281830",
+                        "Amortissements du matériel de bureau et informatique",
+                        "",
+                        "127 000",
+                        "",
+                        "97 000"
+                      ],
+                      [
+                        "371000",
+                        "Stock de marchandises - fournitures de bureau",
+                        "560 000",
+                        "",
+                        "520 000",
+                        ""
+                      ],
+                      [
+                        "372000",
+                        "Stock de marchandises - mobilier de bureau",
+                        "930 000",
+                        "",
+                        "610 000",
+                        ""
+                      ],
+                      [
+                        "373000",
+                        "Stock de marchandises - consommables informatiques",
+                        "230 000",
+                        "",
+                        "210 000",
+                        ""
+                      ],
+                      [
+                        "397000",
+                        "Dépréciations des stocks de marchandises",
+                        "",
+                        "34 000",
+                        "",
+                        "34 000"
+                      ],
+                      [
+                        "401000",
+                        "Fournisseurs",
+                        "",
+                        "1 455 000",
+                        "",
+                        "1 420 000"
+                      ],
+                      [
+                        "408100",
+                        "Fournisseurs - factures non parvenues",
+                        "",
+                        "38 000",
+                        "",
+                        "214 000"
+                      ],
+                      [
+                        "409100",
+                        "Fournisseurs - avances et acomptes versés",
+                        "9 000",
+                        "",
+                        "12 000",
+                        ""
+                      ],
+                      [
+                        "411000",
+                        "Clients",
+                        "2 660 000",
+                        "",
+                        "1 985 000",
+                        ""
+                      ],
+                      [
+                        "416000",
+                        "Clients douteux ou litigieux",
+                        "98 000",
+                        "",
+                        "96 000",
+                        ""
+                      ],
+                      [
+                        "418100",
+                        "Clients - factures à établir",
+                        "44 000",
+                        "",
+                        "41 000",
+                        ""
+                      ],
+                      [
+                        "419100",
+                        "Clients - avances et acomptes reçus",
+                        "",
+                        "26 000",
+                        "",
+                        "22 000"
+                      ],
+                      [
+                        "421000",
+                        "Personnel - rémunérations dues",
+                        "",
+                        "4 500",
+                        "",
+                        "4 200"
+                      ],
+                      [
+                        "428200",
+                        "Dettes provisionnées pour congés payés",
+                        "",
+                        "146 000",
+                        "",
+                        "142 000"
+                      ],
+                      [
+                        "431000",
+                        "Sécurité sociale (URSSAF)",
+                        "",
+                        "121 000",
+                        "",
+                        "118 000"
+                      ],
+                      [
+                        "437000",
+                        "Autres organismes sociaux",
+                        "",
+                        "66 000",
+                        "",
+                        "64 000"
+                      ],
+                      [
+                        "438200",
+                        "Charges sociales sur congés payés",
+                        "",
+                        "60 000",
+                        "",
+                        "58 000"
+                      ],
+                      [
+                        "444000",
+                        "État - impôt sur les bénéfices",
+                        "",
+                        "126 400",
+                        "",
+                        "12 000"
+                      ],
+                      [
+                        "445510",
+                        "TVA à décaisser",
+                        "",
+                        "81 000",
+                        "",
+                        "74 000"
+                      ],
+                      [
+                        "445860",
+                        "TVA sur factures non parvenues",
+                        "6 300",
+                        "",
+                        "35 700",
+                        ""
+                      ],
+                      [
+                        "445870",
+                        "TVA sur factures à établir",
+                        "",
+                        "7 300",
+                        "",
+                        "6 800"
+                      ],
+                      [
+                        "447000",
+                        "Autres impôts, taxes et versements assimilés",
+                        "",
+                        "13 000",
+                        "",
+                        "12 000"
+                      ],
+                      [
+                        "455000",
+                        "Compte courant d'associé - M. Verhaeghe",
+                        "",
+                        "150 000",
+                        "",
+                        "150 000"
+                      ],
+                      [
+                        "471000",
+                        "Compte d'attente",
+                        "86 400",
+                        "",
+                        "",
+                        ""
+                      ],
+                      [
+                        "486000",
+                        "Charges constatées d'avance",
+                        "67 000",
+                        "",
+                        "64 000",
+                        ""
+                      ],
+                      [
+                        "491000",
+                        "Dépréciations des comptes clients",
+                        "",
+                        "52 000",
+                        "",
+                        "71 000"
+                      ],
+                      [
+                        "512000",
+                        "Banque",
+                        "433 800",
+                        "",
+                        "975 200",
+                        ""
+                      ],
+                      [
+                        "530000",
+                        "Caisse",
+                        "900",
+                        "",
+                        "1 200",
+                        ""
+                      ],
+                      [
+                        "603710",
+                        "Variation des stocks - fournitures de bureau",
+                        "",
+                        "40 000",
+                        "",
+                        "20 000"
+                      ],
+                      [
+                        "603720",
+                        "Variation des stocks - mobilier de bureau",
+                        "",
+                        "320 000",
+                        "",
+                        "25 000"
+                      ],
+                      [
+                        "603730",
+                        "Variation des stocks - consommables informatiques",
+                        "",
+                        "20 000",
+                        "",
+                        "5 000"
+                      ],
+                      [
+                        "606100",
+                        "Fournitures non stockables (électricité, gaz)",
+                        "80 000",
+                        "",
+                        "58 000",
+                        ""
+                      ],
+                      [
+                        "606300",
+                        "Fournitures d'entretien et de petit équipement",
+                        "23 000",
+                        "",
+                        "21 000",
+                        ""
+                      ],
+                      [
+                        "606400",
+                        "Fournitures administratives",
+                        "9 400",
+                        "",
+                        "9 000",
+                        ""
+                      ],
+                      [
+                        "607110",
+                        "Achats de marchandises - fournitures de bureau",
+                        "3 950 000",
+                        "",
+                        "3 600 000",
+                        ""
+                      ],
+                      [
+                        "607120",
+                        "Achats de marchandises - mobilier de bureau",
+                        "2 710 000",
+                        "",
+                        "2 740 000",
+                        ""
+                      ],
+                      [
+                        "607130",
+                        "Achats de marchandises - consommables informatiques",
+                        "1 690 000",
+                        "",
+                        "1 440 000",
+                        ""
+                      ],
+                      [
+                        "609700",
+                        "Rabais, remises et ristournes obtenus sur achats",
+                        "",
+                        "99 000",
+                        "",
+                        "96 000"
+                      ],
+                      [
+                        "613200",
+                        "Locations immobilières - SCI des Peupliers (entrepôt)",
+                        "318 000",
+                        "",
+                        "312 000",
+                        ""
+                      ],
+                      [
+                        "613500",
+                        "Locations mobilières",
+                        "22 000",
+                        "",
+                        "38 000",
+                        ""
+                      ],
+                      [
+                        "615500",
+                        "Entretien et réparations",
+                        "47 000",
+                        "",
+                        "44 000",
+                        ""
+                      ],
+                      [
+                        "616000",
+                        "Primes d'assurance",
+                        "55 000",
+                        "",
+                        "52 000",
+                        ""
+                      ],
+                      [
+                        "622600",
+                        "Honoraires",
+                        "71 000",
+                        "",
+                        "68 000",
+                        ""
+                      ],
+                      [
+                        "623000",
+                        "Publicité, salons et catalogues",
+                        "92 000",
+                        "",
+                        "86 000",
+                        ""
+                      ],
+                      [
+                        "624200",
+                        "Transports sur ventes",
+                        "436 000",
+                        "",
+                        "402 000",
+                        ""
+                      ],
+                      [
+                        "625100",
+                        "Voyages et déplacements",
+                        "63 000",
+                        "",
+                        "61 000",
+                        ""
+                      ],
+                      [
+                        "626000",
+                        "Frais postaux et de télécommunications",
+                        "18 500",
+                        "",
+                        "18 000",
+                        ""
+                      ],
+                      [
+                        "627000",
+                        "Services bancaires",
+                        "15 000",
+                        "",
+                        "14 000",
+                        ""
+                      ],
+                      [
+                        "633300",
+                        "Participation à la formation professionnelle",
+                        "25 000",
+                        "",
+                        "24 000",
+                        ""
+                      ],
+                      [
+                        "635110",
+                        "Contribution économique territoriale",
+                        "44 000",
+                        "",
+                        "46 000",
+                        ""
+                      ],
+                      [
+                        "641100",
+                        "Salaires et appointements",
+                        "1 548 000",
+                        "",
+                        "1 512 000",
+                        ""
+                      ],
+                      [
+                        "645100",
+                        "Cotisations à l'URSSAF",
+                        "439 000",
+                        "",
+                        "428 000",
+                        ""
+                      ],
+                      [
+                        "645300",
+                        "Cotisations aux caisses de retraite et prévoyance",
+                        "197 000",
+                        "",
+                        "192 000",
+                        ""
+                      ],
+                      [
+                        "647500",
+                        "Médecine du travail",
+                        "5 300",
+                        "",
+                        "5 200",
+                        ""
+                      ],
+                      [
+                        "654100",
+                        "Pertes sur créances irrécouvrables",
+                        "4 000",
+                        "",
+                        "18 000",
+                        ""
+                      ],
+                      [
+                        "661100",
+                        "Intérêts des emprunts",
+                        "27 000",
+                        "",
+                        "11 000",
+                        ""
+                      ],
+                      [
+                        "681120",
+                        "Dotations aux amortissements des immobilisations corporelles",
+                        "193 200",
+                        "",
+                        "190 400",
+                        ""
+                      ],
+                      [
+                        "681740",
+                        "Dotations aux dépréciations des créances",
+                        "",
+                        "",
+                        "26 000",
+                        ""
+                      ],
+                      [
+                        "695000",
+                        "Impôt sur les bénéfices",
+                        "212 200",
+                        "",
+                        "85 800",
+                        ""
+                      ],
+                      [
+                        "707110",
+                        "Ventes de marchandises - fournitures de bureau",
+                        "",
+                        "5 610 000",
+                        "",
+                        "5 240 000"
+                      ],
+                      [
+                        "707120",
+                        "Ventes de marchandises - mobilier de bureau",
+                        "",
+                        "4 270 000",
+                        "",
+                        "4 130 000"
+                      ],
+                      [
+                        "707130",
+                        "Ventes de marchandises - consommables informatiques",
+                        "",
+                        "2 600 000",
+                        "",
+                        "2 250 000"
+                      ],
+                      [
+                        "708500",
+                        "Ports et frais accessoires facturés",
+                        "",
+                        "151 000",
+                        "",
+                        "148 000"
+                      ],
+                      [
+                        "709700",
+                        "Rabais, remises et ristournes accordés",
+                        "205 000",
+                        "",
+                        "186 000",
+                        ""
+                      ],
+                      [
+                        "758000",
+                        "Produits divers de gestion courante",
+                        "",
+                        "5 000",
+                        "",
+                        "6 000"
+                      ],
+                      [
+                        "768000",
+                        "Autres produits financiers",
+                        "",
+                        "2 000",
+                        "",
+                        "3 000"
+                      ],
+                      [
+                        "781740",
+                        "Reprises sur dépréciations des créances",
+                        "",
+                        "19 000",
+                        "",
+                        "22 000"
+                      ]
+                    ],
+                    "copyRows": [
+                      [
+                        "101300",
+                        "Capital souscrit, appelé, versé",
+                        "",
+                        "500000",
+                        "",
+                        "500000"
+                      ],
+                      [
+                        "106100",
+                        "Réserve légale",
+                        "",
+                        "50000",
+                        "",
+                        "50000"
+                      ],
+                      [
+                        "106800",
+                        "Autres réserves",
+                        "",
+                        "1707600",
+                        "",
+                        "1550000"
+                      ],
+                      [
+                        "151100",
+                        "Provisions pour litiges",
+                        "",
+                        "45000",
+                        "",
+                        "45000"
+                      ],
+                      [
+                        "164000",
+                        "Emprunt Banque Littorale des Flandres n° 4471",
+                        "",
+                        "880000",
+                        "",
+                        "380000"
+                      ],
+                      [
+                        "168840",
+                        "Intérêts courus sur emprunts",
+                        "",
+                        "4600",
+                        "",
+                        "2100"
+                      ],
+                      [
+                        "213500",
+                        "Installations générales, agencements",
+                        "410000",
+                        "",
+                        "410000",
+                        ""
+                      ],
+                      [
+                        "215400",
+                        "Matériel industriel (rayonnages, chariots)",
+                        "1140000",
+                        "",
+                        "520000",
+                        ""
+                      ],
+                      [
+                        "218200",
+                        "Matériel de transport",
+                        "286000",
+                        "",
+                        "286000",
+                        ""
+                      ],
+                      [
+                        "218300",
+                        "Matériel de bureau et informatique",
+                        "163000",
+                        "",
+                        "148000",
+                        ""
+                      ],
+                      [
+                        "275000",
+                        "Dépôts et cautionnements versés",
+                        "42000",
+                        "",
+                        "42000",
+                        ""
+                      ],
+                      [
+                        "281350",
+                        "Amortissements des agencements",
+                        "",
+                        "287000",
+                        "",
+                        "246000"
+                      ],
+                      [
+                        "281540",
+                        "Amortissements du matériel industriel",
+                        "",
+                        "377000",
+                        "",
+                        "312000"
+                      ],
+                      [
+                        "281820",
+                        "Amortissements du matériel de transport",
+                        "",
+                        "171600",
+                        "",
+                        "114400"
+                      ],
+                      [
+                        "281830",
+                        "Amortissements du matériel de bureau et informatique",
+                        "",
+                        "127000",
+                        "",
+                        "97000"
+                      ],
+                      [
+                        "371000",
+                        "Stock de marchandises - fournitures de bureau",
+                        "560000",
+                        "",
+                        "520000",
+                        ""
+                      ],
+                      [
+                        "372000",
+                        "Stock de marchandises - mobilier de bureau",
+                        "930000",
+                        "",
+                        "610000",
+                        ""
+                      ],
+                      [
+                        "373000",
+                        "Stock de marchandises - consommables informatiques",
+                        "230000",
+                        "",
+                        "210000",
+                        ""
+                      ],
+                      [
+                        "397000",
+                        "Dépréciations des stocks de marchandises",
+                        "",
+                        "34000",
+                        "",
+                        "34000"
+                      ],
+                      [
+                        "401000",
+                        "Fournisseurs",
+                        "",
+                        "1455000",
+                        "",
+                        "1420000"
+                      ],
+                      [
+                        "408100",
+                        "Fournisseurs - factures non parvenues",
+                        "",
+                        "38000",
+                        "",
+                        "214000"
+                      ],
+                      [
+                        "409100",
+                        "Fournisseurs - avances et acomptes versés",
+                        "9000",
+                        "",
+                        "12000",
+                        ""
+                      ],
+                      [
+                        "411000",
+                        "Clients",
+                        "2660000",
+                        "",
+                        "1985000",
+                        ""
+                      ],
+                      [
+                        "416000",
+                        "Clients douteux ou litigieux",
+                        "98000",
+                        "",
+                        "96000",
+                        ""
+                      ],
+                      [
+                        "418100",
+                        "Clients - factures à établir",
+                        "44000",
+                        "",
+                        "41000",
+                        ""
+                      ],
+                      [
+                        "419100",
+                        "Clients - avances et acomptes reçus",
+                        "",
+                        "26000",
+                        "",
+                        "22000"
+                      ],
+                      [
+                        "421000",
+                        "Personnel - rémunérations dues",
+                        "",
+                        "4500",
+                        "",
+                        "4200"
+                      ],
+                      [
+                        "428200",
+                        "Dettes provisionnées pour congés payés",
+                        "",
+                        "146000",
+                        "",
+                        "142000"
+                      ],
+                      [
+                        "431000",
+                        "Sécurité sociale (URSSAF)",
+                        "",
+                        "121000",
+                        "",
+                        "118000"
+                      ],
+                      [
+                        "437000",
+                        "Autres organismes sociaux",
+                        "",
+                        "66000",
+                        "",
+                        "64000"
+                      ],
+                      [
+                        "438200",
+                        "Charges sociales sur congés payés",
+                        "",
+                        "60000",
+                        "",
+                        "58000"
+                      ],
+                      [
+                        "444000",
+                        "État - impôt sur les bénéfices",
+                        "",
+                        "126400",
+                        "",
+                        "12000"
+                      ],
+                      [
+                        "445510",
+                        "TVA à décaisser",
+                        "",
+                        "81000",
+                        "",
+                        "74000"
+                      ],
+                      [
+                        "445860",
+                        "TVA sur factures non parvenues",
+                        "6300",
+                        "",
+                        "35700",
+                        ""
+                      ],
+                      [
+                        "445870",
+                        "TVA sur factures à établir",
+                        "",
+                        "7300",
+                        "",
+                        "6800"
+                      ],
+                      [
+                        "447000",
+                        "Autres impôts, taxes et versements assimilés",
+                        "",
+                        "13000",
+                        "",
+                        "12000"
+                      ],
+                      [
+                        "455000",
+                        "Compte courant d'associé - M. Verhaeghe",
+                        "",
+                        "150000",
+                        "",
+                        "150000"
+                      ],
+                      [
+                        "471000",
+                        "Compte d'attente",
+                        "86400",
+                        "",
+                        "",
+                        ""
+                      ],
+                      [
+                        "486000",
+                        "Charges constatées d'avance",
+                        "67000",
+                        "",
+                        "64000",
+                        ""
+                      ],
+                      [
+                        "491000",
+                        "Dépréciations des comptes clients",
+                        "",
+                        "52000",
+                        "",
+                        "71000"
+                      ],
+                      [
+                        "512000",
+                        "Banque",
+                        "433800",
+                        "",
+                        "975200",
+                        ""
+                      ],
+                      [
+                        "530000",
+                        "Caisse",
+                        "900",
+                        "",
+                        "1200",
+                        ""
+                      ],
+                      [
+                        "603710",
+                        "Variation des stocks - fournitures de bureau",
+                        "",
+                        "40000",
+                        "",
+                        "20000"
+                      ],
+                      [
+                        "603720",
+                        "Variation des stocks - mobilier de bureau",
+                        "",
+                        "320000",
+                        "",
+                        "25000"
+                      ],
+                      [
+                        "603730",
+                        "Variation des stocks - consommables informatiques",
+                        "",
+                        "20000",
+                        "",
+                        "5000"
+                      ],
+                      [
+                        "606100",
+                        "Fournitures non stockables (électricité, gaz)",
+                        "80000",
+                        "",
+                        "58000",
+                        ""
+                      ],
+                      [
+                        "606300",
+                        "Fournitures d'entretien et de petit équipement",
+                        "23000",
+                        "",
+                        "21000",
+                        ""
+                      ],
+                      [
+                        "606400",
+                        "Fournitures administratives",
+                        "9400",
+                        "",
+                        "9000",
+                        ""
+                      ],
+                      [
+                        "607110",
+                        "Achats de marchandises - fournitures de bureau",
+                        "3950000",
+                        "",
+                        "3600000",
+                        ""
+                      ],
+                      [
+                        "607120",
+                        "Achats de marchandises - mobilier de bureau",
+                        "2710000",
+                        "",
+                        "2740000",
+                        ""
+                      ],
+                      [
+                        "607130",
+                        "Achats de marchandises - consommables informatiques",
+                        "1690000",
+                        "",
+                        "1440000",
+                        ""
+                      ],
+                      [
+                        "609700",
+                        "Rabais, remises et ristournes obtenus sur achats",
+                        "",
+                        "99000",
+                        "",
+                        "96000"
+                      ],
+                      [
+                        "613200",
+                        "Locations immobilières - SCI des Peupliers (entrepôt)",
+                        "318000",
+                        "",
+                        "312000",
+                        ""
+                      ],
+                      [
+                        "613500",
+                        "Locations mobilières",
+                        "22000",
+                        "",
+                        "38000",
+                        ""
+                      ],
+                      [
+                        "615500",
+                        "Entretien et réparations",
+                        "47000",
+                        "",
+                        "44000",
+                        ""
+                      ],
+                      [
+                        "616000",
+                        "Primes d'assurance",
+                        "55000",
+                        "",
+                        "52000",
+                        ""
+                      ],
+                      [
+                        "622600",
+                        "Honoraires",
+                        "71000",
+                        "",
+                        "68000",
+                        ""
+                      ],
+                      [
+                        "623000",
+                        "Publicité, salons et catalogues",
+                        "92000",
+                        "",
+                        "86000",
+                        ""
+                      ],
+                      [
+                        "624200",
+                        "Transports sur ventes",
+                        "436000",
+                        "",
+                        "402000",
+                        ""
+                      ],
+                      [
+                        "625100",
+                        "Voyages et déplacements",
+                        "63000",
+                        "",
+                        "61000",
+                        ""
+                      ],
+                      [
+                        "626000",
+                        "Frais postaux et de télécommunications",
+                        "18500",
+                        "",
+                        "18000",
+                        ""
+                      ],
+                      [
+                        "627000",
+                        "Services bancaires",
+                        "15000",
+                        "",
+                        "14000",
+                        ""
+                      ],
+                      [
+                        "633300",
+                        "Participation à la formation professionnelle",
+                        "25000",
+                        "",
+                        "24000",
+                        ""
+                      ],
+                      [
+                        "635110",
+                        "Contribution économique territoriale",
+                        "44000",
+                        "",
+                        "46000",
+                        ""
+                      ],
+                      [
+                        "641100",
+                        "Salaires et appointements",
+                        "1548000",
+                        "",
+                        "1512000",
+                        ""
+                      ],
+                      [
+                        "645100",
+                        "Cotisations à l'URSSAF",
+                        "439000",
+                        "",
+                        "428000",
+                        ""
+                      ],
+                      [
+                        "645300",
+                        "Cotisations aux caisses de retraite et prévoyance",
+                        "197000",
+                        "",
+                        "192000",
+                        ""
+                      ],
+                      [
+                        "647500",
+                        "Médecine du travail",
+                        "5300",
+                        "",
+                        "5200",
+                        ""
+                      ],
+                      [
+                        "654100",
+                        "Pertes sur créances irrécouvrables",
+                        "4000",
+                        "",
+                        "18000",
+                        ""
+                      ],
+                      [
+                        "661100",
+                        "Intérêts des emprunts",
+                        "27000",
+                        "",
+                        "11000",
+                        ""
+                      ],
+                      [
+                        "681120",
+                        "Dotations aux amortissements des immobilisations corporelles",
+                        "193200",
+                        "",
+                        "190400",
+                        ""
+                      ],
+                      [
+                        "681740",
+                        "Dotations aux dépréciations des créances",
+                        "",
+                        "",
+                        "26000",
+                        ""
+                      ],
+                      [
+                        "695000",
+                        "Impôt sur les bénéfices",
+                        "212200",
+                        "",
+                        "85800",
+                        ""
+                      ],
+                      [
+                        "707110",
+                        "Ventes de marchandises - fournitures de bureau",
+                        "",
+                        "5610000",
+                        "",
+                        "5240000"
+                      ],
+                      [
+                        "707120",
+                        "Ventes de marchandises - mobilier de bureau",
+                        "",
+                        "4270000",
+                        "",
+                        "4130000"
+                      ],
+                      [
+                        "707130",
+                        "Ventes de marchandises - consommables informatiques",
+                        "",
+                        "2600000",
+                        "",
+                        "2250000"
+                      ],
+                      [
+                        "708500",
+                        "Ports et frais accessoires facturés",
+                        "",
+                        "151000",
+                        "",
+                        "148000"
+                      ],
+                      [
+                        "709700",
+                        "Rabais, remises et ristournes accordés",
+                        "205000",
+                        "",
+                        "186000",
+                        ""
+                      ],
+                      [
+                        "758000",
+                        "Produits divers de gestion courante",
+                        "",
+                        "5000",
+                        "",
+                        "6000"
+                      ],
+                      [
+                        "768000",
+                        "Autres produits financiers",
+                        "",
+                        "2000",
+                        "",
+                        "3000"
+                      ],
+                      [
+                        "781740",
+                        "Reprises sur dépréciations des créances",
+                        "",
+                        "19000",
+                        "",
+                        "22000"
+                      ]
+                    ]
+                  },
+                  {
+                    "type": "data",
+                    "title": "Fiche contexte · entretien du 15 janvier 2026 avec le directeur financier",
+                    "copyLabel": "Copier la fiche",
+                    "text": "Nordelia Distribution SAS : négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Un entrepôt, 46 salariés.\nFaits marquants de 2025 selon le directeur financier, entretien du 15 janvier 2026 :\n1. Chiffre d'affaires en hausse d'environ 7 %, tiré par les consommables informatiques (nouveau catalogue lancé en février 2025). Aucun nouveau client important.\n2. Conditions de règlement des clients inchangées : 45 jours fin de mois.\n3. Mise en service le 1er avril 2025 de rayonnages automatisés et de chariots pour 620 000 euros, financés par un emprunt de 600 000 euros débloqué en avril. Les chariots étaient auparavant loués.\n4. Hausse du tarif d'électricité au 1er janvier 2025 et consommation supplémentaire du nouvel équipement.\n5. Effectif stable. Aucun nouveau litige.\n6. Inventaire physique réalisé le 30 décembre 2025.\n7. Dividende de 100 000 euros versé en juin 2025 sur le résultat 2024.\nMéthodes comptables : aucun changement en 2025, matériel industriel amorti en linéaire sur 8 ans.\nSeuils fixés par le chef de mission : seuil de signification de 100 000 euros, investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue."
+                  },
+                  {
+                    "type": "input",
+                    "id": "retire",
+                    "label": "Ce que j'ai retiré",
+                    "help": "Listez chaque élément identifiant et où vous l'avez trouvé.",
+                    "placeholder": "Exemple : le nom de la société, en tête de la fiche contexte.",
+                    "multiline": true
+                  }
+                ]
+              },
+              {
+                "title": "Calculez et contrôlez",
+                "duration": "10 min",
+                "lead": "Collez votre balance anonymisée dans votre assistant avec le prompt 1. Puis contrôlez sa réponse avant d'aller plus loin.",
+                "blocks": [
+                  {
+                    "type": "prompt",
+                    "title": "Prompt 1 · calcul et tri",
+                    "text": "Tu m'aides à préparer une revue analytique d'audit. Je te donne une balance générale anonymisée sur deux exercices, en euros. Colonnes : compte, libellé, solde débiteur 2025, solde créditeur 2025, solde débiteur 2024, solde créditeur 2024.\n\n1. Pour chaque compte, calcule le solde net de chaque exercice (débit moins crédit), la variation en euros et la variation en pourcentage. Utilise ton outil de calcul, ne calcule pas de tête.\n2. Liste les comptes dont la variation dépasse à la fois 10 % et 30 000 euros en valeur absolue.\n3. Calcule pour les deux exercices, en donnant la formule utilisée : le taux de marge commerciale global et par famille de produits, le délai de règlement des clients en jours, la durée de rotation des stocks par famille en jours.\n4. Ne propose aucune explication pour l'instant. Indique le nombre de comptes traités et les totaux débit et crédit de chaque exercice."
+                  },
+                  {
+                    "type": "checks",
+                    "id": "controle-1",
+                    "title": "Contrôle 1 : a-t-elle tout lu ?",
+                    "help": "Saisissez ce que l'IA vous a répondu. La page compare avec le fichier.",
+                    "items": [
+                      {
+                        "id": "comptes",
+                        "label": "Nombre de comptes traités",
+                        "expected": 81,
+                        "mismatch": "Ce n'est pas le nombre de comptes du fichier : l'IA a perdu ou inventé des lignes. Tout le reste est faux, recommencez."
+                      },
+                      {
+                        "id": "total-2025",
+                        "label": "Total débit ou crédit 2025",
+                        "expected": 19666000,
+                        "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul."
+                      },
+                      {
+                        "id": "total-2024",
+                        "label": "Total débit ou crédit 2024",
+                        "expected": 17643500,
+                        "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul."
+                      },
+                      {
+                        "id": "au-dessus",
+                        "label": "Comptes au-dessus des seuils",
+                        "expected": 16,
+                        "mismatch": "Ce n'est pas le nombre attendu. Regardez les comptes créditeurs, les comptes partis de zéro et la règle « à la fois 10 % et 30 000 euros »."
+                      }
+                    ]
+                  },
+                  {
+                    "type": "input",
+                    "id": "recalculs",
+                    "label": "Contrôles 2 et 3 : mes recalculs et les pièges de signe",
+                    "help": "Cinq lignes recalculées dans votre tableur (les trois plus grosses variations et deux au hasard). Notez toute erreur de l'IA.",
+                    "placeholder": "Compte, solde net 2025, solde net 2024, variation : identique à l'IA ou non.",
+                    "multiline": true
+                  }
+                ]
+              },
+              {
+                "title": "Analysez",
+                "duration": "25 min",
+                "lead": "Utilisez le prompt 2 avec la fiche contexte anonymisée. Triez les réponses : reformulation, hypothèse testable, fait inventé. Puis remplissez votre tableau, une ligne par constat. Cherchez aussi ce qui aurait dû bouger et n'a pas bougé.",
+                "blocks": [
+                  {
+                    "type": "prompt",
+                    "title": "Prompt 2 · hypothèses et documents",
+                    "text": "Voici le contexte de l'entité, anonymisé : [coller la fiche contexte].\n\nPour chaque compte au-dessus des seuils et pour chaque ratio qui a varié :\n1. Rappelle le constat chiffré.\n2. Dis si le contexte fourni l'explique, et cite la phrase du contexte.\n3. Propose deux ou trois hypothèses, dont au moins une hypothèse d'erreur ou d'omission comptable et une hypothèse d'explication normale.\n4. Pour chaque hypothèse, indique le document ou le contrôle qui permettrait de trancher.\n\nEnsuite :\n5. Liste les comptes qui, d'après le contexte, auraient dû varier et n'ont pas varié.\n6. Indique les lignes qui pourraient avoir une cause commune.\n\nRègles : n'utilise que la balance et le contexte fournis. N'invente aucun fait sur l'entité ou son secteur. Si une information te manque, écris « information manquante » et dis laquelle."
+                  },
+                  {
+                    "type": "table",
+                    "id": "constats",
+                    "title": "Mon tableau de constats",
+                    "help": "Visez au moins huit lignes : les anomalies que vous repérez et au moins trois variations expliquées.",
+                    "target": 8,
+                    "columns": [
+                      {
+                        "id": "compte",
+                        "label": "Compte ou ratio",
+                        "placeholder": "Ventes de consommables informatiques"
+                      },
+                      {
+                        "id": "constat",
+                        "label": "Constat chiffré",
+                        "placeholder": "+15,6 %, soit +350 000 euros",
+                        "multiline": true
+                      },
+                      {
+                        "id": "contexte",
+                        "label": "Ce que dit le contexte",
+                        "multiline": true
+                      },
+                      {
+                        "id": "hypotheses",
+                        "label": "Hypothèses",
+                        "multiline": true
+                      },
+                      {
+                        "id": "document",
+                        "label": "Document à obtenir",
+                        "multiline": true
+                      },
+                      {
+                        "id": "statut",
+                        "label": "Statut",
+                        "suggestions": [
+                          "Expliquée, à corroborer",
+                          "Anomalie possible, à investiguer",
+                          "Information manquante"
+                        ]
+                      }
+                    ],
+                    "example": {
+                      "title": "Exemple tiré de la leçon 3",
+                      "values": {
+                        "compte": "Ventes de consommables informatiques",
+                        "constat": "+15,6 %, soit +350 000 euros. Au-dessus des seuils.",
+                        "contexte": "« Nouveau catalogue lancé en février 2025 » : une déclaration du client, pas une preuve.",
+                        "hypotheses": "Variation cohérente avec les comptes liés : achats +17,4 %, marge proche de 36 %, rotation autour de 50 jours.",
+                        "document": "Ventes mensuelles par famille, pour voir si la hausse démarre bien en février.",
+                        "statut": "Expliquée, à corroborer"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "title": "Rédigez et relisez",
+                "duration": "15 min",
+                "lead": "Donnez à l'IA votre tableau validé, pas la balance. Puis relisez phrase par phrase avec deux questions : l'ai-je fait ? puis-je le montrer ?",
+                "blocks": [
+                  {
+                    "type": "prompt",
+                    "title": "Prompt 3 · rédaction, avec mon tableau",
+                    "text": "Voici mon tableau de constats validé : [coller le tableau].\n\nRédige une feuille de travail de revue analytique avec ces rubriques : objectif et étendue, travaux réalisés, constats, conclusion, points à remonter au chef de mission.\n\nRègles :\n- N'ajoute aucun constat, aucun chiffre et aucun travail qui ne figure pas dans mon tableau.\n- Écris au passé uniquement ce que j'ai réellement fait. Écris « à obtenir » ou « à réaliser » pour tout le reste.\n- La conclusion ne se prononce pas sur la régularité des comptes. Elle liste les risques identifiés et les travaux à mener.\n- Style : phrases courtes, un constat par ligne, montants en euros.",
+                    "insertTable": {
+                      "tableId": "constats",
+                      "placeholder": "[coller le tableau]"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "html": "<p>Reportez ici le texte de l'IA, rubrique par rubrique, après l'avoir relu. La rubrique des constats reprend directement votre tableau.</p>"
+                  },
+                  {
+                    "type": "input",
+                    "id": "objectif",
+                    "label": "Objectif et étendue",
+                    "help": "Comptes couverts, exercices comparés, seuils retenus, sources utilisées.",
+                    "multiline": true
+                  },
+                  {
+                    "type": "input",
+                    "id": "travaux",
+                    "label": "Travaux réalisés",
+                    "help": "Uniquement ce que vous avez réellement fait : calculs, contrôles, lignes recalculées.",
+                    "multiline": true
+                  },
+                  {
+                    "type": "input",
+                    "id": "conclusion",
+                    "label": "Conclusion",
+                    "help": "Les risques identifiés, classés par montant possible, et les travaux à mener. Pas d'avis sur la régularité des comptes.",
+                    "multiline": true
+                  },
+                  {
+                    "type": "text",
+                    "html": "<h3>Journal d'usage de l'IA</h3>"
+                  },
+                  {
+                    "type": "input",
+                    "id": "journal-outil",
+                    "label": "Outil et date",
+                    "placeholder": "Assistant utilisé, version si connue, date."
+                  },
+                  {
+                    "type": "input",
+                    "id": "journal-donnees",
+                    "label": "Données transmises et anonymisation",
+                    "multiline": true
+                  },
+                  {
+                    "type": "input",
+                    "id": "journal-taches",
+                    "label": "Tâches confiées",
+                    "multiline": true
+                  },
+                  {
+                    "type": "input",
+                    "id": "journal-controles",
+                    "label": "Contrôles effectués",
+                    "multiline": true
+                  },
+                  {
+                    "type": "input",
+                    "id": "journal-ecartes",
+                    "label": "Éléments écartés ou corrigés",
+                    "multiline": true
+                  },
+                  {
+                    "type": "review",
+                    "title": "Relecture automatique",
+                    "help": "La page repère les formules à risque vues dans les leçons 3 et 4. Elle ne remplace pas votre relecture.",
+                    "sources": [
+                      "objectif",
+                      "travaux",
+                      "constats",
+                      "conclusion",
+                      "journal-taches",
+                      "journal-controles"
+                    ]
+                  }
+                ]
+              },
+              {
+                "title": "Assemblez votre feuille de travail",
+                "duration": "5 min",
+                "lead": "Complétez l'en-tête. La page assemble votre feuille à partir de vos saisies : relisez-la une dernière fois, puis copiez-la ou imprimez-la.",
+                "blocks": [
+                  {
+                    "type": "input",
+                    "id": "entete-objet",
+                    "label": "Exercice et objet",
+                    "defaultValue": "Exercice clos le 31/12/2025. Revue analytique de la balance avant l'intervention finale."
+                  },
+                  {
+                    "type": "input",
+                    "id": "entete-prepare",
+                    "label": "Préparé par, et date",
+                    "placeholder": "Vos initiales, la date du jour."
+                  },
+                  {
+                    "type": "input",
+                    "id": "entete-revu",
+                    "label": "Revu par, et date",
+                    "defaultValue": "À compléter par le relecteur."
+                  },
+                  {
+                    "type": "review",
+                    "title": "Dernière relecture automatique",
+                    "sources": [
+                      "objectif",
+                      "travaux",
+                      "constats",
+                      "conclusion",
+                      "journal-taches",
+                      "journal-controles"
+                    ]
+                  },
+                  {
+                    "type": "deliverable",
+                    "title": "Feuille de travail : revue analytique",
+                    "help": "Dans le dossier du cabinet, et seulement là, vous rétablissez le nom du client et les libellés réels.",
+                    "sections": [
+                      {
+                        "title": "En-tête",
+                        "sources": [
+                          "entete-objet",
+                          "entete-prepare",
+                          "entete-revu"
+                        ]
+                      },
+                      {
+                        "title": "Objectif et étendue",
+                        "sources": [
+                          "objectif"
+                        ]
+                      },
+                      {
+                        "title": "Travaux réalisés",
+                        "sources": [
+                          "travaux",
+                          "controle-1",
+                          "recalculs"
+                        ]
+                      },
+                      {
+                        "title": "Constats",
+                        "sources": [
+                          "constats"
+                        ]
+                      },
+                      {
+                        "title": "Conclusion",
+                        "sources": [
+                          "conclusion"
+                        ]
+                      },
+                      {
+                        "title": "Journal d'usage de l'IA",
+                        "sources": [
+                          "journal-outil",
+                          "journal-donnees",
+                          "retire",
+                          "journal-taches",
+                          "journal-controles",
+                          "journal-ecartes"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "reviewRules": [
+              {
+                "id": "travail-au-passe",
+                "label": "Travail affirmé au passé",
+                "patterns": [
+                  "\\b(nous avons|j'ai|on a) (obtenu|verifie|rapproche|controle|examine|inspecte|confirme|circularise|teste|pointe|valide|corrobore|analyse les pieces)",
+                  "\\b(a|ont) ete (obtenue?s?|verifiee?s?|controlee?s?|confirmee?s?|corroboree?s?|rapprochee?s?)\\b"
+                ],
+                "message": "L'avez-vous fait, et pouvez-vous le montrer ? Sinon, écrivez « à obtenir » ou « à réaliser » (leçon 4)."
+              },
+              {
+                "id": "conclusion-trop-forte",
+                "label": "Conclusion qui va trop loin",
+                "patterns": [
+                  "\\baucune? (anomalie|erreur|irregularite|inexactitude)",
+                  "\\bpas d'(anomalie|erreur|irregularite)",
+                  "\\b(n'a|n'ont) (revele|mis en evidence|identifie|releve) aucun",
+                  "\\bcomptes (annuels )?(sont|apparaissent|semblent) (reguliers|sinceres|fiables|corrects)",
+                  "\\bimage fidele\\b"
+                ],
+                "message": "Une revue analytique ne permet pas de se prononcer sur la régularité des comptes. La conclusion liste les risques et les travaux à mener (leçon 4)."
+              },
+              {
+                "id": "fait-exterieur",
+                "label": "Fait qui ne vient pas du dossier",
+                "patterns": [
+                  "\\binflation\\b",
+                  "\\b(du|le|au|dans le|de ce) secteur\\b",
+                  "\\b(tendance|moyenne|evolution) du marche\\b",
+                  "\\bselon (les|des|une|certaines) (etudes?|statistiques|sources|donnees de marche)"
+                ],
+                "message": "Ni la balance ni le contexte ne le disent. Demandez la source ; sans source, supprimez (leçon 3)."
+              },
+              {
+                "id": "reformulation",
+                "label": "Reformulation du constat",
+                "patterns": [
+                  "\\ben raison d'une (hausse|baisse|augmentation|diminution)\\b",
+                  "\\bs'explique par (la|une) (hausse|baisse|augmentation|diminution) (du|des|de la)\\b"
+                ],
+                "message": "Cette phrase répète-t-elle le constat avec d'autres mots ? Si oui, supprimez-la ou remplacez-la par une hypothèse testable (leçon 3)."
+              }
+            ]
           },
           "position": 5,
           "status": "published"

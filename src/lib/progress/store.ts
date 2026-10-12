@@ -5,6 +5,7 @@
 // l'interface (useProgress, saveStep) restera la même.
 
 import { useSyncExternalStore } from "react";
+import type { ExerciseInputs } from "@/lib/content/types";
 
 export interface StepProgress {
   /** Dernier écran affiché. */
@@ -12,6 +13,8 @@ export interface StepProgress {
   done: boolean;
   /** Réponses aux questions de vérification : index de question -> option choisie. */
   answers?: Record<number, number>;
+  /** Saisies d'un exercice guidé, par identifiant de bloc. */
+  inputs?: ExerciseInputs;
   updatedAt: number;
 }
 
@@ -75,6 +78,12 @@ export function saveStep(key: string, patch: Partial<StepProgress>) {
   const state = read();
   const prev = state[key] ?? { screen: 0, done: false, updatedAt: 0 };
   write({ ...state, [key]: { ...prev, ...patch, updatedAt: Date.now() } });
+}
+
+/** Enregistre une saisie d'exercice sans toucher aux autres. */
+export function saveInput(key: string, id: string, value: ExerciseInputs[string]) {
+  const prev = read()[key];
+  saveStep(key, { inputs: { ...prev?.inputs, [id]: value } });
 }
 
 export function resetProgress(prefix: string) {

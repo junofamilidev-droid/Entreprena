@@ -226,6 +226,16 @@
   & li + li {
     margin-top: 0.6em;
   }
+  & h3 {
+    font-weight: 600;
+    margin-top: 1.6em;
+  }
+  & h3:first-child {
+    margin-top: 0;
+  }
+  & h3 + p {
+    margin-top: 0.35em;
+  }
 }
 
 /* Listes de sources sous les leçons : plus petites et plus serrées. */
@@ -233,4 +243,22 @@
   font-size: 0.875rem;
   line-height: 1.55;
   color: var(--muted-foreground);
+}
+
+/* Impression du livrable d'un exercice : seule la zone .print-area est imprimée. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+  }
 }

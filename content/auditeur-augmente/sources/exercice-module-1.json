@@ -1,0 +1,219 @@
+{
+  "duration": "60 min en 5 étapes",
+  "intro": {
+    "title": "Votre mission : la revue analytique de Nordelia Distribution",
+    "blocks": [
+      {
+        "type": "text",
+        "html": "<p>Vous êtes auditeur dans l'équipe chargée de l'audit des comptes 2025 de Nordelia Distribution SAS. Votre chef de mission vous demande la revue analytique de la balance avant l'intervention finale.</p><p>La balance contient <mark>cinq anomalies</mark> et plusieurs variations qui s'expliquent très bien. On n'attend pas de vous « la » cause de chaque anomalie. On attend des constats chiffrés, des hypothèses et les documents à obtenir pour trancher.</p><p>Tout se fait ici. Vous utilisez l'assistant IA de votre choix dans un autre onglet, et vous notez votre travail dans cette page. À la fin, elle assemble votre feuille de travail. Toutes les données sont fictives : la société n'existe pas.</p>"
+      },
+      {
+        "type": "text",
+        "html": "<h3>La société</h3><p>Nordelia Distribution SAS est un négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Elle a un entrepôt et 46 salariés. Ses ventes de marchandises nettes de remises atteignent environ 12,4 millions d'euros en 2025 (d'après la balance).</p><h3>Les seuils fixés par votre chef de mission</h3><p>Seuil de signification de 100 000 euros. Investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue.</p>"
+      }
+    ]
+  },
+  "parts": [
+    {
+      "title": "Anonymisez",
+      "duration": "5 min",
+      "lead": "Travaillez sur une copie. Retirez tout ce qui identifie l'entité, dans la balance et dans la fiche contexte. Les deux documents sont livrés tels que le client les a donnés.",
+      "blocks": [
+        {
+          "type": "data",
+          "title": "Balance au 31/12/2025 et au 31/12/2024 · 81 comptes",
+          "note": "Collez-la dans un tableur. Soldes avant affectation du résultat, en euros.",
+          "copyLabel": "Copier la balance",
+          "csv": "balance-nordelia-2025.csv"
+        },
+        {
+          "type": "data",
+          "title": "Fiche contexte · entretien du 15 janvier 2026 avec le directeur financier",
+          "copyLabel": "Copier la fiche",
+          "text": "Nordelia Distribution SAS : négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Un entrepôt, 46 salariés.\nFaits marquants de 2025 selon le directeur financier, entretien du 15 janvier 2026 :\n1. Chiffre d'affaires en hausse d'environ 7 %, tiré par les consommables informatiques (nouveau catalogue lancé en février 2025). Aucun nouveau client important.\n2. Conditions de règlement des clients inchangées : 45 jours fin de mois.\n3. Mise en service le 1er avril 2025 de rayonnages automatisés et de chariots pour 620 000 euros, financés par un emprunt de 600 000 euros débloqué en avril. Les chariots étaient auparavant loués.\n4. Hausse du tarif d'électricité au 1er janvier 2025 et consommation supplémentaire du nouvel équipement.\n5. Effectif stable. Aucun nouveau litige.\n6. Inventaire physique réalisé le 30 décembre 2025.\n7. Dividende de 100 000 euros versé en juin 2025 sur le résultat 2024.\nMéthodes comptables : aucun changement en 2025, matériel industriel amorti en linéaire sur 8 ans.\nSeuils fixés par le chef de mission : seuil de signification de 100 000 euros, investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue."
+        },
+        {
+          "type": "input",
+          "id": "retire",
+          "label": "Ce que j'ai retiré",
+          "help": "Listez chaque élément identifiant et où vous l'avez trouvé.",
+          "placeholder": "Exemple : le nom de la société, en tête de la fiche contexte.",
+          "multiline": true
+        }
+      ]
+    },
+    {
+      "title": "Calculez et contrôlez",
+      "duration": "10 min",
+      "lead": "Collez votre balance anonymisée dans votre assistant avec le prompt 1. Puis contrôlez sa réponse avant d'aller plus loin.",
+      "blocks": [
+        {
+          "type": "prompt",
+          "title": "Prompt 1 · calcul et tri",
+          "text": "Tu m'aides à préparer une revue analytique d'audit. Je te donne une balance générale anonymisée sur deux exercices, en euros. Colonnes : compte, libellé, solde débiteur 2025, solde créditeur 2025, solde débiteur 2024, solde créditeur 2024.\n\n1. Pour chaque compte, calcule le solde net de chaque exercice (débit moins crédit), la variation en euros et la variation en pourcentage. Utilise ton outil de calcul, ne calcule pas de tête.\n2. Liste les comptes dont la variation dépasse à la fois 10 % et 30 000 euros en valeur absolue.\n3. Calcule pour les deux exercices, en donnant la formule utilisée : le taux de marge commerciale global et par famille de produits, le délai de règlement des clients en jours, la durée de rotation des stocks par famille en jours.\n4. Ne propose aucune explication pour l'instant. Indique le nombre de comptes traités et les totaux débit et crédit de chaque exercice."
+        },
+        {
+          "type": "checks",
+          "id": "controle-1",
+          "title": "Contrôle 1 : a-t-elle tout lu ?",
+          "help": "Saisissez ce que l'IA vous a répondu. La page compare avec le fichier.",
+          "items": [
+            { "id": "comptes", "label": "Nombre de comptes traités", "expected": 81, "mismatch": "Ce n'est pas le nombre de comptes du fichier : l'IA a perdu ou inventé des lignes. Tout le reste est faux, recommencez." },
+            { "id": "total-2025", "label": "Total débit ou crédit 2025", "expected": 19666000, "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul." },
+            { "id": "total-2024", "label": "Total débit ou crédit 2024", "expected": 17643500, "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul." },
+            { "id": "au-dessus", "label": "Comptes au-dessus des seuils", "expected": 16, "mismatch": "Ce n'est pas le nombre attendu. Regardez les comptes créditeurs, les comptes partis de zéro et la règle « à la fois 10 % et 30 000 euros »." }
+          ]
+        },
+        {
+          "type": "input",
+          "id": "recalculs",
+          "label": "Contrôles 2 et 3 : mes recalculs et les pièges de signe",
+          "help": "Cinq lignes recalculées dans votre tableur (les trois plus grosses variations et deux au hasard). Notez toute erreur de l'IA.",
+          "placeholder": "Compte, solde net 2025, solde net 2024, variation : identique à l'IA ou non.",
+          "multiline": true
+        }
+      ]
+    },
+    {
+      "title": "Analysez",
+      "duration": "25 min",
+      "lead": "Utilisez le prompt 2 avec la fiche contexte anonymisée. Triez les réponses : reformulation, hypothèse testable, fait inventé. Puis remplissez votre tableau, une ligne par constat. Cherchez aussi ce qui aurait dû bouger et n'a pas bougé.",
+      "blocks": [
+        {
+          "type": "prompt",
+          "title": "Prompt 2 · hypothèses et documents",
+          "text": "Voici le contexte de l'entité, anonymisé : [coller la fiche contexte].\n\nPour chaque compte au-dessus des seuils et pour chaque ratio qui a varié :\n1. Rappelle le constat chiffré.\n2. Dis si le contexte fourni l'explique, et cite la phrase du contexte.\n3. Propose deux ou trois hypothèses, dont au moins une hypothèse d'erreur ou d'omission comptable et une hypothèse d'explication normale.\n4. Pour chaque hypothèse, indique le document ou le contrôle qui permettrait de trancher.\n\nEnsuite :\n5. Liste les comptes qui, d'après le contexte, auraient dû varier et n'ont pas varié.\n6. Indique les lignes qui pourraient avoir une cause commune.\n\nRègles : n'utilise que la balance et le contexte fournis. N'invente aucun fait sur l'entité ou son secteur. Si une information te manque, écris « information manquante » et dis laquelle."
+        },
+        {
+          "type": "table",
+          "id": "constats",
+          "title": "Mon tableau de constats",
+          "help": "Visez au moins huit lignes : les anomalies que vous repérez et au moins trois variations expliquées.",
+          "target": 8,
+          "columns": [
+            { "id": "compte", "label": "Compte ou ratio", "placeholder": "Ventes de consommables informatiques" },
+            { "id": "constat", "label": "Constat chiffré", "placeholder": "+15,6 %, soit +350 000 euros", "multiline": true },
+            { "id": "contexte", "label": "Ce que dit le contexte", "multiline": true },
+            { "id": "hypotheses", "label": "Hypothèses", "multiline": true },
+            { "id": "document", "label": "Document à obtenir", "multiline": true },
+            { "id": "statut", "label": "Statut", "suggestions": ["Expliquée, à corroborer", "Anomalie possible, à investiguer", "Information manquante"] }
+          ],
+          "example": {
+            "title": "Exemple tiré de la leçon 3",
+            "values": {
+              "compte": "Ventes de consommables informatiques",
+              "constat": "+15,6 %, soit +350 000 euros. Au-dessus des seuils.",
+              "contexte": "« Nouveau catalogue lancé en février 2025 » : une déclaration du client, pas une preuve.",
+              "hypotheses": "Variation cohérente avec les comptes liés : achats +17,4 %, marge proche de 36 %, rotation autour de 50 jours.",
+              "document": "Ventes mensuelles par famille, pour voir si la hausse démarre bien en février.",
+              "statut": "Expliquée, à corroborer"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Rédigez et relisez",
+      "duration": "15 min",
+      "lead": "Donnez à l'IA votre tableau validé, pas la balance. Puis relisez phrase par phrase avec deux questions : l'ai-je fait ? puis-je le montrer ?",
+      "blocks": [
+        {
+          "type": "prompt",
+          "title": "Prompt 3 · rédaction, avec mon tableau",
+          "text": "Voici mon tableau de constats validé : [coller le tableau].\n\nRédige une feuille de travail de revue analytique avec ces rubriques : objectif et étendue, travaux réalisés, constats, conclusion, points à remonter au chef de mission.\n\nRègles :\n- N'ajoute aucun constat, aucun chiffre et aucun travail qui ne figure pas dans mon tableau.\n- Écris au passé uniquement ce que j'ai réellement fait. Écris « à obtenir » ou « à réaliser » pour tout le reste.\n- La conclusion ne se prononce pas sur la régularité des comptes. Elle liste les risques identifiés et les travaux à mener.\n- Style : phrases courtes, un constat par ligne, montants en euros.",
+          "insertTable": { "tableId": "constats", "placeholder": "[coller le tableau]" }
+        },
+        {
+          "type": "text",
+          "html": "<p>Reportez ici le texte de l'IA, rubrique par rubrique, après l'avoir relu. La rubrique des constats reprend directement votre tableau.</p>"
+        },
+        { "type": "input", "id": "objectif", "label": "Objectif et étendue", "help": "Comptes couverts, exercices comparés, seuils retenus, sources utilisées.", "multiline": true },
+        { "type": "input", "id": "travaux", "label": "Travaux réalisés", "help": "Uniquement ce que vous avez réellement fait : calculs, contrôles, lignes recalculées.", "multiline": true },
+        { "type": "input", "id": "conclusion", "label": "Conclusion", "help": "Les risques identifiés, classés par montant possible, et les travaux à mener. Pas d'avis sur la régularité des comptes.", "multiline": true },
+        { "type": "text", "html": "<h3>Journal d'usage de l'IA</h3>" },
+        { "type": "input", "id": "journal-outil", "label": "Outil et date", "placeholder": "Assistant utilisé, version si connue, date." },
+        { "type": "input", "id": "journal-donnees", "label": "Données transmises et anonymisation", "multiline": true },
+        { "type": "input", "id": "journal-taches", "label": "Tâches confiées", "multiline": true },
+        { "type": "input", "id": "journal-controles", "label": "Contrôles effectués", "multiline": true },
+        { "type": "input", "id": "journal-ecartes", "label": "Éléments écartés ou corrigés", "multiline": true },
+        {
+          "type": "review",
+          "title": "Relecture automatique",
+          "help": "La page repère les formules à risque vues dans les leçons 3 et 4. Elle ne remplace pas votre relecture.",
+          "sources": ["objectif", "travaux", "constats", "conclusion", "journal-taches", "journal-controles"]
+        }
+      ]
+    },
+    {
+      "title": "Assemblez votre feuille de travail",
+      "duration": "5 min",
+      "lead": "Complétez l'en-tête. La page assemble votre feuille à partir de vos saisies : relisez-la une dernière fois, puis copiez-la ou imprimez-la.",
+      "blocks": [
+        { "type": "input", "id": "entete-objet", "label": "Exercice et objet", "defaultValue": "Exercice clos le 31/12/2025. Revue analytique de la balance avant l'intervention finale." },
+        { "type": "input", "id": "entete-prepare", "label": "Préparé par, et date", "placeholder": "Vos initiales, la date du jour." },
+        { "type": "input", "id": "entete-revu", "label": "Revu par, et date", "defaultValue": "À compléter par le relecteur." },
+        {
+          "type": "review",
+          "title": "Dernière relecture automatique",
+          "sources": ["objectif", "travaux", "constats", "conclusion", "journal-taches", "journal-controles"]
+        },
+        {
+          "type": "deliverable",
+          "title": "Feuille de travail : revue analytique",
+          "help": "Dans le dossier du cabinet, et seulement là, vous rétablissez le nom du client et les libellés réels.",
+          "sections": [
+            { "title": "En-tête", "sources": ["entete-objet", "entete-prepare", "entete-revu"] },
+            { "title": "Objectif et étendue", "sources": ["objectif"] },
+            { "title": "Travaux réalisés", "sources": ["travaux", "controle-1", "recalculs"] },
+            { "title": "Constats", "sources": ["constats"] },
+            { "title": "Conclusion", "sources": ["conclusion"] },
+            { "title": "Journal d'usage de l'IA", "sources": ["journal-outil", "journal-donnees", "retire", "journal-taches", "journal-controles", "journal-ecartes"] }
+          ]
+        }
+      ]
+    }
+  ],
+  "reviewRules": [
+    {
+      "id": "travail-au-passe",
+      "label": "Travail affirmé au passé",
+      "patterns": [
+        "\\b(nous avons|j'ai|on a) (obtenu|verifie|rapproche|controle|examine|inspecte|confirme|circularise|teste|pointe|valide|corrobore|analyse les pieces)",
+        "\\b(a|ont) ete (obtenue?s?|verifiee?s?|controlee?s?|confirmee?s?|corroboree?s?|rapprochee?s?)\\b"
+      ],
+      "message": "L'avez-vous fait, et pouvez-vous le montrer ? Sinon, écrivez « à obtenir » ou « à réaliser » (leçon 4)."
+    },
+    {
+      "id": "conclusion-trop-forte",
+      "label": "Conclusion qui va trop loin",
+      "patterns": [
+        "\\baucune? (anomalie|erreur|irregularite|inexactitude)",
+        "\\bpas d'(anomalie|erreur|irregularite)",
+        "\\b(n'a|n'ont) (revele|mis en evidence|identifie|releve) aucun",
+        "\\bcomptes (annuels )?(sont|apparaissent|semblent) (reguliers|sinceres|fiables|corrects)",
+        "\\bimage fidele\\b"
+      ],
+      "message": "Une revue analytique ne permet pas de se prononcer sur la régularité des comptes. La conclusion liste les risques et les travaux à mener (leçon 4)."
+    },
+    {
+      "id": "fait-exterieur",
+      "label": "Fait qui ne vient pas du dossier",
+      "patterns": [
+        "\\binflation\\b",
+        "\\b(du|le|au|dans le|de ce) secteur\\b",
+        "\\b(tendance|moyenne|evolution) du marche\\b",
+        "\\bselon (les|des|une|certaines) (etudes?|statistiques|sources|donnees de marche)"
+      ],
+      "message": "Ni la balance ni le contexte ne le disent. Demandez la source ; sans source, supprimez (leçon 3)."
+    },
+    {
+      "id": "reformulation",
+      "label": "Reformulation du constat",
+      "patterns": [
+        "\\ben raison d'une (hausse|baisse|augmentation|diminution)\\b",
+        "\\bs'explique par (la|une) (hausse|baisse|augmentation|diminution) (du|des|de la)\\b"
+      ],
+      "message": "Cette phrase répète-t-elle le constat avec d'autres mots ? Si oui, supprimez-la ou remplacez-la par une hypothèse testable (leçon 3)."
+    }
+  ]
+}

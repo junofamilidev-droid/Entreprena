@@ -6,12 +6,25 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 // Prompt à copier dans l'assistant IA de son choix.
-export function PromptBlock({ title, note, text }: { title: string; note: string | null; text: string }) {
+// `copyText` remplace le texte copié (par exemple, le prompt complété avec les saisies de l'apprenant).
+export function PromptBlock({
+  title,
+  note,
+  text,
+  copyText,
+  copyLabel = "Copier",
+}: {
+  title: string;
+  note: string | null;
+  text: string;
+  copyText?: string;
+  copyLabel?: string;
+}) {
   const [copied, setCopied] = React.useState(false);
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(copyText ?? text);
       setCopied(true);
       toast.success("Prompt copié");
       setTimeout(() => setCopied(false), 2000);
@@ -25,7 +38,7 @@ export function PromptBlock({ title, note, text }: { title: string; note: string
       <figcaption className="flex items-center justify-between gap-3 border-b bg-card px-4 py-2.5">
         <span className="text-sm font-medium">{title}</span>
         <Button variant="outline" size="sm" onClick={copy}>
-          {copied ? <CheckIcon /> : <CopyIcon />} {copied ? "Copié" : "Copier"}
+          {copied ? <CheckIcon /> : <CopyIcon />} {copied ? "Copié" : copyLabel}
         </Button>
       </figcaption>
       <pre className="max-h-80 overflow-auto whitespace-pre-wrap px-4 py-4 font-mono text-[0.8125rem] leading-relaxed">{text}</pre>
