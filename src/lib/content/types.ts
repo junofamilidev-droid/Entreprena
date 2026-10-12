@@ -226,6 +226,8 @@ export type ExerciseBlock =
       title: string;
       note?: string;
       copyLabel: string;
+      /** Lignes d'en-tête du document (copiées avec les données). */
+      header?: string;
       /** Données en tableau (copiées avec des tabulations, pour un tableur)… */
       columns?: DataColumn[];
       rows?: string[][];
@@ -252,8 +254,15 @@ export type ExerciseBlock =
       type: "deliverable";
       title: string;
       help?: string;
-      sections: { title: string; sources: string[] }[];
+      sections: DeliverableSectionDef[];
     };
+
+export interface DeliverableSectionDef {
+  title: string;
+  sources: string[];
+  /** Section hors numérotation (l'en-tête). */
+  unnumbered?: boolean;
+}
 
 export interface ExercisePart {
   title: string;
@@ -274,3 +283,77 @@ export interface ExerciseContent {
 /** Saisies d'un exercice : texte, tableau (lignes) ou contrôles (valeurs par identifiant). */
 export type ExerciseValue = string | Record<string, string>[] | Record<string, string>;
 export type ExerciseInputs = Record<string, ExerciseValue>;
+
+/* ---------------- Auto-correction ---------------- */
+// L'apprenant compare sa copie au corrigé et coche ce qu'il a fait. Certaines cases sont
+// pré-cochées d'après ses saisies (`auto`) ; il peut toujours les corriger.
+
+export type AutoCheck =
+  /** Toutes ces saisies sont remplies. */
+  | { type: "filled"; sources: string[] }
+  /** Ces valeurs d'un bloc de contrôles sont saisies. */
+  | { type: "checks"; id: string; items: string[] }
+  /** Le tableau compte au moins `min` lignes remplies. */
+  | { type: "rows"; tableId: string; min: number }
+  /** Le texte d'une saisie contient l'un de ces motifs (sans accents, en minuscules). */
+  | { type: "matches"; source: string; patterns: string[] }
+  /** La relecture automatique de l'exercice repère l'une de ces règles. */
+  | { type: "review"; sources: string[]; ruleIds: string[] };
+
+export interface SelfReviewItem {
+  id: string;
+  label: string;
+  points: number;
+  /** Corrigé de ce point (HTML), affiché sous la case. */
+  detail?: string;
+  /** Point accordé seulement si cet autre point est coché. */
+  requires?: string;
+  auto?: AutoCheck;
+}
+
+export interface SelfReviewCriterion {
+  id: string;
+  title: string;
+  /** Maximum du critère. */
+  points: number;
+  help?: string;
+  /** Saisies de l'exercice à relire pour ce critère. */
+  sources?: string[];
+  /** Corrigé commun au critère (HTML). */
+  detail?: string;
+  items: SelfReviewItem[];
+}
+
+export interface SelfReviewContent {
+  duration?: string;
+  /** Étape d'exercice corrigée (slug, dans le même module). */
+  exerciseStep: string;
+  title: string;
+  intro: string;
+  total: number;
+  passMark: number;
+  criteria: SelfReviewCriterion[];
+  eliminatory: { title: string; help?: string; items: Omit<SelfReviewItem, "points">[] };
+  /** Ce qu'on attend des meilleures copies (HTML). */
+  overview?: { title: string; html: string };
+}
+
+/** Résultat enregistré par l'auto-correction, lu par la fin de module. */
+export interface SelfReviewResult {
+  score: number;
+  passed: boolean;
+  eliminated: boolean;
+  date: string;
+}
+
+export interface ModuleEndContent {
+  duration?: string;
+  /** Étape d'auto-correction (slug, dans le même module). */
+  reviewStep: string;
+  title: string;
+  /** Texte de l'attestation : {nom}, {date} et {note} sont remplacés. */
+  template: string;
+  notice: string;
+  /** Message quand la copie n'est pas validée (HTML). */
+  retry: string;
+}

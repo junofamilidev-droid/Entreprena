@@ -1,12 +1,13 @@
-// Range un exercice guidé (fichier source JSON) dans une étape de formation.json.
-// Les blocs « data » qui citent un fichier CSV (`csv`) reçoivent ses colonnes et ses lignes.
-// Usage : node scripts/import-exercice.mjs <exercice.json> <formation.json> <slug-du-module> <slug-de-l-etape>
+// Range le contenu d'une étape (exercice, auto-correction, fin de module…), rédigé dans un
+// fichier source JSON, dans l'étape correspondante de formation.json.
+// Dans un exercice, les blocs « data » qui citent un fichier CSV (`csv`) reçoivent ses colonnes et ses lignes.
+// Usage : node scripts/import-etape.mjs <source.json> <formation.json> <slug-du-module> <slug-de-l-etape>
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const [exercisePath, formationPath, moduleSlug, stepSlug] = process.argv.slice(2);
-if (!exercisePath || !formationPath || !moduleSlug || !stepSlug) {
-  console.error("Usage : node scripts/import-exercice.mjs <exercice.json> <formation.json> <slug-du-module> <slug-de-l-etape>");
+const [sourcePath, formationPath, moduleSlug, stepSlug] = process.argv.slice(2);
+if (!sourcePath || !formationPath || !moduleSlug || !stepSlug) {
+  console.error("Usage : node scripts/import-etape.mjs <source.json> <formation.json> <slug-du-module> <slug-de-l-etape>");
   process.exit(1);
 }
 
@@ -32,17 +33,18 @@ function csvBlock(block, dir) {
   };
 }
 
-const exercise = JSON.parse(readFileSync(exercisePath, "utf8"));
-const dir = path.dirname(exercisePath);
+const content = JSON.parse(readFileSync(sourcePath, "utf8"));
+const dir = path.dirname(sourcePath);
 const expand = (blocks) => blocks.map((b) => (b.type === "data" && b.csv ? csvBlock(b, dir) : b));
-exercise.intro.blocks = expand(exercise.intro.blocks);
-exercise.parts = exercise.parts.map((p) => ({ ...p, blocks: expand(p.blocks) }));
+if (content.parts) {
+  content.intro.blocks = expand(content.intro.blocks);
+  content.parts = content.parts.map((p) => ({ ...p, blocks: expand(p.blocks) }));
+}
 
 const pkg = JSON.parse(readFileSync(formationPath, "utf8"));
 const mod = pkg.modules.find((m) => m.slug === moduleSlug);
 const step = mod?.steps.find((s) => s.slug === stepSlug);
 if (!step) throw new Error(`Étape introuvable : ${moduleSlug}/${stepSlug}`);
-if (step.kind !== "exercise") throw new Error(`L'étape ${stepSlug} n'est pas un exercice (${step.kind}).`);
-step.content = exercise;
+step.content = content;
 writeFileSync(formationPath, JSON.stringify(pkg, null, 2) + "\n");
-console.log(`Exercice écrit dans « ${step.title} » : ${exercise.parts.length} parties.`);
+console.log(`Contenu écrit dans l'étape « ${step.title} » (${step.kind}).`);

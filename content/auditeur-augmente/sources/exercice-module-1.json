@@ -5,11 +5,11 @@
     "blocks": [
       {
         "type": "text",
-        "html": "<p>Vous êtes auditeur dans l'équipe chargée de l'audit des comptes 2025 de Nordelia Distribution SAS. Votre chef de mission vous demande la revue analytique de la balance avant l'intervention finale.</p><p>La balance contient <mark>cinq anomalies</mark> et plusieurs variations qui s'expliquent très bien. On n'attend pas de vous « la » cause de chaque anomalie. On attend des constats chiffrés, des hypothèses et les documents à obtenir pour trancher.</p><p>Tout se fait ici. Vous utilisez l'assistant IA de votre choix dans un autre onglet, et vous notez votre travail dans cette page. À la fin, elle assemble votre feuille de travail. Toutes les données sont fictives : la société n'existe pas.</p>"
+        "html": "<p>Vous êtes auditeur dans l'équipe chargée de l'audit des comptes 2025 de Nordelia Distribution SAS. Votre chef de mission vous demande la revue analytique de la balance avant l'intervention finale. Vous avez 60 minutes.</p><p>Toutes les données sont fictives. La balance contient <mark>cinq anomalies</mark> et plusieurs variations qui s'expliquent très bien. On n'attend pas de vous « la » cause de chaque anomalie. On attend des constats chiffrés, des hypothèses et les documents à obtenir.</p><p>Tout se fait ici. Vous utilisez l'assistant IA de votre choix dans un autre onglet, et vous notez votre travail dans cette page. À la fin, elle assemble votre feuille de travail.</p>"
       },
       {
         "type": "text",
-        "html": "<h3>La société</h3><p>Nordelia Distribution SAS est un négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Elle a un entrepôt et 46 salariés. Ses ventes de marchandises nettes de remises atteignent environ 12,4 millions d'euros en 2025 (d'après la balance).</p><h3>Les seuils fixés par votre chef de mission</h3><p>Seuil de signification de 100 000 euros. Investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue.</p>"
+        "html": "<h3>La société</h3><p>Nordelia Distribution SAS est un négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Elle a un entrepôt et 46 salariés. Son chiffre d'affaires dépasse 10 millions d'euros et son total de bilan 5 millions d'euros, ce qui l'oblige à désigner un commissaire aux comptes.</p><h3>Les seuils fixés par votre chef de mission</h3><p>Seuil de signification de 100 000 euros. Investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue.</p>"
       }
     ]
   },
@@ -17,14 +17,15 @@
     {
       "title": "Anonymisez",
       "duration": "5 min",
-      "lead": "Travaillez sur une copie. Retirez tout ce qui identifie l'entité, dans la balance et dans la fiche contexte. Les deux documents sont livrés tels que le client les a donnés.",
+      "lead": "Travaillez sur une copie. Retirez tout ce qui identifie l'entité, dans la balance et dans la fiche contexte. Notez ce que vous avez retiré. Les deux documents sont livrés tels que le client les a donnés.",
       "blocks": [
         {
           "type": "data",
           "title": "Balance au 31/12/2025 et au 31/12/2024 · 81 comptes",
           "note": "Collez-la dans un tableur. Soldes avant affectation du résultat, en euros.",
           "copyLabel": "Copier la balance",
-          "csv": "balance-nordelia-2025.csv"
+          "csv": "balance-nordelia-2025.csv",
+          "header": "Nordelia Distribution SAS · SIREN 512 840 371 · Zone d'activité du Grand Marais, 59000 Lille\nBalance générale au 31/12/2025, comparée au 31/12/2024"
         },
         {
           "type": "data",
@@ -58,10 +59,30 @@
           "title": "Contrôle 1 : a-t-elle tout lu ?",
           "help": "Saisissez ce que l'IA vous a répondu. La page compare avec le fichier.",
           "items": [
-            { "id": "comptes", "label": "Nombre de comptes traités", "expected": 81, "mismatch": "Ce n'est pas le nombre de comptes du fichier : l'IA a perdu ou inventé des lignes. Tout le reste est faux, recommencez." },
-            { "id": "total-2025", "label": "Total débit ou crédit 2025", "expected": 19666000, "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul." },
-            { "id": "total-2024", "label": "Total débit ou crédit 2024", "expected": 17643500, "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul." },
-            { "id": "au-dessus", "label": "Comptes au-dessus des seuils", "expected": 16, "mismatch": "Ce n'est pas le nombre attendu. Regardez les comptes créditeurs, les comptes partis de zéro et la règle « à la fois 10 % et 30 000 euros »." }
+            {
+              "id": "comptes",
+              "label": "Nombre de comptes traités",
+              "expected": 81,
+              "mismatch": "Ce n'est pas le nombre de comptes du fichier : l'IA a perdu ou inventé des lignes. Tout le reste est faux, recommencez."
+            },
+            {
+              "id": "total-2025",
+              "label": "Total débit ou crédit 2025",
+              "expected": 19666000,
+              "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul."
+            },
+            {
+              "id": "total-2024",
+              "label": "Total débit ou crédit 2024",
+              "expected": 17643500,
+              "mismatch": "Ce total ne correspond pas au fichier. Vérifiez qu'elle a lu toutes les lignes, puis relancez le calcul."
+            },
+            {
+              "id": "au-dessus",
+              "label": "Comptes au-dessus des seuils",
+              "expected": 16,
+              "mismatch": "Ce n'est pas le nombre attendu. Regardez les comptes créditeurs, les comptes partis de zéro et la règle « à la fois 10 % et 30 000 euros »."
+            }
           ]
         },
         {
@@ -91,12 +112,40 @@
           "help": "Visez au moins huit lignes : les anomalies que vous repérez et au moins trois variations expliquées.",
           "target": 8,
           "columns": [
-            { "id": "compte", "label": "Compte ou ratio", "placeholder": "Ventes de consommables informatiques" },
-            { "id": "constat", "label": "Constat chiffré", "placeholder": "+15,6 %, soit +350 000 euros", "multiline": true },
-            { "id": "contexte", "label": "Ce que dit le contexte", "multiline": true },
-            { "id": "hypotheses", "label": "Hypothèses", "multiline": true },
-            { "id": "document", "label": "Document à obtenir", "multiline": true },
-            { "id": "statut", "label": "Statut", "suggestions": ["Expliquée, à corroborer", "Anomalie possible, à investiguer", "Information manquante"] }
+            {
+              "id": "compte",
+              "label": "Compte ou ratio",
+              "placeholder": "Ventes de consommables informatiques"
+            },
+            {
+              "id": "constat",
+              "label": "Constat chiffré",
+              "placeholder": "+15,6 %, soit +350 000 euros",
+              "multiline": true
+            },
+            {
+              "id": "contexte",
+              "label": "Ce que dit le contexte",
+              "multiline": true
+            },
+            {
+              "id": "hypotheses",
+              "label": "Hypothèses",
+              "multiline": true
+            },
+            {
+              "id": "document",
+              "label": "Document à obtenir",
+              "multiline": true
+            },
+            {
+              "id": "statut",
+              "label": "Statut",
+              "suggestions": [
+                "Expliquée, à corroborer",
+                "Inexpliquée"
+              ]
+            }
           ],
           "example": {
             "title": "Exemple tiré de la leçon 3",
@@ -115,59 +164,177 @@
     {
       "title": "Rédigez et relisez",
       "duration": "15 min",
-      "lead": "Donnez à l'IA votre tableau validé, pas la balance. Puis relisez phrase par phrase avec deux questions : l'ai-je fait ? puis-je le montrer ?",
+      "lead": "Donnez à l'IA votre tableau validé, pas la balance. Puis relisez phrase par phrase avec deux questions : l'ai-je fait ? puis-je le montrer ? Remplissez enfin le journal d'usage de l'IA.",
       "blocks": [
         {
           "type": "prompt",
           "title": "Prompt 3 · rédaction, avec mon tableau",
           "text": "Voici mon tableau de constats validé : [coller le tableau].\n\nRédige une feuille de travail de revue analytique avec ces rubriques : objectif et étendue, travaux réalisés, constats, conclusion, points à remonter au chef de mission.\n\nRègles :\n- N'ajoute aucun constat, aucun chiffre et aucun travail qui ne figure pas dans mon tableau.\n- Écris au passé uniquement ce que j'ai réellement fait. Écris « à obtenir » ou « à réaliser » pour tout le reste.\n- La conclusion ne se prononce pas sur la régularité des comptes. Elle liste les risques identifiés et les travaux à mener.\n- Style : phrases courtes, un constat par ligne, montants en euros.",
-          "insertTable": { "tableId": "constats", "placeholder": "[coller le tableau]" }
+          "insertTable": {
+            "tableId": "constats",
+            "placeholder": "[coller le tableau]"
+          }
         },
         {
           "type": "text",
           "html": "<p>Reportez ici le texte de l'IA, rubrique par rubrique, après l'avoir relu. La rubrique des constats reprend directement votre tableau.</p>"
         },
-        { "type": "input", "id": "objectif", "label": "Objectif et étendue", "help": "Comptes couverts, exercices comparés, seuils retenus, sources utilisées.", "multiline": true },
-        { "type": "input", "id": "travaux", "label": "Travaux réalisés", "help": "Uniquement ce que vous avez réellement fait : calculs, contrôles, lignes recalculées.", "multiline": true },
-        { "type": "input", "id": "conclusion", "label": "Conclusion", "help": "Les risques identifiés, classés par montant possible, et les travaux à mener. Pas d'avis sur la régularité des comptes.", "multiline": true },
-        { "type": "text", "html": "<h3>Journal d'usage de l'IA</h3>" },
-        { "type": "input", "id": "journal-outil", "label": "Outil et date", "placeholder": "Assistant utilisé, version si connue, date." },
-        { "type": "input", "id": "journal-donnees", "label": "Données transmises et anonymisation", "multiline": true },
-        { "type": "input", "id": "journal-taches", "label": "Tâches confiées", "multiline": true },
-        { "type": "input", "id": "journal-controles", "label": "Contrôles effectués", "multiline": true },
-        { "type": "input", "id": "journal-ecartes", "label": "Éléments écartés ou corrigés", "multiline": true },
+        {
+          "type": "input",
+          "id": "objectif",
+          "label": "Objectif et étendue",
+          "help": "Comptes couverts, exercices comparés, seuils retenus, sources utilisées.",
+          "multiline": true
+        },
+        {
+          "type": "input",
+          "id": "travaux",
+          "label": "Travaux réalisés",
+          "help": "Uniquement ce que vous avez réellement fait : calculs, contrôles, lignes recalculées.",
+          "multiline": true
+        },
+        {
+          "type": "input",
+          "id": "conclusion",
+          "label": "Conclusion",
+          "help": "Risques identifiés, classés par montant possible. Travaux à mener. Points à remonter au chef de mission. Pas d'avis sur la régularité des comptes.",
+          "multiline": true
+        },
+        {
+          "type": "text",
+          "html": "<h3>Journal d'usage de l'IA</h3>"
+        },
+        {
+          "type": "input",
+          "id": "journal-outil",
+          "label": "Outil et date",
+          "placeholder": "Assistant utilisé, version si connue, date."
+        },
+        {
+          "type": "input",
+          "id": "journal-donnees",
+          "label": "Données transmises et anonymisation",
+          "multiline": true
+        },
+        {
+          "type": "input",
+          "id": "journal-taches",
+          "label": "Tâches confiées",
+          "multiline": true
+        },
+        {
+          "type": "input",
+          "id": "journal-controles",
+          "label": "Contrôles effectués",
+          "multiline": true
+        },
+        {
+          "type": "input",
+          "id": "journal-ecartes",
+          "label": "Éléments écartés ou corrigés",
+          "multiline": true
+        },
         {
           "type": "review",
           "title": "Relecture automatique",
           "help": "La page repère les formules à risque vues dans les leçons 3 et 4. Elle ne remplace pas votre relecture.",
-          "sources": ["objectif", "travaux", "constats", "conclusion", "journal-taches", "journal-controles"]
+          "sources": [
+            "objectif",
+            "travaux",
+            "constats",
+            "conclusion",
+            "journal-taches",
+            "journal-controles"
+          ]
         }
       ]
     },
     {
-      "title": "Assemblez votre feuille de travail",
+      "title": "Déposez",
       "duration": "5 min",
-      "lead": "Complétez l'en-tête. La page assemble votre feuille à partir de vos saisies : relisez-la une dernière fois, puis copiez-la ou imprimez-la.",
+      "lead": "Complétez l'en-tête. La page assemble votre feuille de travail à partir de vos saisies : elle tient en deux pages au plus. Relisez-la une dernière fois, copiez-la ou imprimez-la, puis déposez-la pour passer à l'auto-correction.",
       "blocks": [
-        { "type": "input", "id": "entete-objet", "label": "Exercice et objet", "defaultValue": "Exercice clos le 31/12/2025. Revue analytique de la balance avant l'intervention finale." },
-        { "type": "input", "id": "entete-prepare", "label": "Préparé par, et date", "placeholder": "Vos initiales, la date du jour." },
-        { "type": "input", "id": "entete-revu", "label": "Revu par, et date", "defaultValue": "À compléter par le relecteur." },
+        {
+          "type": "input",
+          "id": "entete-entite",
+          "label": "Entité",
+          "defaultValue": "Nom rétabli dans le dossier du cabinet uniquement."
+        },
+        {
+          "type": "input",
+          "id": "entete-prepare",
+          "label": "Préparé par, et date",
+          "placeholder": "Vos initiales, la date du jour."
+        },
+        {
+          "type": "input",
+          "id": "entete-revu",
+          "label": "Revu par, et date",
+          "defaultValue": "À compléter par le relecteur."
+        },
         {
           "type": "review",
           "title": "Dernière relecture automatique",
-          "sources": ["objectif", "travaux", "constats", "conclusion", "journal-taches", "journal-controles"]
+          "sources": [
+            "objectif",
+            "travaux",
+            "constats",
+            "conclusion",
+            "journal-taches",
+            "journal-controles"
+          ]
         },
         {
           "type": "deliverable",
-          "title": "Feuille de travail : revue analytique",
+          "title": "Revue analytique : exercice 2025",
           "help": "Dans le dossier du cabinet, et seulement là, vous rétablissez le nom du client et les libellés réels.",
           "sections": [
-            { "title": "En-tête", "sources": ["entete-objet", "entete-prepare", "entete-revu"] },
-            { "title": "Objectif et étendue", "sources": ["objectif"] },
-            { "title": "Travaux réalisés", "sources": ["travaux", "controle-1", "recalculs"] },
-            { "title": "Constats", "sources": ["constats"] },
-            { "title": "Conclusion", "sources": ["conclusion"] },
-            { "title": "Journal d'usage de l'IA", "sources": ["journal-outil", "journal-donnees", "retire", "journal-taches", "journal-controles", "journal-ecartes"] }
+            {
+              "title": "En-tête",
+              "sources": [
+                "entete-entite",
+                "entete-prepare",
+                "entete-revu"
+              ],
+              "unnumbered": true
+            },
+            {
+              "title": "Objectif et étendue",
+              "sources": [
+                "objectif"
+              ]
+            },
+            {
+              "title": "Travaux réalisés",
+              "sources": [
+                "travaux",
+                "controle-1",
+                "recalculs"
+              ]
+            },
+            {
+              "title": "Constats",
+              "sources": [
+                "constats"
+              ]
+            },
+            {
+              "title": "Conclusion",
+              "sources": [
+                "conclusion"
+              ]
+            },
+            {
+              "title": "Journal d'usage de l'IA",
+              "sources": [
+                "journal-outil",
+                "journal-donnees",
+                "retire",
+                "journal-taches",
+                "journal-controles",
+                "journal-ecartes"
+              ]
+            }
           ]
         }
       ]

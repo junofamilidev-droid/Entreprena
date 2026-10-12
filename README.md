@@ -12,7 +12,8 @@ Priorité actuelle : l'interface (pas de backend pour l'instant).
 - Plateforme : tableau de bord, catalogue, page de formation, diagnostic, thème clair et sombre
 - Lecteur de leçon et exercice guidé (blocs : texte, données à copier, saisie, contrôle de valeurs,
   tableau à lignes, relecture automatique, livrable assemblé), progression et saisies enregistrées sur l'appareil
-- À venir : auto-correction et fin de module (en attente du corrigé et de la grille), comptes, espace réservé
+- Auto-correction (grille sur 20, corrigé ouvert après dépôt, critères éliminatoires) et attestation de fin de module
+- À venir : comptes, espace réservé, retours des testeurs
 
 La plateforme accueille des formations pour tous les métiers : aucun écran n'est propre à l'audit.
 
@@ -27,6 +28,6 @@ Next.js, TypeScript, Tailwind CSS, shadcn/ui, Motion. À venir : Supabase, TipTa
   sans Supabase, en local uniquement, le site lit directement ces fichiers pour l'aperçu.
 - Base de données : `supabase/migrations/` (tables et règles d'accès). Tests des règles sur un PostgreSQL local :
   `PGHOST=… PGPORT=… PGUSER=postgres supabase/tests/run-local.sh`
-- Exercice : rédigé dans `content/<formation>/sources/exercice-*.json`, puis rangé dans `formation.json` par
-  `node scripts/import-exercice.mjs <exercice.json> <formation.json> <module> <étape>` (la balance CSV y est incluse)
+- Exercice, auto-correction, fin de module : rédigés dans `content/<formation>/sources/*.json`, puis rangés dans `formation.json` par
+  `node scripts/import-etape.mjs <source.json> <formation.json> <module> <étape>` (la balance CSV y est incluse)
 - Tests : `npm test` (le moteur de diagnostic est comparé au prototype sur 500 jeux de réponses)

@@ -93,7 +93,8 @@ describe("livrable", () => {
     };
     const sections = assemble(content, inputs, deliverable.sections);
     const text = deliverableToText(deliverable.title, sections);
-    expect(text).toContain("Exercice clos le 31/12/2025");
+    expect(text).toContain("Nom rétabli dans le dossier du cabinet uniquement.");
+    expect(text).toContain("1. Objectif et étendue");
     expect(text).toContain("Balance 2025 et 2024, 81 comptes.");
     expect(text).toContain("Nombre de comptes traités : 81 (conforme au fichier)");
     expect(text).toContain("Total débit ou crédit 2025 : 19 000 000 (écart avec le fichier)");

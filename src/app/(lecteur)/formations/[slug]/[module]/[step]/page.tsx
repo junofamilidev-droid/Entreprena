@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LessonReader } from "@/components/reader/lesson-reader";
 import { ExerciseRunner } from "@/components/exercise/exercise-runner";
+import { ModuleEnd } from "@/components/exercise/module-end";
+import { SelfReviewRunner } from "@/components/exercise/self-review";
 import { StepPlaceholder } from "@/components/reader/step-placeholder";
 import { getFormation, getModule, listFormations } from "@/lib/content/source";
-import type { ExerciseContent, LessonContent } from "@/lib/content/types";
+import type { ExerciseContent, LessonContent, ModuleEndContent, SelfReviewContent } from "@/lib/content/types";
 
 type Props = PageProps<"/formations/[slug]/[module]/[step]">;
 
@@ -62,6 +64,38 @@ export default async function StepPage(props: Props) {
         exitHref={moduleHref}
         next={next}
         tutorUrl={formation.tutorUrl}
+      />
+    );
+  }
+  const keyOf = (stepSlug: string) => `${slug}/${module}/${stepSlug}`;
+  const review = current.content as unknown as Partial<SelfReviewContent>;
+  const reviewed = review.exerciseStep ? mod.steps.find((s) => s.slug === review.exerciseStep) : undefined;
+  if (current.kind === "self_review" && review.criteria && reviewed) {
+    return (
+      <SelfReviewRunner
+        progressKey={keyOf(current.slug)}
+        exerciseKey={keyOf(reviewed.slug)}
+        exerciseHref={`${moduleHref}/${reviewed.slug}`}
+        stepTitle={current.title}
+        moduleLabel={moduleLabel}
+        content={review as SelfReviewContent}
+        exercise={reviewed.content as unknown as ExerciseContent}
+        exitHref={moduleHref}
+        next={next}
+      />
+    );
+  }
+  const end = current.content as unknown as Partial<ModuleEndContent>;
+  if (current.kind === "module_end" && end.template && end.reviewStep) {
+    return (
+      <ModuleEnd
+        progressKey={keyOf(current.slug)}
+        reviewKey={keyOf(end.reviewStep)}
+        reviewHref={`${moduleHref}/${end.reviewStep}`}
+        stepTitle={current.title}
+        moduleLabel={moduleLabel}
+        content={end as ModuleEndContent}
+        exitHref={moduleHref}
       />
     );
   }

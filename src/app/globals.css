@@ -236,6 +236,27 @@
   & h3 + p {
     margin-top: 0.35em;
   }
+  & table {
+    width: 100%;
+    margin-top: 0.8em;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+  & th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted-foreground);
+  }
+  & th,
+  & td {
+    padding: 0.45em 0.75em 0.45em 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  & table + p {
+    margin-top: 1em;
+  }
 }
 
 /* Listes de sources sous les leçons : plus petites et plus serrées. */

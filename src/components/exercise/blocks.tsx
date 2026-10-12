@@ -18,6 +18,7 @@ import {
   review,
   reviewFields,
   tableToText,
+  type DeliverablePart,
 } from "@/lib/exercise/logic";
 import type { ExerciseBlock, ExerciseContent, ExerciseInputs, ExerciseValue } from "@/lib/content/types";
 
@@ -61,9 +62,10 @@ function BlockHeading({ title, help, aside }: { title: string; help?: string; as
 function DataBlock({ block }: { block: Block<"data"> }) {
   const { copied, copy } = useCopy();
   const isTable = Boolean(block.columns && block.rows);
-  const copyText = isTable
+  const body = isTable
     ? [block.columns!.map((c) => c.label), ...(block.copyRows ?? block.rows!)].map((r) => r.join("\t")).join("\n")
     : (block.text ?? "");
+  const copyText = block.header ? `${block.header}\n\n${body}` : body;
 
   return (
     <section className="overflow-hidden rounded-lg border">
@@ -76,6 +78,9 @@ function DataBlock({ block }: { block: Block<"data"> }) {
           {copied ? <CheckIcon /> : <CopyIcon />} {copied ? "Copié" : block.copyLabel}
         </Button>
       </header>
+      {block.header && (
+        <p className="border-b bg-muted/30 px-4 py-2.5 text-sm font-medium whitespace-pre-line">{block.header}</p>
+      )}
       {isTable ? (
         <div className="max-h-[26rem] overflow-auto bg-muted/30" tabIndex={0} aria-label={block.title}>
           <table className="w-full min-w-[40rem] border-collapse text-[0.8125rem]">
@@ -377,6 +382,48 @@ function ReviewBlock({ block, ctx }: { block: Block<"review">; ctx: BlockContext
 
 /* ---------------- Livrable assemblé ---------------- */
 
+/** Saisies assemblées : textes, lignes de tableau, rubriques vides. */
+export function DeliverableParts({ parts }: { parts: DeliverablePart[] }) {
+  return (
+    <>
+      {parts.map((p, j) => {
+        if (p.kind === "missing")
+          return (
+            <p key={j} className="text-sm text-muted-foreground italic">
+              {p.label} : à compléter
+            </p>
+          );
+        if (p.kind === "text")
+          return (
+            <div key={j} className="text-body">
+              {p.label && <p className="text-sm font-medium">{p.label}</p>}
+              <p className="whitespace-pre-line">{p.text}</p>
+            </div>
+          );
+        return (
+          <ol key={j} className="divide-y rounded-md border">
+            {p.rows.map((r, k) => (
+              <li key={k} className="break-inside-avoid px-4 py-3">
+                <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[10rem_1fr]">
+                  {p.columns
+                    .filter((c) => r[c.id]?.trim())
+                    .map((c) => (
+                      <React.Fragment key={c.id}>
+                        <dt className="text-muted-foreground">{c.label}</dt>
+                        <dd className={cn("whitespace-pre-line", c === p.columns[0] && "font-medium")}>{r[c.id]}</dd>
+                      </React.Fragment>
+                    ))}
+                </dl>
+              </li>
+            ))}
+          </ol>
+        );
+      })}
+    </>
+  );
+}
+
+
 function DeliverableBlock({ block, ctx }: { block: Block<"deliverable">; ctx: BlockContext }) {
   const { copied, copy } = useCopy();
   const sections = assemble(ctx.content, ctx.inputs, block.sections);
@@ -406,44 +453,13 @@ function DeliverableBlock({ block, ctx }: { block: Block<"deliverable">; ctx: Bl
       )}
       <article className="print-area space-y-7 rounded-lg border bg-card px-5 py-6 shadow-xs sm:px-8 sm:py-8">
         <h2 className="text-heading">{block.title}</h2>
-        {sections.map((s, i) => (
+        {sections.map((s) => (
           <section key={s.title} className="space-y-2">
             <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-              {i + 1}. {s.title}
+              {s.number ? `${s.number}. ` : ""}
+              {s.title}
             </h3>
-            {s.parts.map((p, j) => {
-              if (p.kind === "missing")
-                return (
-                  <p key={j} className="text-sm text-muted-foreground italic">
-                    {p.label} : à compléter
-                  </p>
-                );
-              if (p.kind === "text")
-                return (
-                  <div key={j} className="text-body">
-                    {p.label && <p className="text-sm font-medium">{p.label}</p>}
-                    <p className="whitespace-pre-line">{p.text}</p>
-                  </div>
-                );
-              return (
-                <ol key={j} className="divide-y rounded-md border">
-                  {p.rows.map((r, k) => (
-                    <li key={k} className="break-inside-avoid px-4 py-3">
-                      <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[10rem_1fr]">
-                        {p.columns
-                          .filter((c) => r[c.id]?.trim())
-                          .map((c) => (
-                            <React.Fragment key={c.id}>
-                              <dt className="text-muted-foreground">{c.label}</dt>
-                              <dd className={cn("whitespace-pre-line", c === p.columns[0] && "font-medium")}>{r[c.id]}</dd>
-                            </React.Fragment>
-                          ))}
-                      </dl>
-                    </li>
-                  ))}
-                </ol>
-              );
-            })}
+            <DeliverableParts parts={s.parts} />
           </section>
         ))}
       </article>

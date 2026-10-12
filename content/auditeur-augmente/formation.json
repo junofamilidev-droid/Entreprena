@@ -336,11 +336,11 @@
               "blocks": [
                 {
                   "type": "text",
-                  "html": "<p>Vous êtes auditeur dans l'équipe chargée de l'audit des comptes 2025 de Nordelia Distribution SAS. Votre chef de mission vous demande la revue analytique de la balance avant l'intervention finale.</p><p>La balance contient <mark>cinq anomalies</mark> et plusieurs variations qui s'expliquent très bien. On n'attend pas de vous « la » cause de chaque anomalie. On attend des constats chiffrés, des hypothèses et les documents à obtenir pour trancher.</p><p>Tout se fait ici. Vous utilisez l'assistant IA de votre choix dans un autre onglet, et vous notez votre travail dans cette page. À la fin, elle assemble votre feuille de travail. Toutes les données sont fictives : la société n'existe pas.</p>"
+                  "html": "<p>Vous êtes auditeur dans l'équipe chargée de l'audit des comptes 2025 de Nordelia Distribution SAS. Votre chef de mission vous demande la revue analytique de la balance avant l'intervention finale. Vous avez 60 minutes.</p><p>Toutes les données sont fictives. La balance contient <mark>cinq anomalies</mark> et plusieurs variations qui s'expliquent très bien. On n'attend pas de vous « la » cause de chaque anomalie. On attend des constats chiffrés, des hypothèses et les documents à obtenir.</p><p>Tout se fait ici. Vous utilisez l'assistant IA de votre choix dans un autre onglet, et vous notez votre travail dans cette page. À la fin, elle assemble votre feuille de travail.</p>"
                 },
                 {
                   "type": "text",
-                  "html": "<h3>La société</h3><p>Nordelia Distribution SAS est un négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Elle a un entrepôt et 46 salariés. Ses ventes de marchandises nettes de remises atteignent environ 12,4 millions d'euros en 2025 (d'après la balance).</p><h3>Les seuils fixés par votre chef de mission</h3><p>Seuil de signification de 100 000 euros. Investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue.</p>"
+                  "html": "<h3>La société</h3><p>Nordelia Distribution SAS est un négociant en fournitures de bureau, mobilier de bureau et consommables informatiques pour les entreprises. Elle a un entrepôt et 46 salariés. Son chiffre d'affaires dépasse 10 millions d'euros et son total de bilan 5 millions d'euros, ce qui l'oblige à désigner un commissaire aux comptes.</p><h3>Les seuils fixés par votre chef de mission</h3><p>Seuil de signification de 100 000 euros. Investigation de toute variation supérieure à 10 % et à 30 000 euros en valeur absolue.</p>"
                 }
               ]
             },
@@ -348,13 +348,14 @@
               {
                 "title": "Anonymisez",
                 "duration": "5 min",
-                "lead": "Travaillez sur une copie. Retirez tout ce qui identifie l'entité, dans la balance et dans la fiche contexte. Les deux documents sont livrés tels que le client les a donnés.",
+                "lead": "Travaillez sur une copie. Retirez tout ce qui identifie l'entité, dans la balance et dans la fiche contexte. Notez ce que vous avez retiré. Les deux documents sont livrés tels que le client les a donnés.",
                 "blocks": [
                   {
                     "type": "data",
                     "title": "Balance au 31/12/2025 et au 31/12/2024 · 81 comptes",
                     "note": "Collez-la dans un tableur. Soldes avant affectation du résultat, en euros.",
                     "copyLabel": "Copier la balance",
+                    "header": "Nordelia Distribution SAS · SIREN 512 840 371 · Zone d'activité du Grand Marais, 59000 Lille\nBalance générale au 31/12/2025, comparée au 31/12/2024",
                     "columns": [
                       {
                         "label": "Compte"
@@ -1796,8 +1797,7 @@
                         "label": "Statut",
                         "suggestions": [
                           "Expliquée, à corroborer",
-                          "Anomalie possible, à investiguer",
-                          "Information manquante"
+                          "Inexpliquée"
                         ]
                       }
                     ],
@@ -1818,7 +1818,7 @@
               {
                 "title": "Rédigez et relisez",
                 "duration": "15 min",
-                "lead": "Donnez à l'IA votre tableau validé, pas la balance. Puis relisez phrase par phrase avec deux questions : l'ai-je fait ? puis-je le montrer ?",
+                "lead": "Donnez à l'IA votre tableau validé, pas la balance. Puis relisez phrase par phrase avec deux questions : l'ai-je fait ? puis-je le montrer ? Remplissez enfin le journal d'usage de l'IA.",
                 "blocks": [
                   {
                     "type": "prompt",
@@ -1851,7 +1851,7 @@
                     "type": "input",
                     "id": "conclusion",
                     "label": "Conclusion",
-                    "help": "Les risques identifiés, classés par montant possible, et les travaux à mener. Pas d'avis sur la régularité des comptes.",
+                    "help": "Risques identifiés, classés par montant possible. Travaux à mener. Points à remonter au chef de mission. Pas d'avis sur la régularité des comptes.",
                     "multiline": true
                   },
                   {
@@ -1904,15 +1904,15 @@
                 ]
               },
               {
-                "title": "Assemblez votre feuille de travail",
+                "title": "Déposez",
                 "duration": "5 min",
-                "lead": "Complétez l'en-tête. La page assemble votre feuille à partir de vos saisies : relisez-la une dernière fois, puis copiez-la ou imprimez-la.",
+                "lead": "Complétez l'en-tête. La page assemble votre feuille de travail à partir de vos saisies : elle tient en deux pages au plus. Relisez-la une dernière fois, copiez-la ou imprimez-la, puis déposez-la pour passer à l'auto-correction.",
                 "blocks": [
                   {
                     "type": "input",
-                    "id": "entete-objet",
-                    "label": "Exercice et objet",
-                    "defaultValue": "Exercice clos le 31/12/2025. Revue analytique de la balance avant l'intervention finale."
+                    "id": "entete-entite",
+                    "label": "Entité",
+                    "defaultValue": "Nom rétabli dans le dossier du cabinet uniquement."
                   },
                   {
                     "type": "input",
@@ -1940,16 +1940,17 @@
                   },
                   {
                     "type": "deliverable",
-                    "title": "Feuille de travail : revue analytique",
+                    "title": "Revue analytique : exercice 2025",
                     "help": "Dans le dossier du cabinet, et seulement là, vous rétablissez le nom du client et les libellés réels.",
                     "sections": [
                       {
                         "title": "En-tête",
                         "sources": [
-                          "entete-objet",
+                          "entete-entite",
                           "entete-prepare",
                           "entete-revu"
-                        ]
+                        ],
+                        "unnumbered": true
                       },
                       {
                         "title": "Objectif et étendue",
@@ -2045,7 +2046,380 @@
           "kind": "self_review",
           "title": "Auto-correction",
           "content": {
-            "duration": "grille sur 20 et corrigé"
+            "duration": "grille sur 20 et corrigé",
+            "exerciseStep": "exercice",
+            "title": "Auto-correction",
+            "intro": "<p>Comparez votre feuille de travail au corrigé, critère par critère, et cochez ce que vous avez fait. Certaines cases sont déjà cochées d'après vos saisies : vérifiez-les.</p><p>En revue analytique, on ne connaît pas encore la cause. Le corrigé donne donc des <mark>hypothèses acceptables, pas une vérité</mark>.</p><p>La copie est validée à partir de 14 sur 20, sans critère éliminatoire. Une copie renvoyée peut être déposée une seconde fois.</p>",
+            "total": 20,
+            "passMark": 14,
+            "criteria": [
+              {
+                "id": "anonymisation",
+                "title": "Anonymisation",
+                "points": 2,
+                "help": "0,5 point par élément identifiant retiré. Quatre éléments étaient plantés.",
+                "sources": [
+                  "retire"
+                ],
+                "detail": "<p>Bonus sans point : vous avez aussi renommé le fichier, dont le nom contient celui de la société.</p>",
+                "items": [
+                  {
+                    "id": "anon-entete",
+                    "label": "En-tête de la balance : nom de la société, SIREN, adresse",
+                    "points": 0.5,
+                    "auto": {
+                      "type": "matches",
+                      "source": "retire",
+                      "patterns": [
+                        "siren",
+                        "en-tete",
+                        "entete",
+                        "adresse"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "anon-banque",
+                    "label": "Compte 164000 : nom de la banque et numéro du prêt",
+                    "points": 0.5,
+                    "auto": {
+                      "type": "matches",
+                      "source": "retire",
+                      "patterns": [
+                        "164",
+                        "banque",
+                        "littorale",
+                        "pret",
+                        "emprunt"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "anon-associe",
+                    "label": "Compte 455000 : nom de l'associé",
+                    "points": 0.5,
+                    "auto": {
+                      "type": "matches",
+                      "source": "retire",
+                      "patterns": [
+                        "455",
+                        "associe",
+                        "verhaeghe"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "anon-sci",
+                    "label": "Compte 613200 : nom de la SCI bailleresse",
+                    "points": 0.5,
+                    "auto": {
+                      "type": "matches",
+                      "source": "retire",
+                      "patterns": [
+                        "613",
+                        "\\bsci\\b",
+                        "peupliers",
+                        "bailleresse",
+                        "bailleur"
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "calculs",
+                "title": "Contrôle des calculs",
+                "points": 2,
+                "sources": [
+                  "controle-1",
+                  "recalculs"
+                ],
+                "detail": "<h3>Indicateurs attendus</h3><table><thead><tr><th>Indicateur</th><th>2024</th><th>2025</th></tr></thead><tbody><tr><td>Chiffre d'affaires net (ventes, moins remises, plus ports)</td><td>11 582 000</td><td>12 426 000 (+7,3 %)</td></tr><tr><td>Taux de marge commerciale global</td><td>33,2 %</td><td>35,9 %</td></tr><tr><td>Taux de marge, fournitures de bureau</td><td>31,7 %</td><td>30,3 %</td></tr><tr><td>Taux de marge, mobilier de bureau</td><td>34,3 %</td><td>44,0 %</td></tr><tr><td>Taux de marge, consommables informatiques</td><td>36,2 %</td><td>35,8 %</td></tr><tr><td>Délai de règlement clients (compte 411)</td><td>52 jours</td><td>65 jours</td></tr><tr><td>Rotation du stock, fournitures</td><td>53 jours</td><td>52 jours</td></tr><tr><td>Rotation du stock, mobilier</td><td>82 jours</td><td>142 jours</td></tr><tr><td>Rotation du stock, consommables</td><td>53 jours</td><td>50 jours</td></tr><tr><td>Résultat avant impôt</td><td>343 400</td><td>848 600 (+147 %)</td></tr><tr><td>Banque</td><td>975 200</td><td>433 800 (-56 %)</td></tr></tbody></table><p>Formules retenues : taux de marge = (ventes - remises accordées - coût d'achat des marchandises vendues) / (ventes - remises accordées), avec coût d'achat = achats - remises obtenues + variation de stock. Les taux par famille sont calculés sans les remises. Délai clients = solde du compte 411 / (chiffre d'affaires net x 1,2) x 365. Rotation = stock / coût d'achat des marchandises vendues x 365.</p>",
+                "items": [
+                  {
+                    "id": "calc-totaux",
+                    "label": "Le nombre de comptes et les totaux sont cités",
+                    "points": 1,
+                    "auto": {
+                      "type": "checks",
+                      "id": "controle-1",
+                      "items": [
+                        "comptes",
+                        "total-2025",
+                        "total-2024"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "calc-lignes",
+                    "label": "Cinq lignes au moins sont recalculées, ou une erreur de l'IA est relevée",
+                    "points": 1
+                  }
+                ]
+              },
+              {
+                "id": "anomalies",
+                "title": "Anomalies repérées",
+                "points": 5,
+                "help": "1 point par anomalie accompagnée de son constat chiffré.",
+                "sources": [
+                  "constats"
+                ],
+                "items": [
+                  {
+                    "id": "anomalie-1",
+                    "label": "Anomalie 1 : Clients (411)",
+                    "points": 1,
+                    "detail": "<p><b>Constat chiffré.</b> Clients +675 000, soit +34 %, pour un chiffre d'affaires en hausse de 7 %. Délai de 52 à 65 jours alors que les conditions sont inchangées. Dépréciation des créances de 71 000 à 52 000, sans dotation en 2025.</p><p><b>Ordre de grandeur.</b> Environ 530 000 de créances au-delà du délai de 2024.</p>"
+                  },
+                  {
+                    "id": "anomalie-2",
+                    "label": "Anomalie 2 : Stock de mobilier (372)",
+                    "points": 1,
+                    "detail": "<p><b>Constat chiffré.</b> Stock de mobilier +320 000, soit +52 %, alors que les achats de mobilier baissent de 1 % et les ventes montent de 3 %. Rotation de 82 à 142 jours. Marge du mobilier de 34,3 % à 44,0 %. Dépréciation des stocks inchangée à 34 000.</p><p><b>Ordre de grandeur.</b> 300 000 à 400 000.</p>"
+                  },
+                  {
+                    "id": "anomalie-3",
+                    "label": "Anomalie 3 : Factures non parvenues (4081)",
+                    "points": 1,
+                    "detail": "<p><b>Constat chiffré.</b> Factures non parvenues de 214 000 à 38 000, soit -82 %, et TVA correspondante de 35 700 à 6 300, alors que l'activité progresse et que le compte fournisseurs est stable (+2,5 %).</p><p><b>Ordre de grandeur.</b> Environ 150 000 hors taxes.</p>"
+                  },
+                  {
+                    "id": "anomalie-4",
+                    "label": "Anomalie 4 : Compte d'attente (471)",
+                    "points": 1,
+                    "detail": "<p><b>Constat chiffré.</b> Compte d'attente débiteur de 86 400 à la clôture, nul en 2024. Le montant correspond à 72 000 hors taxes plus 20 % de TVA.</p><p><b>Ordre de grandeur.</b> Jusqu'à 72 000.</p>"
+                  },
+                  {
+                    "id": "anomalie-5",
+                    "label": "Anomalie 5 : Amortissement du nouveau matériel",
+                    "points": 1,
+                    "detail": "<p><b>Constat chiffré.</b> Matériel industriel +620 000 mis en service le 1er avril 2025, mais dotation aux amortissements de 190 400 à 193 200 seulement (+1,5 %). Les amortissements du matériel industriel augmentent de 65 000, soit 520 000 / 8 : rien sur le nouveau matériel.</p><p><b>Ordre de grandeur.</b> Environ 58 000 (620 000 / 8 x 9/12). Cette anomalie ne sort pas du filtre : c'est un compte qui aurait dû bouger. Elle distingue les meilleures copies.</p>"
+                  }
+                ]
+              },
+              {
+                "id": "hypotheses",
+                "title": "Hypothèses et documents",
+                "points": 5,
+                "help": "Par anomalie repérée : 0,5 point pour deux hypothèses dont une d'erreur, 0,5 point pour un document précis à obtenir.",
+                "sources": [
+                  "constats"
+                ],
+                "items": [
+                  {
+                    "id": "hyp-1",
+                    "label": "Anomalie 1 : deux hypothèses, dont une d'erreur",
+                    "points": 0.5,
+                    "requires": "anomalie-1",
+                    "detail": "<p><b>Hypothèses acceptables.</b> Ventes de janvier 2026 comptabilisées en décembre. Retards de paiement ou créances anciennes non dépréciées. Factures en double ou avoirs non émis.</p>"
+                  },
+                  {
+                    "id": "doc-1",
+                    "label": "Anomalie 1 : un document précis à obtenir",
+                    "points": 0.5,
+                    "requires": "anomalie-1",
+                    "detail": "<p><b>Documents à obtenir.</b> Balance âgée, encaissements de janvier et février 2026, factures et bons de livraison de décembre, avoirs émis début 2026, détail des dépréciations.</p>"
+                  },
+                  {
+                    "id": "hyp-2",
+                    "label": "Anomalie 2 : deux hypothèses, dont une d'erreur",
+                    "points": 0.5,
+                    "requires": "anomalie-2",
+                    "detail": "<p><b>Hypothèses acceptables.</b> Erreur de comptage ou de valorisation à l'inventaire. Stock invendu non déprécié. Marchandises reçues en décembre, comptées en stock mais non comptabilisées en achats (lien avec l'anomalie 3).</p>"
+                  },
+                  {
+                    "id": "doc-2",
+                    "label": "Anomalie 2 : un document précis à obtenir",
+                    "points": 0.5,
+                    "requires": "anomalie-2",
+                    "detail": "<p><b>Documents à obtenir.</b> État d'inventaire valorisé du 30 décembre, test de valorisation, bons de réception de décembre, ancienneté du stock.</p>"
+                  },
+                  {
+                    "id": "hyp-3",
+                    "label": "Anomalie 3 : deux hypothèses, dont une d'erreur",
+                    "points": 0.5,
+                    "requires": "anomalie-3",
+                    "detail": "<p><b>Hypothèses acceptables.</b> Charges ou achats de décembre non provisionnés. Factures reçues plus tôt qu'en 2024 (explication normale, mais le compte 401 ne monte pas en proportion).</p>"
+                  },
+                  {
+                    "id": "doc-3",
+                    "label": "Anomalie 3 : un document précis à obtenir",
+                    "points": 0.5,
+                    "requires": "anomalie-3",
+                    "detail": "<p><b>Documents à obtenir.</b> Détail des factures non parvenues 2024 et 2025, factures reçues en janvier et février 2026, réceptions non facturées au 31 décembre.</p>"
+                  },
+                  {
+                    "id": "hyp-4",
+                    "label": "Anomalie 4 : deux hypothèses, dont une d'erreur",
+                    "points": 0.5,
+                    "requires": "anomalie-4",
+                    "detail": "<p><b>Hypothèses acceptables.</b> Charge ou immobilisation non imputée. Règlement non affecté ou payé deux fois.</p>"
+                  },
+                  {
+                    "id": "doc-4",
+                    "label": "Anomalie 4 : un document précis à obtenir",
+                    "points": 0.5,
+                    "requires": "anomalie-4",
+                    "detail": "<p><b>Documents à obtenir.</b> Grand livre du compte, pièce justificative, écritures de régularisation après clôture.</p>"
+                  },
+                  {
+                    "id": "hyp-5",
+                    "label": "Anomalie 5 : deux hypothèses, dont une d'erreur",
+                    "points": 0.5,
+                    "requires": "anomalie-5",
+                    "detail": "<p><b>Hypothèses acceptables.</b> Immobilisation absente du fichier des immobilisations. Mise en service réelle plus tardive que déclarée. Durée d'amortissement différente.</p>"
+                  },
+                  {
+                    "id": "doc-5",
+                    "label": "Anomalie 5 : un document précis à obtenir",
+                    "points": 0.5,
+                    "requires": "anomalie-5",
+                    "detail": "<p><b>Documents à obtenir.</b> Tableau des immobilisations et des amortissements, facture, procès-verbal de mise en service.</p>"
+                  }
+                ]
+              },
+              {
+                "id": "tri",
+                "title": "Tri des variations expliquées",
+                "points": 2,
+                "sources": [
+                  "constats"
+                ],
+                "detail": "<p>Le filtre fait sortir seize comptes. Cinq se rattachent aux anomalies 1 à 4 (411, 372, 603720, 4081, 471). Les onze autres s'expliquent :</p><table><thead><tr><th>Comptes</th><th>Variation</th><th>Explication</th></tr></thead><tbody><tr><td>Emprunts (164)</td><td>+500 000</td><td>Emprunt de 600 000 en avril, moins 100 000 de remboursements ; cohérent avec les intérêts, de 11 000 à 27 000</td></tr><tr><td>Matériel industriel (2154)</td><td>+620 000</td><td>Investissement déclaré par le directeur financier (mais voir l'anomalie 5)</td></tr><tr><td>Ventes et achats de consommables (70713, 60713)</td><td>+15,6 % et +17,4 %</td><td>Nouveau catalogue ; marge et rotation stables. Exemple traité en leçon 3</td></tr><tr><td>Amortissements cumulés (28135, 28154, 28182)</td><td>+41 000, +65 000, +57 200</td><td>Dotation annuelle normale des biens déjà présents</td></tr><tr><td>Autres réserves (1068)</td><td>+157 600</td><td>Résultat 2024 de 257 600, moins le dividende de 100 000</td></tr><tr><td>Impôt sur les bénéfices (695 et 444)</td><td>+126 400 et +114 400</td><td>Conséquence mécanique du résultat, au taux de 25 %</td></tr><tr><td>Banque (512)</td><td>-541 400</td><td>Conséquence de la hausse des créances et des stocks, à signaler comme indice et non comme anomalie</td></tr></tbody></table><p>Deux fausses pistes restent sous le seuil en montant : l'électricité (+38 %, soit +22 000) s'explique par le tarif et le nouvel équipement, et les locations mobilières (-42 %) par la fin de la location des chariots.</p>",
+                "items": [
+                  {
+                    "id": "tri-trois",
+                    "label": "Trois variations au moins sont classées « expliquées », avec la phrase du contexte",
+                    "points": 1.5
+                  },
+                  {
+                    "id": "tri-aucune",
+                    "label": "Aucune de ces variations n'est présentée comme une anomalie",
+                    "points": 0.5
+                  }
+                ]
+              },
+              {
+                "id": "conclusion",
+                "title": "Conclusion",
+                "points": 2,
+                "sources": [
+                  "conclusion"
+                ],
+                "items": [
+                  {
+                    "id": "concl-risques",
+                    "label": "Elle liste les risques et les travaux à mener",
+                    "points": 1
+                  },
+                  {
+                    "id": "concl-cumul",
+                    "label": "Elle relève le cumul par rapport au seuil de 100 000 euros, ou le sens commun des anomalies",
+                    "points": 1
+                  }
+                ]
+              },
+              {
+                "id": "journal",
+                "title": "Journal d'usage de l'IA",
+                "points": 2,
+                "sources": [
+                  "journal-outil",
+                  "journal-donnees",
+                  "journal-taches",
+                  "journal-controles",
+                  "journal-ecartes"
+                ],
+                "items": [
+                  {
+                    "id": "journal-cinq",
+                    "label": "Les cinq lignes sont remplies",
+                    "points": 1,
+                    "auto": {
+                      "type": "filled",
+                      "sources": [
+                        "journal-outil",
+                        "journal-donnees",
+                        "journal-taches",
+                        "journal-controles",
+                        "journal-ecartes"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "journal-ecarte",
+                    "label": "Il cite au moins un élément écarté ou corrigé",
+                    "points": 1,
+                    "auto": {
+                      "type": "filled",
+                      "sources": [
+                        "journal-ecartes"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "eliminatory": {
+              "title": "Critères éliminatoires",
+              "help": "Un seul suffit à renvoyer la copie, quelle que soit la note. Les cases cochées d'office l'ont été par la relecture automatique : relisez la phrase, puis décochez si elle est juste.",
+              "items": [
+                {
+                  "id": "elim-passe",
+                  "label": "Une phrase affirme un contrôle qui n'a pas été réalisé (« nous avons vérifié les factures »)",
+                  "auto": {
+                    "type": "review",
+                    "sources": [
+                      "objectif",
+                      "travaux",
+                      "constats",
+                      "conclusion",
+                      "journal-taches",
+                      "journal-controles"
+                    ],
+                    "ruleIds": [
+                      "travail-au-passe"
+                    ]
+                  }
+                },
+                {
+                  "id": "elim-conclusion",
+                  "label": "La conclusion affirme l'absence d'anomalie ou la régularité des comptes",
+                  "auto": {
+                    "type": "review",
+                    "sources": [
+                      "conclusion"
+                    ],
+                    "ruleIds": [
+                      "conclusion-trop-forte"
+                    ]
+                  }
+                },
+                {
+                  "id": "elim-fait",
+                  "label": "Un fait sur l'entité ou son secteur ne figure ni dans la balance ni dans le contexte",
+                  "auto": {
+                    "type": "review",
+                    "sources": [
+                      "objectif",
+                      "travaux",
+                      "constats",
+                      "conclusion",
+                      "journal-taches",
+                      "journal-controles"
+                    ],
+                    "ruleIds": [
+                      "fait-exterieur"
+                    ]
+                  }
+                }
+              ]
+            },
+            "overview": {
+              "title": "Lecture d'ensemble attendue des meilleures copies",
+              "html": "<p>Le résultat avant impôt est multiplié par 2,5 pour un chiffre d'affaires en hausse de 7 %, la marge gagne 2,6 points et la trésorerie baisse de 56 %. Les cinq anomalies vont dans le sens d'une hausse du résultat et leur cumul dépasse largement le seuil de 100 000 euros. L'apprenant le signale au chef de mission sans conclure lui-même sur la cause.</p>"
+            }
           },
           "position": 6,
           "status": "published"
@@ -2055,7 +2429,12 @@
           "kind": "module_end",
           "title": "Fin du module",
           "content": {
-            "duration": "attestation"
+            "duration": "attestation",
+            "reviewStep": "auto-correction",
+            "title": "Votre attestation",
+            "template": "{nom} a validé le module 1, Revue analytique assistée par l'IA, le {date}, en produisant une feuille de travail notée {note} sur 20 sur un cas fictif. Cette attestation n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle.",
+            "notice": "Version de test : la note vient de votre auto-correction. Elle n'a pas été relue par un correcteur.",
+            "retry": "<p>Votre copie n'est pas encore validée : il faut 14 sur 20, sans critère éliminatoire. Reprenez votre feuille de travail dans l'exercice, complétez ou corrigez ce qui manque, puis refaites l'auto-correction. Une copie renvoyée peut être déposée une seconde fois.</p>"
           },
           "position": 7,
           "status": "published"

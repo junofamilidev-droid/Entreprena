@@ -2,6 +2,7 @@
 // assemblage du livrable. Tout dépend du contenu, rien n'est propre à un métier.
 
 import type {
+  DeliverableSectionDef,
   ExerciseBlock,
   ExerciseContent,
   ExerciseInputs,
@@ -121,16 +122,20 @@ export type DeliverablePart =
 
 export interface DeliverableSection {
   title: string;
+  /** Numéro affiché, ou null pour une section hors numérotation. */
+  number: number | null;
   parts: DeliverablePart[];
 }
 
 export function assemble(
   content: ExerciseContent,
   inputs: ExerciseInputs,
-  sections: { title: string; sources: string[] }[],
+  sections: DeliverableSectionDef[],
 ): DeliverableSection[] {
   const blocks = inputBlocks(content);
+  let n = 0;
   return sections.map((s) => {
+    const number = s.unnumbered ? null : ++n;
     const labelled = s.sources.length > 1;
     const parts: DeliverablePart[] = s.sources.flatMap((id): DeliverablePart[] => {
       const b = blocks.get(id);
@@ -156,14 +161,14 @@ export function assemble(
       }
       return [];
     });
-    return { title: s.title, parts };
+    return { title: s.title, number, parts };
   });
 }
 
 export function deliverableToText(title: string, sections: DeliverableSection[]): string {
   const out = [title.toUpperCase(), ""];
-  sections.forEach((s, i) => {
-    out.push(`${i + 1}. ${s.title}`, "");
+  sections.forEach((s) => {
+    out.push(s.number ? `${s.number}. ${s.title}` : s.title, "");
     for (const p of s.parts) {
       if (p.kind === "text") out.push(...(p.label ? [`${p.label} :`] : []), p.text, "");
       if (p.kind === "table") out.push(tableToText(p.columns, p.rows), "");
