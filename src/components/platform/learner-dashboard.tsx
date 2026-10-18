@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { motion, type Variants } from "motion/react";
 import { ArrowRightIcon, CheckIcon, ChevronRightIcon, LockIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Marked } from "@/components/ui/marked";
+import { CountUp } from "@/components/motion/count-up";
 import { displayName, useAuth } from "@/lib/auth/session";
 import { useProgress, useProgressReady, type ProgressState } from "@/lib/progress/store";
 import type { FormationWithModules, Module } from "@/lib/content/types";
@@ -21,6 +23,13 @@ function formatDuration(total: number) {
   const m = total % 60;
   return m ? `${h} h ${String(m).padStart(2, "0")}` : `${h} h`;
 }
+
+// Apparition en cascade : chaque bloc arrive un peu après le précédent.
+const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } } };
+const item: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+};
 
 type ModuleStatus = "done" | "current" | "todo" | "soon";
 
@@ -56,7 +65,7 @@ function StatusDot({ row }: { row: ModuleRow }) {
   const n = row.module.position;
   if (row.status === "done") {
     return (
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform group-hover:scale-105">
         <CheckIcon className="size-4" strokeWidth={3} aria-label="terminé" />
       </span>
     );
@@ -68,7 +77,7 @@ function StatusDot({ row }: { row: ModuleRow }) {
       <span className="relative grid size-9 shrink-0 place-items-center">
         <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
           <circle cx="18" cy="18" r={r} fill="none" strokeWidth="3" className="stroke-primary/20" />
-          <circle
+          <motion.circle
             cx="18"
             cy="18"
             r={r}
@@ -76,7 +85,10 @@ function StatusDot({ row }: { row: ModuleRow }) {
             strokeWidth="3"
             strokeLinecap="round"
             className="stroke-primary"
-            strokeDasharray={`${Math.max(row.ratio, 0.04) * c} ${c}`}
+            strokeDasharray={c}
+            initial={{ strokeDashoffset: c }}
+            animate={{ strokeDashoffset: c * (1 - Math.max(row.ratio, 0.04)) }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
           />
         </svg>
         <span className="text-sm font-semibold tabular-nums text-primary">{n}</span>
@@ -119,10 +131,11 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
     );
   }
 
-  const list = rows(formation, refs, progress);
-  const total = list.length;
-  const done = list.filter((r) => r.status === "done").length;
-  const pct = total ? Math.round((list.reduce((s, r) => s + r.ratio, 0) / total) * 100) : 0;
+  const moduleRows = rows(formation, refs, progress);
+  const total = moduleRows.length;
+  const done = moduleRows.filter((r) => r.status === "done").length;
+  const pct = total ? Math.round((moduleRows.reduce((s, r) => s + r.ratio, 0) / total) * 100) : 0;
+  const shown = ready ? "show" : "hidden";
 
   // Temps restant : les durées connues des étapes des modules ouverts.
   let all = 0;
@@ -145,12 +158,15 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
         <Marked text={`${formation.promise} ${formation.summary}`} />
       </p>
 
-      <div className={cn("mt-6 grid gap-4 lg:grid-cols-[1fr_17rem]", !ready && "invisible")}>
-        <section aria-label="Votre progression" className="grid rounded-lg border bg-card sm:grid-cols-[1fr_auto]">
+      <motion.div variants={list} initial="hidden" animate={shown} className="mt-6 grid gap-4 lg:grid-cols-[1fr_17rem]">
+        <motion.section variants={item} aria-label="Votre progression" className="grid rounded-lg border bg-card sm:grid-cols-[1fr_auto]">
           <div className="p-5">
             <h2 className="text-sm font-semibold">Votre progression</h2>
             <div className="mt-3 flex items-end justify-between gap-4">
-              <p className="text-3xl font-semibold tabular-nums tracking-tight">{pct}&nbsp;%</p>
+              <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                <CountUp value={pct} />
+                &nbsp;%
+              </p>
               <p className="pb-1 text-sm text-muted-foreground tabular-nums">
                 {done} / {total} modules
               </p>
@@ -163,20 +179,29 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
               aria-valuenow={pct}
               className="mt-3 h-2 overflow-hidden rounded-full bg-muted"
             >
-              <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+              <motion.div
+                className="h-full rounded-full bg-primary"
+                initial={{ width: 0 }}
+                animate={{ width: ready ? `${pct}%` : 0 }}
+                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              />
             </div>
           </div>
           {all > 0 && (
             <div className="border-t p-5 sm:min-w-52 sm:border-t-0 sm:border-l">
               <h2 className="text-sm text-muted-foreground">Temps estimé restant</h2>
-              <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight">{formatDuration(left)}</p>
+              <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight"><CountUp value={left} format={formatDuration} /></p>
               <p className="mt-1 text-sm text-muted-foreground">sur {formatDuration(all)} estimées</p>
             </div>
           )}
-        </section>
+        </motion.section>
 
         {final && (
-          <section aria-labelledby="projet-final" className="flex flex-col rounded-lg border bg-card p-5">
+          <motion.section
+            variants={item}
+            aria-labelledby="projet-final"
+            className="group flex flex-col rounded-lg border bg-card p-5 transition-shadow hover:shadow-md"
+          >
             <h2 id="projet-final" className="text-sm font-semibold">
               Votre projet final
             </h2>
@@ -187,26 +212,26 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
               href={`/formations/${formation.slug}`}
               className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-primary hover:underline"
             >
-              En savoir plus <ArrowRightIcon className="size-4" aria-hidden />
+              En savoir plus <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
             </Link>
-          </section>
+          </motion.section>
         )}
-      </div>
+      </motion.div>
 
       <section aria-labelledby="parcours" className="mt-8">
         <h2 id="parcours" className="text-heading">
           Votre parcours
         </h2>
-        <ol className="mt-3 overflow-hidden rounded-lg border bg-card">
-          {list.map((r) => {
+        <motion.ol variants={list} initial="hidden" animate={shown} className="mt-3 overflow-hidden rounded-lg border bg-card">
+          {moduleRows.map((r) => {
             const current = r.status === "current";
             const soon = r.status === "soon";
             return (
-              <li key={r.module.id} className="border-b last:border-b-0">
+              <motion.li variants={item} key={r.module.id} className="border-b last:border-b-0">
                 <Link
                   href={r.href}
                   className={cn(
-                    "flex items-center gap-4 px-4 py-3.5 transition-colors sm:px-5",
+                    "group flex items-center gap-4 px-4 py-3.5 transition-colors sm:px-5",
                     current ? "bg-accent/70 hover:bg-accent" : "hover:bg-muted/60",
                   )}
                 >
@@ -229,12 +254,15 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
                       r.module.durationLabel && <span className="block text-muted-foreground">{r.module.durationLabel}</span>
                     )}
                   </span>
-                  <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <ChevronRightIcon
+                    className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-foreground"
+                    aria-hidden
+                  />
                 </Link>
-              </li>
+              </motion.li>
             );
           })}
-        </ol>
+        </motion.ol>
       </section>
 
       <p className="mt-10 text-caption text-muted-foreground">

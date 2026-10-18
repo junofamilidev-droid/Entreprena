@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { formatPoints } from "@/lib/exercise/self-review";
 import { saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
 import type { ModuleEndContent } from "@/lib/content/types";
+import { celebrate } from "@/components/motion/celebrate";
+import { DrawCheck } from "@/components/motion/draw-check";
 
 export function ModuleEnd({
   progressKey,
@@ -32,6 +34,11 @@ export function ModuleEnd({
   const result = progress[reviewKey]?.inputs?.result as Record<string, string> | undefined;
 
   const passed = result?.passed === "1";
+  // Confettis la première fois que l'apprenant arrive sur son module validé.
+  const firstVisit = ready && passed && !progress[progressKey]?.done;
+  React.useEffect(() => {
+    if (firstVisit) celebrate();
+  }, [firstVisit]);
 
   function finish() {
     saveStep(progressKey, { done: true });
@@ -87,6 +94,9 @@ export function ModuleEnd({
         ) : (
           <>
             <div className="space-y-3">
+              <span className="grid size-14 place-items-center rounded-full bg-primary text-primary-foreground">
+                <DrawCheck className="size-7" delay={0.15} />
+              </span>
               <h1 className="text-title">Module validé</h1>
               <p className="text-lead text-muted-foreground">
                 {moduleLabel} : votre feuille de travail est notée {formatPoints(Number(result.score))} sur 20.

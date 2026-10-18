@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { CircleAlertIcon, CircleCheckIcon, SparklesIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -253,7 +254,10 @@ export function SelfReviewRunner({
               )}
 
               {recorded && result && (
-                <section
+                <motion.section
+                  initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 22 }}
                   role="status"
                   className={cn(
                     "space-y-3 rounded-lg border p-5",
@@ -284,7 +288,7 @@ export function SelfReviewRunner({
                       </Button>
                     )}
                   </div>
-                </section>
+                </motion.section>
               )}
             </div>
           </main>

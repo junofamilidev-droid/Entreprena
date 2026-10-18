@@ -391,3 +391,27 @@
     display: none;
   }
 }
+
+/* Changement de page : l'ancien contenu s'efface vite, le nouveau apparaît en fondu. */
+::view-transition-old(.page) {
+  animation: page-out 120ms ease-in both;
+}
+::view-transition-new(.page) {
+  animation: page-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page),
+  ::view-transition-new(.page) {
+    animation: none;
+  }
+}

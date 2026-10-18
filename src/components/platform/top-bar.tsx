@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDownIcon, SearchIcon } from "lucide-react";
@@ -32,6 +33,20 @@ function SearchBox() {
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(0);
   const listId = React.useId();
+  const input = React.useRef<HTMLInputElement>(null);
+
+  // Ctrl+K (ou ⌘K sur Mac) place le curseur dans la recherche, depuis n'importe quelle page.
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        input.current?.focus();
+        input.current?.select();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const q = normalize(query.trim());
   const results = q ? entries.filter((e) => normalize(`${e.label} ${e.context}`).includes(q)).slice(0, 8) : [];
 
@@ -45,6 +60,7 @@ function SearchBox() {
     <div className="relative w-full max-w-md">
       <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
       <input
+        ref={input}
         type="search"
         role="combobox"
         aria-expanded={open && results.length > 0}
@@ -71,10 +87,22 @@ function SearchBox() {
           if (e.key === "Enter" && results[active]) go(results[active].href);
           if (e.key === "Escape") setOpen(false);
         }}
-        className="h-9 w-full rounded-md border bg-card pr-3 pl-9 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/40"
+        className="peer h-9 w-full rounded-md border bg-card pr-3 pl-9 text-sm transition-shadow outline-none sm:pr-14 placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/40"
       />
+      {!query && (
+        <kbd className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 rounded border bg-muted px-1.5 py-0.5 font-sans text-[0.6875rem] text-muted-foreground peer-focus:opacity-0 sm:block">
+          Ctrl K
+        </kbd>
+      )}
       {open && q && (
-        <ul id={listId} role="listbox" className="absolute top-11 right-0 left-0 z-50 overflow-hidden rounded-md border bg-popover py-1 shadow-md">
+        <motion.ul
+          id={listId}
+          role="listbox"
+          initial={{ opacity: 0, y: -4, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="absolute top-11 right-0 left-0 z-50 origin-top overflow-hidden rounded-md border bg-popover py-1 shadow-md"
+        >
           {results.length === 0 ? (
             <li className="px-3 py-2 text-sm text-muted-foreground">Aucun résultat pour « {query.trim()} ».</li>
           ) : (
@@ -93,7 +121,7 @@ function SearchBox() {
               </li>
             ))
           )}
-        </ul>
+        </motion.ul>
       )}
     </div>
   );

@@ -5,7 +5,7 @@ import { WhereSaved } from "@/components/auth/where-saved";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeftIcon, CheckIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -17,6 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { PromptBlock } from "./prompt-block";
+import { DrawCheck } from "@/components/motion/draw-check";
 import { cn } from "@/lib/utils";
 import { saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
 import type { CheckQuestion, LessonContent } from "@/lib/content/types";
@@ -69,9 +70,14 @@ function QuestionScreen({
       >
         {q.options.map((opt, i) => {
           const id = `q${index}-o${i}`;
+          const wrong = checked && chosen === i && i !== q.answer;
           return (
-            <Label
+            <motion.div
               key={id}
+              animate={wrong ? { x: [0, -7, 7, -5, 5, 0] } : { x: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+            <Label
               htmlFor={id}
               className={cn(
                 "flex cursor-pointer items-start gap-3 rounded-lg border bg-card p-4 text-body leading-snug font-normal transition-colors hover:bg-muted/60",
@@ -83,16 +89,27 @@ function QuestionScreen({
             >
               <RadioGroupItem id={id} value={String(i)} className="mt-0.5" />
               <span className="flex-1">{opt}</span>
-              {checked && i === q.answer && <CheckIcon className="mt-0.5 size-4 text-success" aria-label="bonne réponse" />}
+              {checked && i === q.answer && (
+                <span className="mt-0.5 text-success" role="img" aria-label="bonne réponse">
+                  <DrawCheck className="size-5" />
+                </span>
+              )}
             </Label>
+            </motion.div>
           );
         })}
       </RadioGroup>
       {checked && (
-        <div role="status" className="rounded-lg border-l-2 border-primary bg-muted/50 px-4 py-3 text-body">
+        <motion.div
+          role="status"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="rounded-lg border-l-2 border-primary bg-muted/50 px-4 py-3 text-body"
+        >
           <p className="font-medium">{correct ? "Exact." : "Pas tout à fait."}</p>
           <p className="mt-1 text-muted-foreground">{q.explanation}</p>
-        </div>
+        </motion.div>
       )}
     </div>
   );
@@ -222,10 +239,18 @@ export function LessonReader({
 
             {screen.type === "recap" && (
               <div className="space-y-8">
-                <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                  className="relative space-y-4 overflow-hidden rounded-xl border bg-card p-6 sm:p-8"
+                >
+                  <span className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground">
+                    <DrawCheck className="size-6" delay={0.3} />
+                  </span>
                   <h1 className="text-title">À retenir</h1>
-                  <p className="font-serif text-xl leading-relaxed">{content.recap}</p>
-                </div>
+                  <p className="text-xl leading-relaxed">{content.recap}</p>
+                </motion.div>
                 {content.next && <p className="text-body text-muted-foreground">{content.next}</p>}
                 {content.sourcesHtml && (
                   <Accordion type="single" collapsible className="rounded-lg border px-4">

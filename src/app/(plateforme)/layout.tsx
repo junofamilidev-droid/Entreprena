@@ -1,3 +1,4 @@
+import { ViewTransition } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/platform/app-sidebar";
 import { SearchIndexProvider, type SearchEntry } from "@/components/platform/search-index";
@@ -29,7 +30,9 @@ export default async function PlatformLayout({ children }: LayoutProps<"/">) {
     <SearchIndexProvider entries={entries}>
       <SidebarProvider>
         <AppSidebar formations={formations} />
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+          <ViewTransition default="page">{children}</ViewTransition>
+        </SidebarInset>
       </SidebarProvider>
     </SearchIndexProvider>
   );

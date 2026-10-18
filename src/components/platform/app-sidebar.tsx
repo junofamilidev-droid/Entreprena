@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import {
   AwardIcon,
@@ -31,14 +32,23 @@ import { useProgress } from "@/lib/progress/store";
 import type { FormationWithModules } from "@/lib/content/types";
 
 // L'entrée active porte un trait de couleur à gauche, comme sur la maquette.
+// Le trait glisse d'une entrée à l'autre quand on change de page.
 const ACTIVE =
-  "relative h-10 data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground data-[active=true]:before:absolute data-[active=true]:before:inset-y-1.5 data-[active=true]:before:left-0 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-full data-[active=true]:before:bg-sidebar-primary";
+  "relative h-10 transition-colors data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground";
 
 function NavItem({ href, label, icon, active }: { href: string; label: string; icon: React.ReactNode; active: boolean }) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={active} tooltip={label} className={ACTIVE}>
         <Link href={href}>
+          {active && (
+            <motion.span
+              layoutId="nav-indicator"
+              transition={{ type: "spring", stiffness: 500, damping: 38 }}
+              className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-sidebar-primary"
+              aria-hidden
+            />
+          )}
           {icon} <span>{label}</span>
         </Link>
       </SidebarMenuButton>
