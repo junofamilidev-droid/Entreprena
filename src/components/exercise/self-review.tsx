@@ -1,13 +1,10 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CircleAlertIcon, CircleCheckIcon, SparklesIcon, XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CircleAlertIcon, CircleCheckIcon, SparklesIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { assemble } from "@/lib/exercise/logic";
 import { autoValue, formatPoints, isChecked, scoreReview, type Answers } from "@/lib/exercise/self-review";
@@ -15,6 +12,8 @@ import { saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
 import type { ExerciseContent, SelfReviewContent, SelfReviewItem } from "@/lib/content/types";
 import type { StepLink } from "@/components/reader/lesson-reader";
 import { DeliverableParts } from "./blocks";
+import { ReaderFrame } from "@/components/reader/reader-frame";
+import { stepMinutes } from "@/components/platform/module-progress";
 
 function Html({ html, className }: { html: string; className?: string }) {
   return <div className={cn("prose-lesson overflow-x-auto text-[0.9375rem]", className)} dangerouslySetInnerHTML={{ __html: html }} />;
@@ -76,8 +75,6 @@ export function SelfReviewRunner({
   progressKey,
   exerciseKey,
   exerciseHref,
-  stepTitle,
-  moduleLabel,
   content,
   exercise,
   exitHref,
@@ -132,181 +129,151 @@ export function SelfReviewRunner({
 
   const recorded = result && Number(result.score) === score.score && (result.passed === "1") === score.passed;
 
-  return (
-    <div className="flex min-h-svh flex-col bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-4xl items-center gap-3 px-4">
-          <Button asChild variant="ghost" size="icon-sm" aria-label="Quitter l'auto-correction">
-            <Link href={exitHref}>
-              <XIcon />
-            </Link>
-          </Button>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-caption text-muted-foreground">{moduleLabel}</p>
-            <p className="truncate text-sm font-medium">{stepTitle}</p>
-          </div>
-        </div>
-      </header>
+  const primary = !deposited
+    ? { label: "Revenir à l'exercice", onClick: () => router.push(exerciseHref) }
+    : recorded && score.passed && next
+      ? { label: "Passer à l'étape suivante", onClick: () => router.push(next.href) }
+      : recorded && !score.passed
+        ? { label: "Reprendre mon travail", onClick: () => router.push(exerciseHref) }
+        : { label: "Enregistrer ma note", onClick: record };
 
+  return (
+    <ReaderFrame
+      exitHref={exitHref}
+      progress={deposited ? (recorded ? 100 : 50) : 0}
+      wide
+      primary={ready ? primary : null}
+      footerStart={
+        deposited ? (
+          <p className="flex flex-wrap items-baseline gap-x-2 text-sm text-muted-foreground">
+            <span className="text-xl font-semibold text-foreground tabular-nums">{formatPoints(score.score)}</span>
+            <span>sur {content.total}</span>
+            {score.eliminated ? (
+              <span className="font-medium text-destructive">critère éliminatoire</span>
+            ) : (
+              <span className="hidden sm:inline">validation à {content.passMark}</span>
+            )}
+          </p>
+        ) : null
+      }
+    >
       {ready && !deposited ? (
-        <main className="mx-auto flex w-full max-w-[64ch] flex-1 flex-col justify-center gap-4 px-5 py-16">
+        <div className="space-y-4 py-8">
           <h1 className="text-title">{content.title}</h1>
           <p className="text-lead text-muted-foreground">
-            Le corrigé s&apos;ouvre une fois votre feuille de travail déposée, à la dernière étape de l&apos;exercice.
+            Le corrigé s&apos;ouvre une fois votre travail déposé, à la fin de l&apos;exercice.
           </p>
-          <div className="pt-2">
-            <Button asChild size="lg">
-              <Link href={exerciseHref}>Revenir à l&apos;exercice</Link>
-            </Button>
-          </div>
-        </main>
+        </div>
       ) : (
-        <>
-          <main className="flex-1 px-5 py-10 sm:py-12">
-            <div className="mx-auto max-w-3xl space-y-8">
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Sur {content.total} points{content.duration ? ` · ${content.duration}` : ""}
-                </p>
-                <h1 className="text-title">{content.title}</h1>
-                <Html html={content.intro} className="text-body" />
-              </div>
+        <div className="space-y-10">
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Sur {content.total} points
+              {stepMinutes(content.duration) && <span className="ml-3">{stepMinutes(content.duration)}</span>}
+            </p>
+            <h1 className="text-title">{content.title}</h1>
+            <Html html={content.intro} className="text-body" />
+          </div>
 
-              <ol className="space-y-6">
-                {content.criteria.map((c, i) => {
-                  const cs = score.criteria[i];
-                  const mine = c.sources?.length ? assemble(exercise, inputs, [{ title: c.title, sources: c.sources }])[0] : null;
-                  return (
-                    <li key={c.id} className="rounded-lg border bg-card">
-                      <div className="flex items-start justify-between gap-4 border-b px-4 py-3 sm:px-5">
-                        <div className="space-y-1">
-                          <h2 className="font-semibold">
-                            {i + 1}. {c.title}
-                          </h2>
-                          {c.help && <p className="text-sm text-muted-foreground">{c.help}</p>}
-                        </div>
-                        <span className="shrink-0 font-mono text-sm tabular-nums">
-                          {formatPoints(cs.score)} / {formatPoints(cs.max)}
-                        </span>
-                      </div>
-                      <div className="space-y-4 px-4 py-4 sm:px-5">
-                        {mine && (
-                          <details className="rounded-md border border-dashed px-3 py-2">
-                            <summary className="cursor-pointer text-sm font-medium">Ma copie</summary>
-                            <div className="mt-3 space-y-3">
-                              <DeliverableParts parts={mine.parts} />
-                            </div>
-                          </details>
-                        )}
-                        <ul className="divide-y">
-                          {c.items.map((it) => {
-                            const blocked = Boolean(it.requires) && !value(byId.get(it.requires!) ?? { id: it.requires! });
-                            return (
-                              <ItemRow
-                                key={it.id}
-                                item={it}
-                                checked={value(it) && !blocked}
-                                disabled={blocked}
-                                auto={isAuto(it)}
-                                onChange={(v) => set(it.id, v)}
-                              />
-                            );
-                          })}
-                        </ul>
-                        {c.detail && (
-                          <details className="rounded-md bg-muted/40 px-3 py-2">
-                            <summary className="cursor-pointer text-sm font-medium">Corrigé</summary>
-                            <Html html={c.detail} className="mt-2" />
-                          </details>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-
-              <section className="rounded-lg border border-destructive/30 bg-card">
-                <div className="space-y-1 border-b px-4 py-3 sm:px-5">
-                  <h2 className="font-semibold">{content.eliminatory.title}</h2>
-                  {content.eliminatory.help && <p className="text-sm text-muted-foreground">{content.eliminatory.help}</p>}
-                </div>
-                <ul className="divide-y px-4 py-4 sm:px-5">
-                  {content.eliminatory.items.map((it) => (
-                    <ItemRow
-                      key={it.id}
-                      item={it}
-                      checked={value(it)}
-                      disabled={false}
-                      auto={isAuto(it)}
-                      danger
-                      onChange={(v) => set(it.id, v)}
-                    />
-                  ))}
-                </ul>
-              </section>
-
-              {content.overview && (
-                <section className="space-y-2 rounded-lg border-l-2 border-primary bg-muted/40 px-4 py-3">
-                  <h2 className="font-semibold">{content.overview.title}</h2>
-                  <Html html={content.overview.html} />
-                </section>
-              )}
-
-              {recorded && result && (
-                <section
-                  role="status"
-                  className={cn(
-                    "space-y-3 rounded-lg border p-5",
-                    score.passed ? "border-success/40 bg-success/10" : "border-warning/50 bg-warning/10",
-                  )}
-                >
-                  <p className="flex items-center gap-2 text-heading">
-                    {score.passed ? (
-                      <CircleCheckIcon className="size-6 text-success" aria-hidden />
-                    ) : (
-                      <CircleAlertIcon className="size-6 text-warning" aria-hidden />
-                    )}
-                    {formatPoints(score.score)} sur {content.total} : {score.passed ? "copie validée" : "copie à reprendre"}
-                  </p>
-                  <p className="text-body">
-                    {score.passed
-                      ? "Votre note est enregistrée. Vous pouvez obtenir votre attestation."
-                      : score.eliminated
-                        ? "Un critère éliminatoire est coché : la copie revient à vous, quelle que soit la note. Corrigez la phrase en cause dans l'exercice, puis refaites l'auto-correction."
-                        : `Il faut ${content.passMark} sur ${content.total}. Complétez votre feuille de travail dans l'exercice, puis refaites l'auto-correction.`}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {score.passed && next ? (
-                      <Button onClick={() => router.push(next.href)}>Obtenir mon attestation</Button>
-                    ) : (
-                      <Button asChild>
-                        <Link href={exerciseHref}>Reprendre ma feuille de travail</Link>
-                      </Button>
-                    )}
+          <ol className="space-y-10">
+            {content.criteria.map((c, i) => {
+              const cs = score.criteria[i];
+              const mine = c.sources?.length ? assemble(exercise, inputs, [{ title: c.title, sources: c.sources }])[0] : null;
+              return (
+                <li key={c.id} className="space-y-4 border-t pt-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h2 className="text-heading">
+                        {i + 1}. {c.title}
+                      </h2>
+                      {c.help && <p className="text-sm text-muted-foreground">{c.help}</p>}
+                    </div>
+                    <span className="shrink-0 text-base font-medium tabular-nums">
+                      {formatPoints(cs.score)} / {formatPoints(cs.max)}
+                    </span>
                   </div>
-                </section>
-              )}
-            </div>
-          </main>
+                  {mine && (
+                    <details className="border-l-2 pl-4">
+                      <summary className="cursor-pointer text-sm font-medium">Ma copie</summary>
+                      <div className="mt-3 space-y-3">
+                        <DeliverableParts parts={mine.parts} />
+                      </div>
+                    </details>
+                  )}
+                  <ul className="divide-y">
+                    {c.items.map((it) => {
+                      const blocked = Boolean(it.requires) && !value(byId.get(it.requires!) ?? { id: it.requires! });
+                      return (
+                        <ItemRow
+                          key={it.id}
+                          item={it}
+                          checked={value(it) && !blocked}
+                          disabled={blocked}
+                          auto={isAuto(it)}
+                          onChange={(v) => set(it.id, v)}
+                        />
+                      );
+                    })}
+                  </ul>
+                  {c.detail && (
+                    <details className="border-l-2 border-brand pl-4">
+                      <summary className="cursor-pointer text-sm font-medium">Corrigé</summary>
+                      <Html html={c.detail} className="mt-2" />
+                    </details>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
 
-          <footer className="sticky bottom-0 border-t bg-background/95 backdrop-blur">
-            <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3">
-              <div className="flex items-baseline gap-2">
-                <span className="font-mono text-xl tabular-nums">{formatPoints(score.score)}</span>
-                <span className="text-sm text-muted-foreground">/ {content.total}</span>
-                {score.eliminated ? (
-                  <Badge variant="destructive">Critère éliminatoire</Badge>
-                ) : (
-                  <span className="hidden text-sm text-muted-foreground sm:inline">validation à {content.passMark}</span>
-                )}
-              </div>
-              <Button size="lg" onClick={record}>
-                {recorded ? "Note enregistrée" : "Enregistrer ma note"}
-              </Button>
+          <section className="space-y-4 border-t-2 border-destructive/50 pt-6">
+            <div className="space-y-1">
+              <h2 className="text-heading">{content.eliminatory.title}</h2>
+              {content.eliminatory.help && <p className="text-sm text-muted-foreground">{content.eliminatory.help}</p>}
             </div>
-          </footer>
-        </>
+            <ul className="divide-y">
+              {content.eliminatory.items.map((it) => (
+                <ItemRow
+                  key={it.id}
+                  item={it}
+                  checked={value(it)}
+                  disabled={false}
+                  auto={isAuto(it)}
+                  danger
+                  onChange={(v) => set(it.id, v)}
+                />
+              ))}
+            </ul>
+          </section>
+
+          {content.overview && (
+            <section className="space-y-2 border-l-2 border-brand pl-4">
+              <h2 className="font-semibold">{content.overview.title}</h2>
+              <Html html={content.overview.html} />
+            </section>
+          )}
+
+          {recorded && result && (
+            <section role="status" className="space-y-3 border-t pt-6">
+              <p className="flex items-center gap-2 text-heading">
+                {score.passed ? (
+                  <CircleCheckIcon className="size-6 text-brand" aria-hidden />
+                ) : (
+                  <CircleAlertIcon className="size-6 text-warning" aria-hidden />
+                )}
+                {formatPoints(score.score)} sur {content.total} : {score.passed ? "copie validée" : "copie à reprendre"}
+              </p>
+              <p className="text-body text-muted-foreground">
+                {score.passed
+                  ? "Votre note est enregistrée. L'étape suivante vous donne votre attestation."
+                  : score.eliminated
+                    ? "Un critère éliminatoire est coché : la copie revient à vous, quelle que soit la note. Corrigez la phrase en cause dans l'exercice, puis refaites l'auto-correction."
+                    : `Il faut ${content.passMark} sur ${content.total}. Complétez votre feuille de travail dans l'exercice, puis refaites l'auto-correction.`}
+              </p>
+            </section>
+          )}
+        </div>
       )}
-    </div>
+    </ReaderFrame>
   );
 }

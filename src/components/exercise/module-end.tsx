@@ -1,10 +1,9 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AwardIcon, PrinterIcon, XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AwardIcon, PrinterIcon } from "lucide-react";
+import { ReaderFrame } from "@/components/reader/reader-frame";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPoints } from "@/lib/exercise/self-review";
@@ -15,8 +14,6 @@ export function ModuleEnd({
   progressKey,
   reviewKey,
   reviewHref,
-  stepTitle,
-  moduleLabel,
   content,
   exitHref,
 }: {
@@ -47,34 +44,23 @@ export function ModuleEnd({
     router.push(exitHref);
   }
 
-  return (
-    <div className="flex min-h-svh flex-col bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur print:hidden">
-        <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
-          <Button asChild variant="ghost" size="icon-sm" aria-label="Quitter">
-            <Link href={exitHref}>
-              <XIcon />
-            </Link>
-          </Button>
-          <div className="min-w-0">
-            <p className="truncate text-caption text-muted-foreground">{moduleLabel}</p>
-            <p className="truncate text-sm font-medium">{stepTitle}</p>
-          </div>
-        </div>
-      </header>
+  const primary = !ready
+    ? null
+    : !result
+      ? { label: "Faire l'auto-correction", onClick: () => router.push(reviewHref) }
+      : !passed
+        ? { label: "Revoir l'auto-correction", onClick: () => router.push(reviewHref) }
+        : { label: "Terminer le module", onClick: finish };
 
-      <main className="mx-auto flex w-full max-w-[64ch] flex-1 flex-col justify-center gap-6 px-5 py-14">
+  return (
+    <ReaderFrame exitHref={exitHref} progress={passed ? 100 : 0} primary={primary}>
+      <div className="space-y-6">
         {!ready ? null : !result ? (
           <>
             <h1 className="text-title">{content.title}</h1>
             <p className="text-lead text-muted-foreground">
               L&apos;attestation s&apos;obtient après l&apos;auto-correction de votre feuille de travail.
             </p>
-            <div>
-              <Button asChild size="lg">
-                <Link href={reviewHref}>Faire l&apos;auto-correction</Link>
-              </Button>
-            </div>
           </>
         ) : !passed ? (
           <>
@@ -84,14 +70,6 @@ export function ModuleEnd({
               {result.eliminated === "1" ? ", avec un critère éliminatoire" : ""}.
             </p>
             <div className="prose-lesson" dangerouslySetInnerHTML={{ __html: content.retry }} />
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link href={reviewHref}>Revoir l&apos;auto-correction</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href={exitHref}>Revenir au module</Link>
-              </Button>
-            </div>
           </>
         ) : (
           <>
@@ -106,31 +84,27 @@ export function ModuleEnd({
               <Label htmlFor="nom" className="text-base font-semibold">
                 Prénom et nom
               </Label>
-              <Input
-                id="nom"
-                value={name}
-                autoComplete="name"
-                onChange={(e) => saveInput(progressKey, "nom", e.target.value)}
-                className="bg-card"
-              />
+              <Input id="nom" value={name} autoComplete="name" onChange={(e) => saveInput(progressKey, "nom", e.target.value)} />
             </div>
-            <article className="print-area space-y-5 rounded-lg border bg-card px-6 py-8 shadow-xs sm:px-10 sm:py-10">
-              <AwardIcon className="size-8 text-primary" aria-hidden />
-              <p className="text-caption tracking-wide text-muted-foreground uppercase">Attestation · version de test</p>
-              <p className="font-serif text-xl leading-relaxed">{text}</p>
+            <article className="print-area space-y-5 border-y-2 border-foreground px-1 py-8">
+              <AwardIcon className="size-8 text-brand" aria-hidden />
+              <p className="text-sm text-muted-foreground">Attestation, version de test</p>
+              <p className="text-xl leading-relaxed">{text}</p>
               <p className="text-caption text-muted-foreground">{content.notice}</p>
             </article>
-            <div className="flex flex-wrap gap-3 print:hidden">
-              <Button size="lg" variant="outline" onClick={() => window.print()} disabled={!name.trim()}>
-                <PrinterIcon /> Imprimer ou PDF
-              </Button>
-              <Button size="lg" onClick={finish}>
-                Terminer le module
-              </Button>
+            <div className="print:hidden">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                disabled={!name.trim()}
+                className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-brand underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <PrinterIcon className="size-4" aria-hidden /> Imprimer ou enregistrer en PDF
+              </button>
             </div>
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </ReaderFrame>
   );
 }

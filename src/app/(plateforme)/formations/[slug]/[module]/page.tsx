@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { WhereSaved } from "@/components/auth/where-saved";
+import Link from "next/link";
+import { ArrowLeftIcon, ExternalLinkIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/platform/page-header";
-import { ResumePanel, StepList } from "@/components/platform/module-progress";
+import { ModuleProgressBar, StepTrail } from "@/components/platform/module-progress";
 import { getFormation, getModule, listFormations } from "@/lib/content/source";
 import { moduleRef } from "@/lib/content/refs";
 
@@ -33,48 +34,55 @@ export default async function ModulePage(props: Props) {
     <>
       <PageHeader
         crumbs={[
-          { label: "Tableau de bord", href: "/" },
+          { label: "Ma formation", href: "/app" },
           { label: formation.title, href: `/formations/${formation.slug}` },
           { label: `Module ${mod.position}` },
         ]}
       />
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
+      <div className="mx-auto w-full max-w-2xl px-4 py-12 sm:px-8 sm:py-16">
+        <Link href="/app" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeftIcon className="size-4" aria-hidden /> Ma formation
+        </Link>
+        <p className="mt-8 text-sm text-muted-foreground">
+          Module {mod.position}
+          {mod.durationLabel && <span className="ml-3">{mod.durationLabel}</span>}
+        </p>
+        <h1 className="mt-2 text-title text-balance">{mod.title}</h1>
+
         {!ref || ref.steps.length === 0 ? (
-          <div className="max-w-2xl space-y-3">
-            <p className="text-sm text-muted-foreground">Module {mod.position}</p>
-            <h1 className="text-title">{mod.title}</h1>
-            <p className="text-lead text-muted-foreground">Ce module n&apos;est pas encore ouvert.</p>
-          </div>
+          <p className="mt-6 text-lead text-muted-foreground">Ce module n&apos;est pas encore ouvert.</p>
         ) : (
           <>
-            <ResumePanel refData={ref} />
-            <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-14">
-              <section aria-labelledby="etapes" className="min-w-0">
-                <div className="flex items-baseline justify-between gap-4">
-                  <h2 id="etapes" className="text-heading">Les étapes</h2>
-                  {mod.durationLabel && <span className="text-sm text-muted-foreground">{mod.durationLabel}</span>}
-                </div>
-                <div className="mt-4">
-                  <StepList refData={ref} />
-                </div>
-              </section>
-              <aside className="space-y-6">
-                <section className="space-y-2">
-                  <h2 className="text-sm font-semibold">Le cas</h2>
-                  <p className="text-sm text-muted-foreground">{mod.summary}</p>
-                </section>
-                <section className="space-y-2 border-t pt-6">
-                  <h2 className="text-sm font-semibold">Votre livrable</h2>
-                  <p className="text-sm text-muted-foreground">{mod.deliverable}</p>
-                </section>
-                <section className="space-y-2 border-t pt-6">
-                  <h2 className="text-sm font-semibold">Votre progression</h2>
-                  <p className="text-sm text-muted-foreground">
-                    <WhereSaved subject="Elle est" />
-                  </p>
-                </section>
-              </aside>
-            </div>
+            <ModuleProgressBar refData={ref} className="mt-6" />
+            <section aria-label="Étapes du module" className="mt-10">
+              <StepTrail refData={ref} />
+            </section>
+
+            <section aria-labelledby="livrable" className="mt-14 border-t pt-8">
+              <h2 id="livrable" className="text-base font-semibold">Votre livrable</h2>
+              <p className="mt-2 text-body text-muted-foreground">{mod.deliverable}</p>
+              <p className="mt-1 text-sm text-subtle-foreground">Il se remplit pendant l&apos;exercice.</p>
+            </section>
+
+            <section aria-labelledby="tuteur" className="mt-8 border-t pt-8">
+              <h2 id="tuteur" className="text-base font-semibold">Tuteur IA</h2>
+              <p className="mt-2 text-body text-muted-foreground">
+                Un assistant externe pour obtenir un indice quand vous bloquez. Il ne donne pas les réponses.
+                N&apos;y collez jamais de données réelles d&apos;un client.
+              </p>
+              {formation.tutorUrl ? (
+                <a
+                  href={formation.tutorUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand underline underline-offset-4"
+                >
+                  Ouvrir le tuteur <ExternalLinkIcon className="size-3.5" aria-hidden />
+                </a>
+              ) : (
+                <p className="mt-1 text-sm text-subtle-foreground">Le lien sera ajouté prochainement.</p>
+              )}
+            </section>
           </>
         )}
       </div>

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Connexion" };
 export default function SignInPage() {
   return (
     <>
-      <PageHeader crumbs={[{ label: "Tableau de bord", href: "/" }, { label: "Connexion" }]} />
+      <PageHeader crumbs={[{ label: "Ma formation", href: "/app" }, { label: "Connexion" }]} />
       <div className="mx-auto w-full max-w-md px-4 py-10 sm:py-16">
         <header className="mb-8 space-y-2">
           <h1 className="text-title">Votre compte</h1>

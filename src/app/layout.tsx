@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/inter";
-import "@fontsource-variable/source-serif-4";
-import "@fontsource-variable/jetbrains-mono";
+import "@fontsource-variable/ibm-plex-sans";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme/theme-provider";

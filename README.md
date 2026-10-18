@@ -9,7 +9,12 @@ Première formation : « Auditeur augmenté par l'IA ».
 
 Priorité actuelle : l'interface (pas de backend pour l'instant).
 
-- Plateforme : tableau de bord, catalogue, page de formation, diagnostic, thème clair et sombre
+- Plateforme : « Ma formation » (/app, une seule action : reprendre), page du module (étapes reliées par une ligne),
+  lecteur commun à toutes les étapes (croix, barre fine, « Continuer », écran « Étape terminée »), catalogue,
+  page de formation, diagnostic, thème clair et sombre. Vocabulaire de l'interface : formation, module, étape.
+- Système de design : IBM Plex Sans et Plex Mono, une seule couleur d'action (bleu de Prusse #1E3A8A),
+  filets plutôt que cartes ; jetons dans `src/app/globals.css`, maquettes dans `docs/maquettes/`.
+  Version précédente conservée dans la branche `sauvegarde/avant-refonte`.
 - Lecteur de leçon et exercice guidé (blocs : texte, données à copier, saisie, contrôle de valeurs,
   tableau à lignes, relecture automatique, livrable assemblé), progression et saisies enregistrées sur l'appareil
 - Auto-correction (grille sur 20, corrigé ouvert après dépôt, critères éliminatoires) et attestation de fin de module

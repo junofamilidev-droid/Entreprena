@@ -33,7 +33,7 @@ export default async function FormationPage(props: PageProps<"/formations/[slug]
 
   return (
     <>
-      <PageHeader crumbs={[{ label: "Tableau de bord", href: "/" }, { label: formation.title }]} />
+      <PageHeader crumbs={[{ label: "Ma formation", href: "/app" }, { label: formation.title }]} />
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
         <header className="max-w-3xl space-y-4">
           <p className="text-sm text-muted-foreground">
