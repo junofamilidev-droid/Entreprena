@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquettes de structure</title>
+<style>
+  /* Maquettes en fil de fer : structure seule, volontairement sans style. */
+  :root { --ink: #111; --line: #999; --soft: #e9e9e9; --note: #555; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 32px 16px 64px; font: 15px/1.5 system-ui, sans-serif; color: var(--ink); background: #fff; }
+  main { max-width: 1040px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 56px 0 6px; }
+  p.lead { margin: 0 0 8px; color: var(--note); }
+  .frame { border: 2px solid var(--ink); display: grid; grid-template-columns: 200px 1fr; min-height: 520px; background: #fff; }
+  .frame.full { grid-template-columns: 1fr; }
+  .side { border-right: 1px dashed var(--line); padding: 16px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .side .item { border: 1px solid var(--line); padding: 6px 8px; font-size: 13px; }
+  .side .item.on { border-width: 2px; border-color: var(--ink); font-weight: 600; }
+  .side .spacer { flex: 1; }
+  .body { padding: 40px 48px; display: flex; flex-direction: column; gap: 20px; }
+  .box { border: 1px solid var(--line); padding: 10px 12px; font-size: 13px; color: var(--note); }
+  .muted { color: var(--note); font-size: 13px; }
+  .title { font-size: 24px; font-weight: 700; }
+  .bar { height: 10px; border: 1px solid var(--ink); position: relative; }
+  .bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
+  .btn { border: 2px solid var(--ink); padding: 14px 18px; font-weight: 700; display: inline-block; }
+  .btn.big { display: block; padding: 22px; font-size: 17px; }
+  .fold { border-top: 2px dashed #c00; color: #c00; font-size: 12px; padding-top: 4px; }
+  .note { font-size: 12px; color: #c00; }
+  .steps { list-style: none; margin: 0; padding: 0; position: relative; }
+  .steps::before { content: ""; position: absolute; left: 13px; top: 14px; bottom: 14px; border-left: 2px solid var(--line); }
+  .steps li { position: relative; display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; }
+  .dot { width: 28px; height: 28px; border: 2px solid var(--line); border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 12px; z-index: 1; }
+  .done .dot { border-color: var(--ink); background: var(--ink); color: #fff; }
+  .now .dot { border-color: var(--ink); border-width: 3px; }
+  .now .name { font-weight: 700; }
+  .next .name { color: var(--note); }
+  .now { outline: 2px solid var(--ink); outline-offset: 0; padding-left: 0; padding-right: 12px; }
+  .action { font-size: 13px; border: 1px solid var(--line); padding: 4px 10px; }
+  .now .action { border: 2px solid var(--ink); font-weight: 700; padding: 10px 14px; }
+  .reader { display: grid; grid-template-rows: auto auto 1fr auto; min-height: 520px; }
+  .reader .top { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+  .x { width: 28px; height: 28px; border: 1px solid var(--line); display: grid; place-items: center; }
+  .thin { height: 3px; background: var(--soft); position: relative; }
+  .thin i { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
+  .center { max-width: 560px; width: 100%; margin: 0 auto; padding: 32px 16px; display: flex; flex-direction: column; gap: 14px; }
+  .lines span { display: block; height: 10px; background: var(--soft); margin: 8px 0; }
+  .bottom { display: flex; justify-content: flex-end; padding: 14px 16px; border-top: 1px dashed var(--line); }
+  .check { width: 56px; height: 56px; border: 3px solid var(--ink); border-radius: 50%; display: grid; place-items: center; font-size: 26px; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .mobile { width: 360px; border: 2px solid var(--ink); }
+  .mobile .body { padding: 24px 16px; }
+  ol.notes { font-size: 13px; color: var(--note); padding-left: 20px; }
+  footer.legal { border-top: 1px dashed var(--line); padding-top: 12px; font-size: 12px; color: var(--note); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Maquettes de structure : formation, module, lecteur</h1>
+  <p class="lead">Structure seule, sans couleurs ni typographies. Le contenu des étapes n'est pas modifié. Les pointillés rouges marquent la ligne de flottaison sur un ordinateur portable (environ 700 px de haut).</p>
+
+  <h2>1. Ma formation (accueil de l'apprenant)</h2>
+  <p class="lead">Une seule action au premier regard : reprendre l'étape en cours.</p>
+  <div class="frame">
+    <nav class="side">
+      <div class="item">Entreprena · version de test</div>
+      <div class="item on">Ma formation</div>
+      <div class="item">Catalogue</div>
+      <div class="item">Donner mon avis</div>
+      <div class="spacer"></div>
+      <div class="item">Se connecter / mon compte</div>
+    </nav>
+    <div class="body">
+      <div class="muted">Formation</div>
+      <div class="title">Auditeur augmenté par l'IA</div>
+      <div class="muted">Module 1 · Revue analytique assistée par l'IA</div>
+      <div class="bar"><i style="width:14%"></i></div>
+      <div class="muted">1 étape terminée sur 7</div>
+      <div class="btn big">Reprendre : Faire calculer, puis contrôler · 6 min</div>
+      <div class="fold">ligne de flottaison : rien d'autre au-dessus</div>
+      <div class="box">Lien discret : « Voir toutes les étapes du module » (mène à la page du module)</div>
+      <footer class="legal">Pied de page : version de test · l'attestation n'a pas de valeur officielle · usage de votre adresse email</footer>
+    </div>
+  </div>
+  <ol class="notes">
+    <li>Les 7 cases numérotées, la liste « Dans ce module », les blocs Diagnostic, Livrable, Tuteur IA, « Mes formations » et « Autres formations » disparaissent de cet écran.</li>
+    <li>Le temps affiché est celui de l'étape à reprendre. Si l'apprenant n'a rien commencé, le bouton devient « Commencer : Ai-je le droit ? · 6 min ».</li>
+    <li>Plusieurs formations commencées : la plus récente s'affiche ; les autres se retrouvent depuis le catalogue.</li>
+  </ol>
+
+  <h2>1 bis. Ma formation sur mobile</h2>
+  <div class="row">
+    <div class="mobile">
+      <div class="box" style="border:0;border-bottom:1px dashed #999">☰ Menu · Ma formation</div>
+      <div class="body">
+        <div class="muted">Formation</div>
+        <div class="title" style="font-size:20px">Auditeur augmenté par l'IA</div>
+        <div class="muted">Module 1 · Revue analytique assistée par l'IA</div>
+        <div class="bar"><i style="width:14%"></i></div>
+        <div class="muted">1 étape terminée sur 7</div>
+        <div class="btn big">Reprendre : Faire calculer, puis contrôler · 6 min</div>
+        <div class="fold">ligne de flottaison mobile</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>2. Page du module</h2>
+  <p class="lead">Les étapes en colonne, reliées par une ligne. Une seule action par étape ; l'étape en cours porte l'action principale.</p>
+  <div class="frame">
+    <nav class="side">
+      <div class="item">Entreprena · version de test</div>
+      <div class="item on">Ma formation</div>
+      <div class="item">Catalogue</div>
+      <div class="item">Donner mon avis</div>
+      <div class="spacer"></div>
+      <div class="item">Se connecter / mon compte</div>
+    </nav>
+    <div class="body">
+      <div class="muted">← Ma formation</div>
+      <div class="muted">Module 1 · environ 1 h 30</div>
+      <div class="title">Revue analytique assistée par l'IA</div>
+      <div class="bar"><i style="width:14%"></i></div>
+      <div class="muted">1 étape terminée sur 7</div>
+      <ol class="steps">
+        <li class="done"><span class="dot">✓</span><span class="name">Ai-je le droit ? <span class="muted">· 6 min · terminée</span></span><span class="action">Revoir</span></li>
+        <li class="now"><span class="dot">2</span><span class="name">Faire calculer, puis contrôler <span class="muted">· 6 min · en cours</span></span><span class="action">Reprendre</span></li>
+        <li class="next"><span class="dot">3</span><span class="name">Des variations aux hypothèses <span class="muted">· 7 min</span></span><span class="action">Ouvrir</span></li>
+        <li class="next"><span class="dot">4</span><span class="name">Écrire la feuille de travail et tracer <span class="muted">· 6 min</span></span><span class="action">Ouvrir</span></li>
+        <li class="next"><span class="dot">5</span><span class="name">Exercice : Nordelia Distribution <span class="muted">· 60 min</span></span><span class="action">Ouvrir</span></li>
+        <li class="next"><span class="dot">6</span><span class="name">Auto-correction <span class="muted">· 15 min (à confirmer)</span></span><span class="action">Ouvrir</span></li>
+        <li class="next"><span class="dot">7</span><span class="name">Fin du module <span class="muted">· 2 min (à confirmer)</span></span><span class="action">Ouvrir</span></li>
+      </ol>
+      <div class="box"><b>Votre livrable</b> : feuille de travail (variations significatives, hypothèses, éléments à obtenir, conclusion) et journal d'usage de l'IA. Il se remplit pendant l'exercice.</div>
+      <div class="box"><b>Tuteur IA</b> : un assistant externe pour obtenir un indice. Il ne donne pas les réponses. [Bouton « Ouvrir le tuteur » quand le lien sera branché]</div>
+      <footer class="legal">Pied de page : mentions légales</footer>
+    </div>
+  </div>
+  <ol class="notes">
+    <li>Statut visible en texte et en forme, pas seulement en couleur : coche pleine (terminée), cercle épais et ligne encadrée (en cours), cercle fin et texte gris (à faire, mais cliquable).</li>
+    <li>Plus de type d'étape affiché (« Leçon », « Exercice guidé ») : tout est « étape ». Le titre suffit à distinguer l'exercice.</li>
+    <li>Le livrable et le tuteur, retirés de l'accueil, viennent ici, sous la liste.</li>
+  </ol>
+
+  <h2>3. Lecteur d'étape</h2>
+  <p class="lead">Croix pour quitter, barre fine, contenu centré, « Continuer » en bas à droite. Rien d'autre.</p>
+  <div class="frame full reader">
+    <div class="top"><span class="x">✕</span><span class="muted">(la croix ramène à la page du module)</span></div>
+    <div class="thin"><i style="width:40%"></i></div>
+    <div class="center">
+      <div class="title" style="font-size:22px">Trois contrôles, trois minutes</div>
+      <div class="lines"><span></span><span></span><span style="width:85%"></span><span></span><span style="width:60%"></span></div>
+      <div class="box">Bloc prompt à copier, quand l'écran en contient un (bouton « Copier »)</div>
+      <div class="lines"><span></span><span style="width:70%"></span></div>
+    </div>
+    <div class="bottom"><span class="btn">Continuer</span></div>
+  </div>
+  <ol class="notes">
+    <li>Retirés : le nom du module et de l'étape en en-tête, le compteur « 3 / 7 », le bouton « Retour ». Le retour en arrière reste possible au clavier (flèche gauche) ; voir la question 3.</li>
+    <li>Les questions de vérification gardent le même cadre : le bouton en bas à droite devient « Vérifier », puis « Continuer ».</li>
+    <li>L'exercice suit le même cadre : la barre fine remplace la rangée « Mission, Anonymisez… » ; le titre de chaque partie reste en haut du contenu.</li>
+  </ol>
+
+  <h2>4. Fin d'étape</h2>
+  <p class="lead">Une coche, « Étape terminée », ce qui a été appris, le nom de l'étape suivante et un bouton pour y aller.</p>
+  <div class="frame full reader">
+    <div class="top"><span class="x">✕</span></div>
+    <div class="thin"><i style="width:100%"></i></div>
+    <div class="center" style="align-items:flex-start;justify-content:center">
+      <div class="check">✓</div>
+      <div class="title" style="font-size:22px">Étape terminée</div>
+      <div class="muted">Ce que vous avez appris (le texte « À retenir » de l'étape, 2 ou 3 lignes)</div>
+      <div class="lines" style="width:100%"><span></span><span></span><span style="width:55%"></span></div>
+      <div class="muted" style="margin-top:12px">Étape suivante</div>
+      <div><b>Faire calculer, puis contrôler</b> · 6 min</div>
+    </div>
+    <div class="bottom"><span class="btn">Passer à l'étape suivante</span></div>
+  </div>
+  <ol class="notes">
+    <li>À la dernière étape du module, le bouton devient « Revenir au module ».</li>
+    <li>Les sources de l'étape passent dans un lien discret « Sources » sous le texte ; voir la question 4.</li>
+  </ol>
+</main>
+</body>
+</html>
