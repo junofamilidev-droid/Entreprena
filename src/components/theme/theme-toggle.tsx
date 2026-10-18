@@ -2,21 +2,20 @@
 
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 
-// Bascule clair / sombre, discrète, dans le pied de page.
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const dark = resolvedTheme === "dark";
   return (
-    <button
-      type="button"
+    <SidebarMenuButton
       onClick={() => setTheme(dark ? "light" : "dark")}
-      className="inline-flex min-h-6 items-center gap-1.5 rounded-sm text-caption text-subtle-foreground hover:text-foreground"
+      tooltip={dark ? "Passer en thème clair" : "Passer en thème sombre"}
     >
-      <SunIcon className="hidden size-3.5 dark:block" aria-hidden />
-      <MoonIcon className="size-3.5 dark:hidden" aria-hidden />
+      <SunIcon className="hidden dark:block" />
+      <MoonIcon className="dark:hidden" />
       <span className="dark:hidden">Thème sombre</span>
       <span className="hidden dark:inline">Thème clair</span>
-    </button>
+    </SidebarMenuButton>
   );
 }

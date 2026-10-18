@@ -41,7 +41,7 @@ export function submitWith(handler: (form: FormData) => unknown) {
 
 /** Adresse de retour : une page du site uniquement. */
 function safeNext(raw: string | null) {
-  return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/app";
+  return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
 }
 
 function Field({

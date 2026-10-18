@@ -29,7 +29,7 @@ export function StepView({
 }) {
   const current = steps[index];
   const after = steps[index + 1];
-  const next = after ? { href: hrefOf(after), title: after.title, duration: after.content.duration ?? null } : null;
+  const next = after ? { href: hrefOf(after), title: after.title } : null;
   const keyOf = (stepSlug: string) => `${keyPrefix}/${stepSlug}`;
   const common = { stepTitle: current.title, moduleLabel, exitHref };
 

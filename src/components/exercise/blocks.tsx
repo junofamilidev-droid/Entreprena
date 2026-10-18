@@ -455,7 +455,7 @@ function DeliverableBlock({ block, ctx }: { block: Block<"deliverable">; ctx: Bl
         <h2 className="text-heading">{block.title}</h2>
         {sections.map((s) => (
           <section key={s.title} className="space-y-2">
-            <h3 className="text-base font-semibold">
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               {s.number ? `${s.number}. ` : ""}
               {s.title}
             </h3>
@@ -472,7 +472,7 @@ function DeliverableBlock({ block, ctx }: { block: Block<"deliverable">; ctx: Bl
 export function ExerciseBlockView({ block, ctx }: { block: ExerciseBlock; ctx: BlockContext }) {
   switch (block.type) {
     case "text":
-      return <div className="prose-lesson max-w-[66ch]" dangerouslySetInnerHTML={{ __html: block.html }} />;
+      return <div className="prose-lesson" dangerouslySetInnerHTML={{ __html: block.html }} />;
     case "data":
       return <DataBlock block={block} />;
     case "prompt": {

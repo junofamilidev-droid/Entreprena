@@ -66,7 +66,7 @@ export function AccountPanel() {
     await flushProgress();
     await supabase().auth.signOut();
     toast.success("Vous êtes déconnecté. Votre progression reste dans votre compte.");
-    router.replace("/app");
+    router.replace("/");
   }
 
   return (
