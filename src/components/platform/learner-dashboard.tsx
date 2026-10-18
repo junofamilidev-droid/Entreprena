@@ -163,7 +163,7 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
           <div className="p-5">
             <h2 className="text-sm font-semibold">Votre progression</h2>
             <div className="mt-3 flex items-end justify-between gap-4">
-              <p className="text-3xl font-semibold tabular-nums tracking-tight">
+              <p className="text-3xl font-semibold tracking-tight">
                 <CountUp value={pct} />
                 &nbsp;%
               </p>
@@ -190,7 +190,7 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
           {all > 0 && (
             <div className="border-t p-5 sm:min-w-52 sm:border-t-0 sm:border-l">
               <h2 className="text-sm text-muted-foreground">Temps estimé restant</h2>
-              <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight"><CountUp value={left} format={formatDuration} /></p>
+              <p className="mt-3 text-3xl font-semibold tracking-tight"><CountUp value={left} format={formatDuration} /></p>
               <p className="mt-1 text-sm text-muted-foreground">sur {formatDuration(all)} estimées</p>
             </div>
           )}
