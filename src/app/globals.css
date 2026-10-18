@@ -7,22 +7,23 @@
 /*
  * Charte graphique
  * - Une seule couleur de marque : bleu pétrole (--brand). Tout le reste est neutre.
- * - Typographies : Source Serif 4 (titres), Inter (texte). JetBrains Mono est réservé aux prompts à copier.
+ * - Typographie : Inter (titres et texte). JetBrains Mono est réservé aux prompts à copier.
+ * - Fond gris très clair, surfaces blanches bordées d'un filet ; barre latérale blanche.
  * - Échelle typographique : utilitaires text-display à text-caption plus bas.
  */
 :root {
   --radius: 0.5rem;
   --body-font: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --heading-font: "Source Serif 4 Variable", ui-serif, Georgia, serif;
-  --heading-weight: 580;
-  --heading-tracking: -0.015em;
+  --heading-font: var(--body-font);
+  --heading-weight: 650;
+  --heading-tracking: -0.022em;
 
   /* Thème clair : papier neutre, encre bleu nuit, bleu pétrole. */
   --brand: oklch(0.43 0.075 220);
   --brand-foreground: oklch(0.985 0.004 220);
   --brand-soft: oklch(0.955 0.018 220);
 
-  --background: oklch(0.985 0.002 100);
+  --background: oklch(0.975 0.003 120);
   --foreground: oklch(0.22 0.025 255);
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
@@ -49,7 +50,7 @@
   --chart-4: oklch(0.55 0.012 255);
   --chart-5: oklch(0.8 0.008 255);
 
-  --sidebar: oklch(0.97 0.003 255);
+  --sidebar: oklch(0.995 0.002 120);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--brand);
   --sidebar-primary-foreground: var(--brand-foreground);

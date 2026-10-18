@@ -33,7 +33,7 @@ export default async function ModulePage(props: Props) {
     <>
       <PageHeader
         crumbs={[
-          { label: "Tableau de bord", href: "/" },
+          { label: "Accueil", href: "/" },
           { label: formation.title, href: `/formations/${formation.slug}` },
           { label: `Module ${mod.position}` },
         ]}

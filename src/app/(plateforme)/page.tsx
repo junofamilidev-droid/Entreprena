@@ -8,7 +8,7 @@ export default async function DashboardPage() {
   const refs = await openModuleRefs(formations);
   return (
     <>
-      <PageHeader crumbs={[{ label: "Tableau de bord" }]} />
+      <PageHeader crumbs={[{ label: "Accueil" }]} />
       <LearnerDashboard formations={formations} refs={refs} />
     </>
   );

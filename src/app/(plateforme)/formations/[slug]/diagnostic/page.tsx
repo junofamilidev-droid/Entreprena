@@ -31,7 +31,7 @@ export default async function DiagnosticPage(props: PageProps<"/formations/[slug
     <>
       <PageHeader
         crumbs={[
-          { label: "Tableau de bord", href: "/" },
+          { label: "Accueil", href: "/" },
           { label: formation.title, href: `/formations/${formation.slug}` },
           { label: config.title },
         ]}

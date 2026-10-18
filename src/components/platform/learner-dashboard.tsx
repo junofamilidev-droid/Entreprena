@@ -1,168 +1,247 @@
 "use client";
 
 import Link from "next/link";
-import { WhereSaved } from "@/components/auth/where-saved";
-import { ExternalLinkIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { site } from "@/lib/site";
-import { useProgress } from "@/lib/progress/store";
-import type { FormationWithModules } from "@/lib/content/types";
-import { moduleState, ResumePanel, StepList, type ModuleRef } from "./module-progress";
+import { ArrowRightIcon, CheckIcon, ChevronRightIcon, LockIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { displayName, useAuth } from "@/lib/auth/session";
+import { useProgress, useProgressReady, type ProgressState } from "@/lib/progress/store";
+import type { FormationWithModules, Module } from "@/lib/content/types";
+import { moduleState, type ModuleRef } from "./module-progress";
 
-function AsideSection({ title, children }: { title: string; children: React.ReactNode }) {
+/** Minutes d'une durée écrite « 6 min de lecture », « 60 min en 5 étapes » ; 0 si aucune. */
+export function minutesOf(duration: string | null | undefined) {
+  const m = duration?.match(/(\d+)\s*min/);
+  return m ? Number(m[1]) : 0;
+}
+
+function formatDuration(total: number) {
+  if (total < 60) return `${total} min`;
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  return m ? `${h} h ${String(m).padStart(2, "0")}` : `${h} h`;
+}
+
+type ModuleStatus = "done" | "current" | "todo" | "soon";
+
+interface ModuleRow {
+  module: Module;
+  status: ModuleStatus;
+  /** Part des étapes faites, de 0 à 1. */
+  ratio: number;
+  started: boolean;
+  href: string;
+}
+
+function rows(formation: FormationWithModules, refs: ModuleRef[], progress: ProgressState): ModuleRow[] {
+  let currentFound = false;
+  return formation.modules.map((m) => {
+    const ref = refs.find((r) => r.formationSlug === formation.slug && r.module.slug === m.slug);
+    if (m.availability !== "open" || !ref) {
+      return { module: m, status: "soon", ratio: 0, started: false, href: `/formations/${formation.slug}` };
+    }
+    const st = moduleState(progress, ref);
+    const ratio = ref.steps.length ? st.doneCount / ref.steps.length : 0;
+    let status: ModuleStatus = st.finished ? "done" : "todo";
+    if (!st.finished && !currentFound) {
+      status = "current";
+      currentFound = true;
+    }
+    return { module: m, status, ratio, started: st.started, href: `/formations/${formation.slug}/${m.slug}` };
+  });
+}
+
+// Pastille d'état d'un module : coche pleine (terminé), anneau qui se remplit (en cours), numéro (à faire).
+function StatusDot({ row }: { row: ModuleRow }) {
+  const n = row.module.position;
+  if (row.status === "done") {
+    return (
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+        <CheckIcon className="size-4" strokeWidth={3} aria-label="terminé" />
+      </span>
+    );
+  }
+  if (row.status === "current") {
+    const r = 15;
+    const c = 2 * Math.PI * r;
+    return (
+      <span className="relative grid size-9 shrink-0 place-items-center">
+        <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
+          <circle cx="18" cy="18" r={r} fill="none" strokeWidth="3" className="stroke-primary/20" />
+          <circle
+            cx="18"
+            cy="18"
+            r={r}
+            fill="none"
+            strokeWidth="3"
+            strokeLinecap="round"
+            className="stroke-primary"
+            strokeDasharray={`${Math.max(row.ratio, 0.04) * c} ${c}`}
+          />
+        </svg>
+        <span className="text-sm font-semibold tabular-nums text-primary">{n}</span>
+      </span>
+    );
+  }
   return (
-    <section className="space-y-2 py-5 first:pt-0">
-      <h2 className="text-sm font-semibold">{title}</h2>
-      {children}
-    </section>
+    <span
+      className={cn(
+        "grid size-9 shrink-0 place-items-center rounded-full border-2 text-sm font-semibold tabular-nums",
+        row.status === "soon" ? "border-border text-muted-foreground" : "border-foreground/25 text-foreground",
+      )}
+    >
+      {n}
+    </span>
   );
 }
 
-export function LearnerDashboard({
-  formations,
-  refs,
-}: {
-  formations: FormationWithModules[];
-  refs: ModuleRef[];
-}) {
+export function LearnerDashboard({ formations, refs }: { formations: FormationWithModules[]; refs: ModuleRef[] }) {
+  const auth = useAuth();
+  const ready = useProgressReady();
   const progress = useProgress();
 
-  // Formations commencées, de la plus récemment ouverte à la plus ancienne.
+  // La formation la plus récemment ouverte ; à défaut, la première du catalogue.
   const started = refs
     .map((r) => ({ ref: r, st: moduleState(progress, r) }))
     .filter((x) => x.st.started)
     .sort((a, b) => b.st.lastActivity - a.st.lastActivity);
-  const active = started[0]?.ref ?? refs[0];
-  const formation = formations.find((f) => f.slug === active?.formationSlug);
-  const startedSlugs = new Set(started.map((x) => x.ref.formationSlug));
-  const others = formations.filter((f) => !startedSlugs.has(f.slug) && f.slug !== active?.formationSlug);
+  const formation = formations.find((f) => f.slug === (started[0]?.ref ?? refs[0])?.formationSlug) ?? formations[0];
 
-  if (!active || !formation) {
+  if (!formation) {
     return (
       <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-8">
         <h1 className="text-title">Choisissez une première formation</h1>
         <p className="mt-2 text-body text-muted-foreground">Le catalogue rassemble les formations ouvertes, métier par métier.</p>
-        <Button asChild className="mt-6"><Link href="/catalogue">Voir le catalogue</Link></Button>
+        <Link href="/catalogue" className="mt-6 inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
+          Voir le catalogue
+        </Link>
       </div>
     );
   }
-  const mod = formation.modules.find((m) => m.slug === active.module.slug);
-  const base = `/formations/${formation.slug}`;
+
+  const list = rows(formation, refs, progress);
+  const total = list.length;
+  const done = list.filter((r) => r.status === "done").length;
+  const pct = total ? Math.round((list.reduce((s, r) => s + r.ratio, 0) / total) * 100) : 0;
+
+  // Temps restant : les durées connues des étapes des modules ouverts.
+  let all = 0;
+  let left = 0;
+  for (const r of refs.filter((x) => x.formationSlug === formation.slug)) {
+    for (const s of r.steps) {
+      const m = minutesOf(s.duration);
+      all += m;
+      if (!progress[`${r.formationSlug}/${r.module.slug}/${s.slug}`]?.done) left += m;
+    }
+  }
+  const final = [...formation.modules].sort((a, b) => b.position - a.position)[0];
+  const firstName = auth.status === "user" ? displayName(auth.user).split(/\s+/)[0] : null;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
-      <ResumePanel refData={active} />
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-10">
+      <p className="text-sm text-muted-foreground">{firstName ? `Bonjour ${firstName},` : "Bonjour,"}</p>
+      <h1 className="mt-1 text-title text-balance">{formation.title}</h1>
+      <p className="mt-2 max-w-3xl text-body text-muted-foreground">
+        {formation.promise} {formation.summary}
+      </p>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-14">
-        <section aria-labelledby="sommaire" className="min-w-0">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 id="sommaire" className="text-heading">Dans ce module</h2>
-            {active.module.durationLabel && <span className="text-sm text-muted-foreground">{active.module.durationLabel}</span>}
+      <div className={cn("mt-6 grid gap-4 lg:grid-cols-[1fr_17rem]", !ready && "invisible")}>
+        <section aria-label="Votre progression" className="grid rounded-lg border bg-card sm:grid-cols-[1fr_auto]">
+          <div className="p-5">
+            <h2 className="text-sm font-semibold">Votre progression</h2>
+            <div className="mt-3 flex items-end justify-between gap-4">
+              <p className="text-3xl font-semibold tabular-nums tracking-tight">{pct}&nbsp;%</p>
+              <p className="pb-1 text-sm text-muted-foreground tabular-nums">
+                {done} / {total} modules
+              </p>
+            </div>
+            <div
+              role="progressbar"
+              aria-label="Progression dans la formation"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={pct}
+              className="mt-3 h-2 overflow-hidden rounded-full bg-muted"
+            >
+              <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+            </div>
           </div>
-          <div className="mt-4">
-            <StepList refData={active} />
-          </div>
+          {all > 0 && (
+            <div className="border-t p-5 sm:min-w-52 sm:border-t-0 sm:border-l">
+              <h2 className="text-sm text-muted-foreground">Temps estimé restant</h2>
+              <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight">{formatDuration(left)}</p>
+              <p className="mt-1 text-sm text-muted-foreground">sur {formatDuration(all)} estimées</p>
+            </div>
+          )}
         </section>
 
-        <aside className="divide-y">
-          {formation.hasDiagnostic && (
-            <AsideSection title="Diagnostic">
-              <p className="text-sm text-muted-foreground">Il estime votre exposition à l&apos;IA et indique où commencer.</p>
-              <Button asChild variant="outline" size="sm">
-                <Link href={`${base}/diagnostic`}>Faire le diagnostic</Link>
-              </Button>
-            </AsideSection>
-          )}
-          {mod && (
-            <AsideSection title="Votre livrable">
-              <p className="text-sm text-muted-foreground">{mod.deliverable}</p>
-              <p className="text-caption text-muted-foreground">Il se remplit pendant l&apos;exercice.</p>
-            </AsideSection>
-          )}
-          <AsideSection title="Tuteur IA">
-            <p className="text-sm text-muted-foreground">
-              Un assistant externe pour obtenir un indice. Il ne donne pas les réponses. N&apos;y collez
-              jamais de données confidentielles réelles.
+        {final && (
+          <section aria-labelledby="projet-final" className="flex flex-col rounded-lg border bg-card p-5">
+            <h2 id="projet-final" className="text-sm font-semibold">
+              Votre projet final
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {final.title} : {final.deliverable.charAt(0).toLowerCase() + final.deliverable.slice(1)}
             </p>
-            {formation.tutorUrl ? (
-              <Button asChild variant="outline" size="sm">
-                <a href={formation.tutorUrl} target="_blank" rel="noopener noreferrer">
-                  Ouvrir le tuteur <ExternalLinkIcon />
-                </a>
-              </Button>
-            ) : (
-              <p className="text-caption text-muted-foreground">Lien pas encore branché.</p>
-            )}
-          </AsideSection>
-        </aside>
+            <Link
+              href={`/formations/${formation.slug}`}
+              className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-medium text-primary hover:underline"
+            >
+              En savoir plus <ArrowRightIcon className="size-4" aria-hidden />
+            </Link>
+          </section>
+        )}
       </div>
 
-      {started.length > 0 && (
-        <section aria-labelledby="mes-formations" className="mt-12">
-          <h2 id="mes-formations" className="text-heading">Mes formations</h2>
-          <ul className="mt-4 divide-y border-y">
-            {started.map(({ ref, st }) => {
-              const pct = Math.round((st.doneCount / ref.steps.length) * 100);
-              const f = formations.find((x) => x.slug === ref.formationSlug);
-              return (
-                <li key={ref.formationSlug}>
-                  <Link
-                    href={`/formations/${ref.formationSlug}/${ref.module.slug}`}
-                    className="grid gap-x-6 gap-y-2 py-4 transition-colors hover:bg-muted/50 sm:grid-cols-[1fr_12rem] sm:items-center sm:px-2"
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-caption text-muted-foreground">{f?.domain}</span>
-                      <span className="block font-medium">{ref.formationTitle}</span>
+      <section aria-labelledby="parcours" className="mt-8">
+        <h2 id="parcours" className="text-heading">
+          Votre parcours
+        </h2>
+        <ol className="mt-3 overflow-hidden rounded-lg border bg-card">
+          {list.map((r) => {
+            const current = r.status === "current";
+            const soon = r.status === "soon";
+            return (
+              <li key={r.module.id} className="border-b last:border-b-0">
+                <Link
+                  href={r.href}
+                  className={cn(
+                    "flex items-center gap-4 px-4 py-3.5 transition-colors sm:px-5",
+                    current ? "bg-accent/70 hover:bg-accent" : "hover:bg-muted/60",
+                  )}
+                >
+                  <StatusDot row={r} />
+                  <span className="min-w-0 flex-1">
+                    <span className={cn("block font-medium", soon && "text-muted-foreground")}>
+                      {r.module.position}. {r.module.title}
                     </span>
-                    <span className="flex items-center gap-3">
-                      <Progress value={pct} className="h-1.5 bg-muted" aria-label={`Avancement : ${pct} %`} />
-                      <span className="w-10 shrink-0 text-right text-sm tabular-nums text-muted-foreground">{pct}&nbsp;%</span>
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
-
-      <section aria-labelledby="autres" className="mt-12">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="autres" className="text-heading">Autres formations</h2>
-          <Link href="/catalogue" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
-            Voir le catalogue
-          </Link>
-        </div>
-        {others.length > 0 ? (
-          <ul className="mt-4 divide-y border-y">
-            {others.slice(0, 4).map((f) => (
-              <li key={f.id}>
-                <Link href={`/formations/${f.slug}`} className="block py-4 transition-colors hover:bg-muted/50 sm:px-2">
-                  <span className="block text-caption text-muted-foreground">{f.domain}</span>
-                  <span className="block font-medium">{f.title}</span>
-                  <span className="block text-sm text-muted-foreground">{f.promise}</span>
+                    <span className="block truncate text-sm text-muted-foreground">{r.module.summary}</span>
+                  </span>
+                  <span className="hidden shrink-0 text-right text-sm sm:block">
+                    {current && (
+                      <span className="block font-medium text-primary">{r.started ? "En cours" : "À commencer"}</span>
+                    )}
+                    {soon ? (
+                      <span className="inline-flex items-center gap-1 text-muted-foreground">
+                        <LockIcon className="size-3.5" aria-hidden /> À venir
+                      </span>
+                    ) : (
+                      r.module.durationLabel && <span className="block text-muted-foreground">{r.module.durationLabel}</span>
+                    )}
+                  </span>
+                  <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                 </Link>
               </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-3 text-body text-muted-foreground">
-            De nouvelles formations, pour d&apos;autres métiers, seront ajoutées au fil du temps.
-          </p>
-        )}
+            );
+          })}
+        </ol>
       </section>
 
-      <Separator className="mt-14" />
-      <div className="mt-6 max-w-3xl space-y-2 text-caption text-muted-foreground">
-        <p>
-          Version de test : <WhereSaved invite={false} /> Les contenus sont en cours de relecture par des
-          professionnels.
-        </p>
-        <p>{site.certificateNotice}</p>
-        <p>{site.emailNotice}</p>
-      </div>
+      <p className="mt-10 text-caption text-muted-foreground">
+        Version de test. Les contenus sont en cours de relecture par des professionnels.{" "}
+        <Link href="/aide" className="underline underline-offset-4 hover:text-foreground">
+          Aide, mentions et usage de vos données
+        </Link>
+      </p>
     </div>
   );
 }
