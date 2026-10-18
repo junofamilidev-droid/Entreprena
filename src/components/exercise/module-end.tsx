@@ -3,12 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AwardIcon, PrinterIcon, XIcon } from "lucide-react";
+import { ArrowRightIcon, AwardIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { formatPoints } from "@/lib/exercise/self-review";
-import { saveInput, saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
+import { saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
 import type { ModuleEndContent } from "@/lib/content/types";
 
 export function ModuleEnd({
@@ -32,15 +30,8 @@ export function ModuleEnd({
   const ready = useProgressReady();
   const progress = useProgress();
   const result = progress[reviewKey]?.inputs?.result as Record<string, string> | undefined;
-  const saved = progress[progressKey];
-  const name = typeof saved?.inputs?.nom === "string" ? saved.inputs.nom : "";
 
   const passed = result?.passed === "1";
-  const date = result ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(result.date)) : "";
-  const text = content.template
-    .replace("{nom}", name.trim() || "[Prénom Nom]")
-    .replace("{date}", date)
-    .replace("{note}", result ? formatPoints(Number(result.score)) : "");
 
   function finish() {
     saveStep(progressKey, { done: true });
@@ -95,35 +86,29 @@ export function ModuleEnd({
           </>
         ) : (
           <>
-            <div className="space-y-3 print:hidden">
-              <h1 className="text-title">{content.title}</h1>
+            <div className="space-y-3">
+              <h1 className="text-title">Module validé</h1>
               <p className="text-lead text-muted-foreground">
-                Module validé avec {formatPoints(Number(result.score))} sur 20. Indiquez votre nom tel qu&apos;il doit
-                figurer sur l&apos;attestation.
+                {moduleLabel} : votre feuille de travail est notée {formatPoints(Number(result.score))} sur 20.
               </p>
             </div>
-            <div className="space-y-2 print:hidden">
-              <Label htmlFor="nom" className="text-base font-semibold">
-                Prénom et nom
-              </Label>
-              <Input
-                id="nom"
-                value={name}
-                autoComplete="name"
-                onChange={(e) => saveInput(progressKey, "nom", e.target.value)}
-                className="bg-card"
-              />
-            </div>
-            <article className="print-area space-y-5 rounded-lg border bg-card px-6 py-8 shadow-xs sm:px-10 sm:py-10">
-              <AwardIcon className="size-8 text-primary" aria-hidden />
-              <p className="text-caption tracking-wide text-muted-foreground uppercase">Attestation · version de test</p>
-              <p className="font-serif text-xl leading-relaxed">{text}</p>
-              <p className="text-caption text-muted-foreground">{content.notice}</p>
-            </article>
-            <div className="flex flex-wrap gap-3 print:hidden">
-              <Button size="lg" variant="outline" onClick={() => window.print()} disabled={!name.trim()}>
-                <PrinterIcon /> Imprimer ou PDF
-              </Button>
+            <Link
+              href="/certificat"
+              className="group flex items-center gap-4 rounded-lg border bg-card px-5 py-4 transition-colors hover:bg-muted/60"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent text-primary">
+                <AwardIcon className="size-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium">Un pas de plus vers votre certificat</span>
+                <span className="block text-sm text-muted-foreground">
+                  Le certificat de la formation se dévoile à chaque module validé.
+                </span>
+              </span>
+              <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </Link>
+            <p className="text-caption text-muted-foreground">{content.notice}</p>
+            <div>
               <Button size="lg" onClick={finish}>
                 Terminer le module
               </Button>

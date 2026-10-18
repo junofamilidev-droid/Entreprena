@@ -8,5 +8,5 @@ export const site = {
   emailNotice:
     "Votre adresse email sert uniquement à votre compte, au suivi de votre progression et à vous prévenir de l'ouverture des formations. Elle n'est ni partagée ni revendue, et elle est supprimée sur simple demande.",
   certificateNotice:
-    "L'attestation de fin de module n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle.",
+    "Le certificat de fin de formation n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle.",
 };

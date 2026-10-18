@@ -16,35 +16,3 @@ export function StepStatus({ stepKey }: { stepKey: string }) {
     );
   return <span className="text-sm text-muted-foreground">{p ? "En cours" : "À faire"}</span>;
 }
-
-/** Résultat de l'auto-correction enregistré pour un module (pour le certificat). */
-export function CertificateStatus({ reviewKey, endHref, reviewHref }: { reviewKey: string; endHref: string; reviewHref: string }) {
-  const ready = useProgressReady();
-  const result = useProgress()[reviewKey]?.inputs?.result as Record<string, string> | undefined;
-  if (!ready) return null;
-  if (!result)
-    return (
-      <p className="text-sm text-muted-foreground">
-        Pas encore obtenue : elle se débloque après l&apos;auto-correction.{" "}
-        <a href={reviewHref} className="font-medium text-primary hover:underline">
-          Aller à l&apos;auto-correction
-        </a>
-      </p>
-    );
-  const score = Number(result.score).toLocaleString("fr-FR");
-  return result.passed === "1" ? (
-    <p className="text-sm">
-      <span className="font-medium text-primary">Validée avec {score} sur 20.</span>{" "}
-      <a href={endHref} className="font-medium text-primary hover:underline">
-        Voir et imprimer l&apos;attestation
-      </a>
-    </p>
-  ) : (
-    <p className="text-sm text-muted-foreground">
-      Copie à reprendre ({score} sur 20).{" "}
-      <a href={reviewHref} className="font-medium text-primary hover:underline">
-        Revoir l&apos;auto-correction
-      </a>
-    </p>
-  );
-}

@@ -105,7 +105,7 @@ const EMPTY_CONTENT: Record<StepKind, unknown> = {
   quiz: { questions: [] },
   exercise: { duration: "", intro: { title: "", blocks: [] }, parts: [] },
   self_review: { exerciseStep: "", title: "Auto-correction", intro: "", total: 20, passMark: 14, criteria: [], eliminatory: { title: "Critères éliminatoires", items: [] } },
-  module_end: { reviewStep: "", title: "Votre attestation", template: "{nom} a validé ce module le {date}, avec la note de {note} sur 20.", notice: "", retry: "" },
+  module_end: { reviewStep: "", title: "Bilan du module", template: "{nom} a validé ce module le {date}, avec la note de {note} sur 20.", notice: "", retry: "" },
 };
 
 export async function createStep(moduleId: string, title: string, kind: StepKind) {

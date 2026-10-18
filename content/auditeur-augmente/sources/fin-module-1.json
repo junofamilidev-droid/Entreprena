@@ -1,7 +1,7 @@
 {
-  "duration": "attestation",
+  "duration": "bilan",
   "reviewStep": "auto-correction",
-  "title": "Votre attestation",
+  "title": "Bilan du module",
   "template": "{nom} a validé le module 1, Revue analytique assistée par l'IA, le {date}, en produisant une feuille de travail notée {note} sur 20 sur un cas fictif. Cette attestation n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle.",
   "notice": "Version de test : la note vient de votre auto-correction. Elle n'a pas été relue par un correcteur.",
   "retry": "<p>Votre copie n'est pas encore validée : il faut 14 sur 20, sans critère éliminatoire. Reprenez votre feuille de travail dans l'exercice, complétez ou corrigez ce qui manque, puis refaites l'auto-correction. Une copie renvoyée peut être déposée une seconde fois.</p>"

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/platform/page-header";
 import { getFormation, listFormations } from "@/lib/content/source";
+import { Marked, unmark } from "@/components/ui/marked";
 import { site } from "@/lib/site";
 
 // Les formations, modules et étapes publiés après la mise en ligne n'ont pas de page préparée à
@@ -20,7 +21,7 @@ export async function generateStaticParams() {
 export async function generateMetadata(props: PageProps<"/formations/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const f = await getFormation(slug);
-  return f ? { title: f.title, description: f.promise } : {};
+  return f ? { title: f.title, description: unmark(f.promise) } : {};
 }
 
 export default async function FormationPage(props: PageProps<"/formations/[slug]">) {
@@ -40,18 +41,13 @@ export default async function FormationPage(props: PageProps<"/formations/[slug]
             {formation.domain}, pour les {formation.audience.toLowerCase()}
           </p>
           <h1 className="text-display text-balance">{formation.title}</h1>
-          <p className="text-lead">
-            {formation.promise} <span className="text-muted-foreground">{formation.summary}</span>
+          <p className="text-lead text-muted-foreground">
+            <Marked text={`${formation.promise} ${formation.summary}`} />
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             {firstOpen && (
               <Button asChild size="lg">
                 <Link href={`${base}/${firstOpen.slug}`}>Commencer le module {firstOpen.position}</Link>
-              </Button>
-            )}
-            {formation.hasDiagnostic && (
-              <Button asChild size="lg" variant="outline">
-                <Link href={`${base}/diagnostic`}>Faire le diagnostic</Link>
               </Button>
             )}
           </div>
@@ -103,46 +99,6 @@ export default async function FormationPage(props: PageProps<"/formations/[slug]
                   );
                 })}
               </ol>
-            </section>
-
-            {formation.method.length > 0 && (
-              <section aria-labelledby="routine">
-                <h2 id="routine" className="text-heading">La routine, dans chaque module</h2>
-                <ol className="mt-5 grid gap-x-10 gap-y-6 sm:grid-cols-2">
-                  {formation.method.map((m, i) => (
-                    <li key={m.title} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
-                      <span className="text-sm tabular-nums text-muted-foreground">{i + 1}.</span>
-                      <div>
-                        <h3 className="font-medium">{m.title}</h3>
-                        <p className="mt-1 text-body text-muted-foreground">{m.text}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            )}
-
-            <section aria-labelledby="public" className="grid gap-10 md:grid-cols-2">
-              {formation.forWhom.length > 0 && (
-                <div>
-                  <h2 id="public" className="text-heading">Pour qui</h2>
-                  <ul className="mt-4 space-y-3 text-body">
-                    {formation.forWhom.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {formation.notThis.length > 0 && (
-                <div>
-                  <h2 className="text-heading">Ce que ce n&apos;est pas</h2>
-                  <ul className="mt-4 space-y-3 text-body text-muted-foreground">
-                    {formation.notThis.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </section>
           </div>
 

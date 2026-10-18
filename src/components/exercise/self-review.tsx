@@ -270,14 +270,14 @@ export function SelfReviewRunner({
                   </p>
                   <p className="text-body">
                     {score.passed
-                      ? "Votre note est enregistrée. Vous pouvez obtenir votre attestation."
+                      ? "Votre note est enregistrée : le module est validé."
                       : score.eliminated
                         ? "Un critère éliminatoire est coché : la copie revient à vous, quelle que soit la note. Corrigez la phrase en cause dans l'exercice, puis refaites l'auto-correction."
                         : `Il faut ${content.passMark} sur ${content.total}. Complétez votre feuille de travail dans l'exercice, puis refaites l'auto-correction.`}
                   </p>
                   <div className="flex flex-wrap gap-3">
                     {score.passed && next ? (
-                      <Button onClick={() => router.push(next.href)}>Obtenir mon attestation</Button>
+                      <Button onClick={() => router.push(next.href)}>Voir le bilan du module</Button>
                     ) : (
                       <Button asChild>
                         <Link href={exerciseHref}>Reprendre ma feuille de travail</Link>

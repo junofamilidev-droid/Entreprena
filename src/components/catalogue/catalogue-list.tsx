@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Marked } from "@/components/ui/marked";
 import Link from "next/link";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { FormationWithModules } from "@/lib/content/types";
@@ -42,7 +43,7 @@ export function CatalogueList({ formations }: { formations: FormationWithModules
                 <span className="min-w-0 space-y-1">
                   <span className="block text-sm text-muted-foreground">{f.domain}</span>
                   <span className="block font-serif text-xl font-semibold">{f.title}</span>
-                  <span className="block max-w-[62ch] text-body text-muted-foreground">{f.promise}</span>
+                  <span className="block max-w-[62ch] text-body text-muted-foreground"><Marked text={f.promise} /></span>
                 </span>
                 <span className="space-y-1 text-sm text-muted-foreground sm:text-right">
                   <span className="block">{f.audience}</span>

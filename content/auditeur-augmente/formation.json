@@ -4,8 +4,8 @@
     "title": "Auditeur augmenté par l'IA",
     "domain": "Audit",
     "audience": "Auditeurs juniors et seniors",
-    "promise": "Utilisez l'IA en audit sans exposer une donnée client.",
-    "summary": "Et rendez des feuilles de travail qu'un relecteur accepte. Cinq modules, une tâche réelle par module, sur des dossiers fictifs.",
+    "promise": "Utilisez l'IA en audit ==sans exposer une donnée client==.",
+    "summary": "Et rendez des feuilles de travail ==qu'un relecteur accepte==. Cinq modules, ==une tâche réelle par module==, sur des dossiers fictifs.",
     "forWhom": [
       "Vous êtes auditeur junior ou senior, avec 0 à 5 ans d'expérience.",
       "Votre cabinet autorise l'IA, l'encadre ou l'interdit : la première leçon traite cette question.",
@@ -13,7 +13,7 @@
     ],
     "notThis": [
       "Ce n'est pas une formation homologuée. Nous n'avons pas vérifié si elle peut entrer dans les obligations de formation continue de la profession : considérez que non.",
-      "L'attestation de fin de module est adossée à votre livrable. Elle n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle."
+      "Le certificat de fin de formation est adossé à vos livrables. Elle n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle."
     ],
     "method": [
       {
@@ -2429,9 +2429,9 @@
           "kind": "module_end",
           "title": "Fin du module",
           "content": {
-            "duration": "attestation",
+            "duration": "bilan",
             "reviewStep": "auto-correction",
-            "title": "Votre attestation",
+            "title": "Bilan du module",
             "template": "{nom} a validé le module 1, Revue analytique assistée par l'IA, le {date}, en produisant une feuille de travail notée {note} sur 20 sur un cas fictif. Cette attestation n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle.",
             "notice": "Version de test : la note vient de votre auto-correction. Elle n'a pas été relue par un correcteur.",
             "retry": "<p>Votre copie n'est pas encore validée : il faut 14 sur 20, sans critère éliminatoire. Reprenez votre feuille de travail dans l'exercice, complétez ou corrigez ce qui manque, puis refaites l'auto-correction. Une copie renvoyée peut être déposée une seconde fois.</p>"
@@ -2476,7 +2476,7 @@
       "position": 5,
       "title": "Synthèse de mission",
       "summary": "Les quatre livrables précédents et un projet d'annexe.",
-      "deliverable": "Une note de synthèse au chef de mission, puis l'attestation.",
+      "deliverable": "Une note de synthèse au chef de mission, puis le certificat de fin de formation.",
       "durationLabel": null,
       "availability": "coming_soon",
       "status": "published"

@@ -19,7 +19,7 @@ const faq = [
     a: "Non. Les exercices portent sur des données fictives. Sur un vrai dossier, appliquez d'abord les règles de votre cabinet et anonymisez vos données.",
   },
   {
-    q: "L'attestation a-t-elle une valeur officielle ?",
+    q: "Le certificat a-t-il une valeur officielle ?",
     a: site.certificateNotice,
   },
 ];

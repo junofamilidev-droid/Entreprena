@@ -284,3 +284,110 @@
     box-shadow: none;
   }
 }
+
+/*
+ * Surlignage au feutre : un trait de pinceau irrégulier, légèrement penché, qui se dessine
+ * de gauche à droite. Dans un texte, on l'écrit ==ainsi== (voir components/ui/marked.tsx).
+ */
+:root {
+  --marker-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 24' preserveAspectRatio='none'%3E%3Cpath fill='%23f6cf63' fill-opacity='.7' d='M4 10.5C22 6.8 48 7.6 71 6.4c26-1.3 52-.4 78-1.6 15-.7 31-.2 46 1.4 2 .3 3 2 2.6 4.1l-1.1 7.2c-.3 2-2 3-4 2.9-20-.9-41-.2-61 .6-27 1-55 2.4-82 1.5-15-.5-30-1.2-47-1.5C2 19 .6 17.4 1 15.5Z'/%3E%3Cpath fill='%23f2b84b' fill-opacity='.28' d='M10 16c40-2.3 92-3.4 180-1.8l-.6 3.2c-70-1-130 .4-178.8 2.2Z'/%3E%3C/svg%3E");
+}
+.dark {
+  --marker-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 24' preserveAspectRatio='none'%3E%3Cpath fill='%2338b6b0' fill-opacity='.32' d='M4 10.5C22 6.8 48 7.6 71 6.4c26-1.3 52-.4 78-1.6 15-.7 31-.2 46 1.4 2 .3 3 2 2.6 4.1l-1.1 7.2c-.3 2-2 3-4 2.9-20-.9-41-.2-61 .6-27 1-55 2.4-82 1.5-15-.5-30-1.2-47-1.5C2 19 .6 17.4 1 15.5Z'/%3E%3Cpath fill='%2367d4cc' fill-opacity='.18' d='M10 16c40-2.3 92-3.4 180-1.8l-.6 3.2c-70-1-130 .4-178.8 2.2Z'/%3E%3C/svg%3E");
+}
+.marker {
+  color: var(--foreground);
+  padding-inline: 0.12em;
+  margin-inline: -0.06em;
+  background-image: var(--marker-ink);
+  background-repeat: no-repeat;
+  background-position: 0 75%;
+  background-size: 100% 78%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  animation: marker-draw 0.9s cubic-bezier(0.3, 0.7, 0.2, 1) both;
+  animation-delay: calc(0.25s + var(--marker-index, 0) * 0.35s);
+}
+@keyframes marker-draw {
+  from {
+    background-size: 0% 78%;
+  }
+}
+
+/*
+ * Brouillard du certificat : trois nappes floues qui dérivent lentement. Leur épaisseur
+ * (--fog, de 0 à 1) diminue à mesure que l'apprenant avance dans la formation.
+ */
+.fog {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  opacity: var(--fog, 1);
+  transition: opacity 1.6s ease;
+}
+.fog span {
+  position: absolute;
+  inset: 0;
+  filter: blur(28px);
+  background:
+    radial-gradient(38% 30% at 25% 35%, var(--fog-color) 0%, transparent 70%),
+    radial-gradient(34% 28% at 70% 60%, var(--fog-color) 0%, transparent 72%),
+    radial-gradient(30% 24% at 45% 80%, var(--fog-color) 0%, transparent 70%);
+  animation: fog-drift 22s ease-in-out infinite alternate;
+}
+.fog span:nth-child(2) {
+  animation-duration: 31s;
+  animation-direction: alternate-reverse;
+  transform: scale(1.2) rotate(8deg);
+}
+.fog span:nth-child(3) {
+  animation-duration: 40s;
+  opacity: 0.8;
+  transform: scale(0.9) rotate(-6deg);
+}
+:root {
+  --fog-color: oklch(0.97 0.004 220 / 0.9);
+}
+.dark {
+  --fog-color: oklch(0.3 0.02 230 / 0.92);
+}
+@keyframes fog-drift {
+  0% {
+    translate: -6% -3%;
+  }
+  50% {
+    translate: 5% 4%;
+  }
+  100% {
+    translate: -3% 6%;
+  }
+}
+/* Le brouillard se lève : utilisé une seule fois, quand le certificat se débloque. */
+@keyframes fog-lift {
+  to {
+    opacity: 0;
+    scale: 1.3;
+    filter: blur(12px);
+  }
+}
+.fog-lift {
+  animation: fog-lift 2.4s ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    animation: none;
+  }
+  .fog span {
+    animation: none;
+  }
+  .fog-lift {
+    animation-duration: 0.01s;
+  }
+}
+
+@media print {
+  .fog {
+    display: none;
+  }
+}

@@ -351,7 +351,7 @@ export interface ModuleEndContent {
   /** Étape d'auto-correction (slug, dans le même module). */
   reviewStep: string;
   title: string;
-  /** Texte de l'attestation : {nom}, {date} et {note} sont remplacés. */
+  /** Ancien texte d'attestation par module (le certificat est désormais délivré en fin de formation). */
   template: string;
   notice: string;
   /** Message quand la copie n'est pas validée (HTML). */

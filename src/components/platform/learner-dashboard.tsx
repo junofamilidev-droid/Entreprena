@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRightIcon, CheckIcon, ChevronRightIcon, LockIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Marked } from "@/components/ui/marked";
 import { displayName, useAuth } from "@/lib/auth/session";
 import { useProgress, useProgressReady, type ProgressState } from "@/lib/progress/store";
 import type { FormationWithModules, Module } from "@/lib/content/types";
@@ -141,7 +142,7 @@ export function LearnerDashboard({ formations, refs }: { formations: FormationWi
       <p className="text-sm text-muted-foreground">{firstName ? `Bonjour ${firstName},` : "Bonjour,"}</p>
       <h1 className="mt-1 text-title text-balance">{formation.title}</h1>
       <p className="mt-2 max-w-3xl text-body text-muted-foreground">
-        {formation.promise} {formation.summary}
+        <Marked text={`${formation.promise} ${formation.summary}`} />
       </p>
 
       <div className={cn("mt-6 grid gap-4 lg:grid-cols-[1fr_17rem]", !ready && "invisible")}>
