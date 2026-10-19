@@ -1,0 +1,101 @@
+{
+  "formation": "auditeur-augmente-ia",
+  "module": "revue-analytique",
+  "session": 1,
+  "titre": "Le premier tri d'une balance en 15 minutes",
+  "duree_min": 15,
+  "maj": "2026-10-19",
+  "blocs": [
+    {
+      "type": "mission",
+      "expediteur": "Claire Martin, cheffe de mission",
+      "objet": "Nordelia : premier tri de la balance avant jeudi",
+      "message": "Bonjour,\nLa balance 2025 de Nordelia Distribution est arrivée (fichier joint, 81 comptes).\nAvant la réunion avec le DAF, j'ai besoin de savoir où regarder en priorité.\nPas de conclusion à ce stade : seulement les variations qui méritent une question.\nMerci, Claire",
+      "echeance": "jeudi 12 h",
+      "livrable": "Les 5 variations N/N-1 à creuser, avec une hypothèse pour chacune."
+    },
+    {
+      "type": "texte",
+      "contenu": "Une variation ne devient un sujet que si elle dépasse votre seuil et que rien ne l'explique.\nLe premier tri sert à choisir où regarder, pas à conclure."
+    },
+    {
+      "type": "defi",
+      "consigne": "Repérez dans la balance les 5 variations qui méritent une question au client.",
+      "donnees": "balance-nordelia-2025.csv",
+      "temps_cible_min": 5,
+      "criteres": [
+        "Chaque écart est calculé en euros et en pourcentage.",
+        "Seuil de signification appliqué : 50 000 €.",
+        "5 comptes retenus, chacun avec une raison en une ligne."
+      ]
+    },
+    {
+      "type": "prompt",
+      "texte": "Tu es assistant d'audit. Voici une balance générale anonymisée au format CSV, avec les soldes de l'exercice [N] et de l'exercice [N-1].\n1. Calcule pour chaque compte le solde net (débit moins crédit) en N et en N-1, puis l'écart en euros et en pourcentage.\n2. Ne garde que les écarts supérieurs à [seuil en euros] en valeur absolue.\n3. Classe-les du plus fort au plus faible.\n4. Pour chacun, propose une hypothèse à vérifier auprès du client, formulée comme une question.\nRends un tableau : compte, libellé, solde N, solde N-1, écart €, écart %, question au client.\nN'invente aucun compte et n'affirme rien que la balance ne montre pas.\n\n[Collez la balance ici]",
+      "usage": "Faites calculer et trier les écarts par votre IA",
+      "resultat_attendu": "Un tableau d'une dizaine de lignes, trié par écart. En tête : 411000 Clients (+675 000 €, +34,0 %), 603720 Variation des stocks de mobilier (−295 000 €), 408100 Factures non parvenues (+176 000 €)… avec une question au client pour chacun."
+    },
+    {
+      "type": "collage",
+      "consigne": "Collez ici la réponse de votre IA, puis relisez-la.",
+      "a_verifier": [
+        "Aucun compte n'a été inventé ni oublié parmi les plus gros écarts.",
+        "Les signes sont cohérents : un compte de produits ou de dettes est créditeur.",
+        "Les hypothèses sont des questions, pas des affirmations."
+      ]
+    },
+    {
+      "type": "controle",
+      "items": [
+        "J'ai recalculé moi-même deux écarts pris au hasard.",
+        "Les montants repris par l'IA correspondent à la balance d'origine.",
+        "Je n'ai envoyé à l'IA aucune donnée qui identifie le client."
+      ]
+    },
+    {
+      "type": "repere-erreur",
+      "lignes": [
+        "411000 Clients : 1 985 000 € → 2 660 000 €, soit +675 000 € (+34,0 %).",
+        "408100 Factures non parvenues : 214 000 € → 38 000 € (créditeur), soit −176 000 € (−82,2 %).",
+        "603720 Variation des stocks de mobilier : 25 000 € → 320 000 € (créditeur), soit +295 000 € (+1 080 %).",
+        "607130 Achats de consommables informatiques : 1 440 000 € → 1 690 000 €, soit +250 000 € (+17,4 %)."
+      ],
+      "ligne_fautive": 3,
+      "explication": "295 000 / 25 000 = 11,8 : la hausse est de +1 180 %, pas +1 080 %. Les IA se trompent souvent sur les pourcentages au-delà de 100 % : recalculez toujours les plus spectaculaires."
+    },
+    {
+      "type": "outil",
+      "fichier": "modele-revue-analytique.xlsx",
+      "description": "Un modèle de tableur qui calcule les écarts et signale ceux qui dépassent votre seuil",
+      "champs_a_adapter": ["Seuil de signification (cellule B1)", "Nom du dossier (cellule B2)", "Balance collée à partir de la ligne 5"],
+      "mode_emploi": "Ouvrez le fichier dans Excel ou LibreOffice.\nSaisissez votre seuil en B1.\nCollez la balance anonymisée à partir de la ligne 5.\nFiltrez la colonne « À creuser » sur « Oui », puis triez par écart.\nAucune donnée n'est envoyée à une IA : tout se calcule sur votre poste."
+    },
+    {
+      "type": "gain",
+      "tache": "Premier tri d'une balance de 81 comptes",
+      "reference": "defi"
+    },
+    {
+      "type": "fiche",
+      "titre": "Premier tri d'une balance N/N-1",
+      "etapes": [
+        "Anonymisez la balance : retirez le nom, le SIREN et l'adresse.",
+        "Collez-la dans le modèle et saisissez votre seuil.",
+        "Filtrez « À creuser », triez par écart en valeur absolue.",
+        "Faites rédiger les questions au client par votre IA (prompt de la session).",
+        "Recalculez deux écarts et les pourcentages au-delà de 100 %."
+      ],
+      "pieges": [
+        "Comparer des soldes bruts sans tenir compte du sens débit / crédit.",
+        "Prendre l'hypothèse de l'IA pour une explication.",
+        "Oublier les comptes qui disparaissent ou apparaissent entre N-1 et N."
+      ]
+    }
+  ],
+  "consignes_outils_ia": {
+    "claude": "Ouvrez une nouvelle conversation et joignez le fichier CSV, ou collez son contenu à la place de [Collez la balance ici]. Pour réutiliser le prompt, enregistrez-le dans les instructions d'un Projet. (À vérifier)",
+    "chatgpt": "Ouvrez une nouvelle conversation et joignez le fichier CSV. Pour réutiliser le prompt, créez un Projet ou un GPT personnalisé avec ce texte en instructions. (À vérifier)",
+    "copilot": "Dans Copilot (Microsoft 365), ouvrez le fichier dans Excel et posez la demande dans le volet Copilot, ou joignez le fichier dans le chat. Vérifiez que votre cabinet autorise l'envoi de fichiers. (À vérifier)",
+    "lechat": "Ouvrez une nouvelle conversation dans Le Chat et joignez le fichier CSV. Pour réutiliser le prompt, créez un agent avec ce texte en instructions. (À vérifier)"
+  }
+}

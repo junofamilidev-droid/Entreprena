@@ -1,0 +1,702 @@
+"use client";
+
+import * as React from "react";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  AlertTriangleIcon,
+  CheckIcon,
+  ClipboardPasteIcon,
+  CopyIcon,
+  DownloadIcon,
+  FileSpreadsheetIcon,
+  PlayIcon,
+  SquareIcon,
+  TimerIcon,
+  XIcon,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { DrawCheck } from "@/components/motion/draw-check";
+import { CountUp } from "@/components/motion/count-up";
+import { aiLabel, type AiChoice } from "@/lib/sessions/ai-tool";
+import { formatSeconds } from "@/lib/sessions/progress";
+import type {
+  CollageBlock,
+  ControleBlock,
+  DefiBlock,
+  FicheBlock,
+  GainBlock,
+  MissionBlock,
+  OutilBlock,
+  PromptBlock,
+  RepereErreurBlock,
+  Session,
+  SessionBlock,
+  TexteBlock,
+} from "@/lib/sessions/types";
+import type { ExerciseInputs, ExerciseValue } from "@/lib/content/types";
+
+export interface BlockCtx {
+  /** Position du bloc dans la session (préfixe de ses saisies). */
+  index: number;
+  session: Session;
+  inputs: ExerciseInputs;
+  set: (id: string, value: ExerciseValue) => void;
+  /** Plusieurs saisies d'un coup (une seule écriture). */
+  setMany: (values: ExerciseInputs) => void;
+  aiTool: AiChoice | null | undefined;
+  fileUrl: (name: string) => string;
+  savedTotalSec: number;
+}
+
+// Titre d'un bloc : assez grand pour guider l'œil, sans écraser la consigne.
+const TITLE = "text-2xl font-bold leading-tight tracking-tight text-balance sm:text-[1.75rem]";
+
+const str = (v: ExerciseValue | undefined) => (typeof v === "string" ? v : "");
+const rec = (v: ExerciseValue | undefined) => (v && !Array.isArray(v) && typeof v === "object" ? v : {});
+
+/** Un bloc peut-il être quitté ? Sinon, la raison affichée près du bouton Suivant. */
+export function blockGate(block: SessionBlock, ctx: Pick<BlockCtx, "index" | "inputs">): string | null {
+  const k = `b${ctx.index}`;
+  if (block.type === "defi" && !str(ctx.inputs[`${k}:sec`]) && !str(ctx.inputs[`${k}:passe`]))
+    return "Lancez le chronomètre et faites le défi, ou passez-le.";
+  if (block.type === "controle") {
+    const checks = rec(ctx.inputs[`${k}:coches`]);
+    if (block.items.some((_, i) => checks[i] !== "1")) return "Cochez chaque vérification pour continuer.";
+  }
+  if (block.type === "repere-erreur" && !str(ctx.inputs[`${k}:trouve`]) && Number(str(ctx.inputs[`${k}:essais`]) || 0) < 2)
+    return "Cliquez sur la ligne qui contient l'erreur.";
+  return null;
+}
+
+/* ---------------- Mission ---------------- */
+
+function initials(name: string) {
+  return name
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+}
+
+function Mission({ b }: { b: MissionBlock }) {
+  return (
+    <div className="space-y-5">
+      <p className="text-sm font-medium text-primary">Nouveau message</p>
+      <article className="overflow-hidden rounded-xl border bg-card shadow-sm">
+        <header className="flex items-start gap-3 border-b px-5 py-4">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+            {initials(b.expediteur)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold">{b.expediteur}</p>
+            <p className="text-sm text-muted-foreground">À : vous</p>
+          </div>
+          <span className="shrink-0 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-medium text-foreground">
+            Pour {b.echeance}
+          </span>
+        </header>
+        <div className="space-y-3 px-5 py-5">
+          <h1 className="text-heading text-balance">{b.objet}</h1>
+          <p className="text-body whitespace-pre-line">{b.message}</p>
+        </div>
+        <footer className="border-t bg-muted/40 px-5 py-3 text-sm">
+          <span className="font-medium">Livrable attendu : </span>
+          <span className="text-muted-foreground">{b.livrable}</span>
+        </footer>
+      </article>
+    </div>
+  );
+}
+
+/* ---------------- Défi ---------------- */
+
+function useNow(active: boolean) {
+  const [now, setNow] = React.useState(() => Date.now());
+  React.useEffect(() => {
+    if (!active) return;
+    const t = setInterval(() => setNow(Date.now()), 250);
+    return () => clearInterval(t);
+  }, [active]);
+  return now;
+}
+
+function Clock({ sec, target }: { sec: number; target: number }) {
+  const over = sec > target * 60;
+  const m = Math.floor(sec / 60);
+  return (
+    <span className={cn("font-mono text-4xl font-semibold tabular-nums tracking-tight", over && "text-warning")}>
+      {String(m).padStart(2, "0")}:{String(Math.floor(sec % 60)).padStart(2, "0")}
+    </span>
+  );
+}
+
+function Defi({ b, ctx }: { b: DefiBlock; ctx: BlockCtx }) {
+  const k = `b${ctx.index}`;
+  const start = Number(str(ctx.inputs[`${k}:debut`])) || 0;
+  const stopped = str(ctx.inputs[`${k}:sec`]);
+  const running = start > 0 && !stopped;
+  const now = useNow(running);
+  const sec = stopped ? Number(stopped) : running ? (now - start) / 1000 : 0;
+
+  function stop() {
+    const end = Date.now();
+    // Le temps « avec la méthode » se mesure à partir de la fin du défi.
+    ctx.setMany({ [`${k}:sec`]: String(Math.round((end - start) / 1000)), "methode:debut": String(end) });
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Défi · faites-le d&apos;abord à votre façon</p>
+        <h1 className={TITLE}>{b.consigne}</h1>
+      </div>
+      <a
+        href={ctx.fileUrl(b.donnees)}
+        download
+        className="group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:bg-muted/60"
+      >
+        <FileSpreadsheetIcon className="size-5 text-primary" aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium">{b.donnees}</span>
+          <span className="block text-caption text-muted-foreground">Données fictives</span>
+        </span>
+        <DownloadIcon className="size-4 text-muted-foreground transition-transform group-hover:translate-y-0.5" aria-hidden />
+      </a>
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border bg-card px-5 py-4">
+        <div className="flex items-center gap-3">
+          <TimerIcon className="size-5 text-muted-foreground" aria-hidden />
+          <Clock sec={sec} target={b.temps_cible_min} />
+        </div>
+        <p className="text-sm text-muted-foreground">Temps cible : {b.temps_cible_min} min</p>
+        <div className="ml-auto">
+          {!start && !stopped ? (
+            <Button size="lg" onClick={() => ctx.set(`${k}:debut`, String(Date.now()))}>
+              <PlayIcon /> Lancer le chrono
+            </Button>
+          ) : running ? (
+            <Button size="lg" variant="outline" onClick={stop}>
+              <SquareIcon /> J&apos;ai terminé
+            </Button>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-success">
+              <CheckIcon className="size-4" aria-hidden /> Défi chronométré
+            </span>
+          )}
+        </div>
+      </div>
+
+      {start > 0 && (
+        <div className="space-y-2">
+          <label htmlFor={`${k}-reponse`} className="text-sm font-medium">
+            Votre réponse
+          </label>
+          <Textarea
+            id={`${k}-reponse`}
+            rows={4}
+            value={str(ctx.inputs[`${k}:reponse`])}
+            onChange={(e) => ctx.set(`${k}:reponse`, e.target.value)}
+            placeholder="Notez ce que vous avez trouvé."
+            className="bg-card"
+          />
+        </div>
+      )}
+
+      {b.criteres.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">C&apos;est réussi si :</p>
+          <ul className="space-y-1.5 text-body text-muted-foreground">
+            {b.criteres.map((c) => (
+              <li key={c} className="flex gap-2">
+                <CheckIcon className="mt-1 size-4 shrink-0 text-primary" aria-hidden />
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {!start && !stopped && (
+        <button
+          type="button"
+          onClick={() => ctx.set(`${k}:passe`, "1")}
+          className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+        >
+          {str(ctx.inputs[`${k}:passe`]) ? "Défi passé : le temps gagné ne sera pas mesuré." : "Passer le défi"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Prompt ---------------- */
+
+/** Met en valeur les [champs à remplir] du prompt. */
+function withFields(text: string) {
+  return text.split(/(\[[^\]\n]+\])/g).map((part, i) =>
+    /^\[.*\]$/.test(part) ? (
+      <mark key={i} className="rounded bg-warning/25 px-0.5 text-foreground">
+        {part}
+      </mark>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    ),
+  );
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = React.useState(false);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("La copie n'a pas fonctionné : sélectionnez le texte à la main.");
+    }
+  }
+  return (
+    <Button size="sm" onClick={copy}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={copied ? "ok" : "copy"}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.15 }}
+          className="inline-flex items-center gap-1.5"
+        >
+          {copied ? <CheckIcon /> : <CopyIcon />} {copied ? "Copié" : "Copier"}
+        </motion.span>
+      </AnimatePresence>
+    </Button>
+  );
+}
+
+function ToolNote({ ctx }: { ctx: BlockCtx }) {
+  const tool = ctx.aiTool;
+  if (!tool) return null;
+  const note = tool !== "autre" ? ctx.session.consignes_outils_ia[tool] : undefined;
+  return (
+    <div className="rounded-lg border-l-2 border-primary bg-accent/50 px-4 py-3 text-sm">
+      <p className="font-medium">Dans {aiLabel(tool)}</p>
+      <p className="mt-1 text-muted-foreground">
+        {note || "Collez le prompt dans l'outil d'IA autorisé par votre employeur : il est écrit pour fonctionner partout."}
+      </p>
+    </div>
+  );
+}
+
+function Prompt({ b, ctx }: { b: PromptBlock; ctx: BlockCtx }) {
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Méthode</p>
+        <h1 className={TITLE}>{b.usage}</h1>
+      </div>
+      <figure className="overflow-hidden rounded-xl border bg-card">
+        <figcaption className="flex items-center justify-between gap-3 border-b px-4 py-2.5">
+          <span className="text-sm font-medium">Prompt à copier</span>
+          <CopyButton text={b.texte} />
+        </figcaption>
+        <pre className="max-h-72 overflow-auto px-4 py-4 font-mono text-[0.8125rem] leading-relaxed whitespace-pre-wrap">
+          {withFields(b.texte)}
+        </pre>
+      </figure>
+      <p className="text-caption text-muted-foreground">Remplacez les passages surlignés entre crochets avant d&apos;envoyer.</p>
+      <ToolNote ctx={ctx} />
+      <div className="space-y-1.5">
+        <p className="text-sm font-medium">Ce que vous devez obtenir</p>
+        <p className="rounded-lg border border-dashed bg-muted/30 px-4 py-3 text-body whitespace-pre-line text-muted-foreground">
+          {b.resultat_attendu}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Collage ---------------- */
+
+function Checklist({
+  items,
+  checks,
+  onToggle,
+  idPrefix,
+}: {
+  items: string[];
+  checks: Record<string, string>;
+  onToggle: (i: number, v: boolean) => void;
+  idPrefix: string;
+}) {
+  return (
+    <ul className="space-y-2">
+      {items.map((item, i) => {
+        const on = checks[i] === "1";
+        return (
+          <li key={item}>
+            <label
+              htmlFor={`${idPrefix}-${i}`}
+              className={cn(
+                "flex cursor-pointer items-start gap-3 rounded-lg border bg-card px-4 py-3 text-body transition-colors hover:bg-muted/60",
+                on && "border-primary/40 bg-accent/40",
+              )}
+            >
+              <Checkbox id={`${idPrefix}-${i}`} checked={on} onCheckedChange={(v) => onToggle(i, v === true)} className="mt-0.5" />
+              <span className={cn("flex-1", on && "text-muted-foreground")}>{item}</span>
+            </label>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Collage({ b, ctx }: { b: CollageBlock; ctx: BlockCtx }) {
+  const k = `b${ctx.index}`;
+  const checks = rec(ctx.inputs[`${k}:coches`]);
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Réponse de votre IA</p>
+        <h1 className={TITLE}>{b.consigne}</h1>
+      </div>
+      <div className="relative">
+        <ClipboardPasteIcon className="pointer-events-none absolute top-3 left-3 size-4 text-muted-foreground" aria-hidden />
+        <Textarea
+          rows={7}
+          aria-label="Réponse de votre IA"
+          value={str(ctx.inputs[`${k}:texte`])}
+          onChange={(e) => ctx.set(`${k}:texte`, e.target.value)}
+          placeholder="Collez ici la réponse de votre IA"
+          className="bg-card pl-9 font-mono text-[0.8125rem]"
+        />
+      </div>
+      {b.a_verifier.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">À vérifier dans la réponse</p>
+          <Checklist
+            items={b.a_verifier}
+            checks={checks}
+            idPrefix={k}
+            onToggle={(i, v) => ctx.set(`${k}:coches`, { ...checks, [i]: v ? "1" : "0" })}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Contrôle ---------------- */
+
+function Controle({ b, ctx }: { b: ControleBlock; ctx: BlockCtx }) {
+  const k = `b${ctx.index}`;
+  const checks = rec(ctx.inputs[`${k}:coches`]);
+  const done = b.items.filter((_, i) => checks[i] === "1").length;
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Contrôle</p>
+        <h1 className={TITLE}>Avant d&apos;aller plus loin, vérifiez</h1>
+        <p className="text-sm text-muted-foreground tabular-nums">
+          {done} sur {b.items.length} vérifié{done > 1 ? "s" : ""}
+        </p>
+      </div>
+      <Checklist
+        items={b.items}
+        checks={checks}
+        idPrefix={k}
+        onToggle={(i, v) => ctx.set(`${k}:coches`, { ...checks, [i]: v ? "1" : "0" })}
+      />
+    </div>
+  );
+}
+
+/* ---------------- Repérez l'erreur ---------------- */
+
+function RepereErreur({ b, ctx }: { b: RepereErreurBlock; ctx: BlockCtx }) {
+  const k = `b${ctx.index}`;
+  const found = str(ctx.inputs[`${k}:trouve`]) === "1";
+  const tries = Number(str(ctx.inputs[`${k}:essais`]) || 0);
+  const [wrong, setWrong] = React.useState<number | null>(null);
+  const reveal = found || tries >= 2;
+  const faulty = b.ligne_fautive - 1;
+
+  function pick(i: number) {
+    if (reveal) return;
+    if (i === faulty) ctx.set(`${k}:trouve`, "1");
+    else {
+      setWrong(i);
+      ctx.set(`${k}:essais`, String(tries + 1));
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Repérez l&apos;erreur</p>
+        <h1 className={TITLE}>Une IA a produit ces lignes. L&apos;une d&apos;elles est fausse : laquelle ?</h1>
+      </div>
+      <ol className="overflow-hidden rounded-xl border bg-card font-mono text-[0.8125rem]">
+        {b.lignes.map((line, i) => {
+          const isFaulty = reveal && i === faulty;
+          const isWrong = !reveal && wrong === i;
+          return (
+            <motion.li
+              key={i}
+              animate={isWrong ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+              transition={{ duration: 0.35 }}
+              className="border-b last:border-b-0"
+            >
+              <button
+                type="button"
+                onClick={() => pick(i)}
+                disabled={reveal}
+                className={cn(
+                  "flex w-full items-start gap-3 px-4 py-3 text-left leading-relaxed transition-colors enabled:hover:bg-muted/60",
+                  isFaulty && "bg-destructive/10",
+                  isWrong && "bg-muted",
+                )}
+              >
+                <span className="w-5 shrink-0 text-muted-foreground tabular-nums">{i + 1}</span>
+                <span className="flex-1">{line}</span>
+                {isFaulty && <XIcon className="mt-0.5 size-4 shrink-0 text-destructive" aria-label="ligne fautive" />}
+              </button>
+            </motion.li>
+          );
+        })}
+      </ol>
+      {!reveal && wrong !== null && <p className="text-sm text-muted-foreground">Celle-ci est juste. Encore un essai.</p>}
+      {reveal && (
+        <motion.div
+          role="status"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-lg border-l-2 border-primary bg-muted/50 px-4 py-3 text-body"
+        >
+          <p className="flex items-center gap-2 font-medium">
+            {found ? (
+              <>
+                <DrawCheck className="size-5 text-success" /> Bien vu : ligne {b.ligne_fautive}.
+              </>
+            ) : (
+              <>L&apos;erreur était à la ligne {b.ligne_fautive}.</>
+            )}
+          </p>
+          <p className="mt-1 text-muted-foreground">{b.explication}</p>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Outil ---------------- */
+
+function Outil({ b, ctx }: { b: OutilBlock; ctx: BlockCtx }) {
+  const steps = b.mode_emploi.split("\n").map((s) => s.trim()).filter(Boolean);
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Votre outil</p>
+        <h1 className={TITLE}>{b.description}</h1>
+      </div>
+      <a
+        href={ctx.fileUrl(b.fichier)}
+        download
+        className="group flex items-center gap-4 rounded-xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+      >
+        <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
+          <FileSpreadsheetIcon className="size-6" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-semibold">{b.fichier}</span>
+          <span className="block text-sm text-muted-foreground">À télécharger et à adapter à vos dossiers</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+          <DownloadIcon className="size-4 transition-transform group-hover:translate-y-0.5" aria-hidden /> Télécharger
+        </span>
+      </a>
+      {b.champs_a_adapter.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Champs à adapter</p>
+          <ul className="flex flex-wrap gap-2">
+            {b.champs_a_adapter.map((c) => (
+              <li key={c} className="rounded-md border bg-warning/15 px-2.5 py-1 text-sm">
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Mode d&apos;emploi</p>
+        <ol className="space-y-2 text-body">
+          {steps.map((s, i) => (
+            <li key={i} className="flex gap-3">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs font-semibold text-primary">
+                {i + 1}
+              </span>
+              <span className="text-muted-foreground">{s.replace(/^\d+[.)]\s*/, "")}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Gain ---------------- */
+
+/** Temps du défi et temps avec la méthode, calculés à l'arrivée sur le bloc puis figés. */
+function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean }) {
+  const defiIndex = ctx.session.blocs.slice(0, ctx.index).map((x) => x.type).lastIndexOf("defi");
+  const defiSec = Number(str(ctx.inputs[`b${defiIndex}:sec`])) || 0;
+  const methodStart = Number(str(ctx.inputs["methode:debut"])) || 0;
+  const recorded = str(ctx.inputs["gain:methode_sec"]);
+  const { setMany } = ctx;
+
+  React.useEffect(() => {
+    if (!active || recorded || !defiSec || !methodStart) return;
+    const methodSec = Math.round((Date.now() - methodStart) / 1000);
+    // Au-delà d'une heure, l'apprenant a fait une pause : la mesure n'a plus de sens.
+    if (methodSec > 3600) return void setMany({ "gain:methode_sec": "pause" });
+    setMany({ "gain:methode_sec": String(methodSec), gain_sec: String(Math.max(0, defiSec - methodSec)) });
+  }, [active, recorded, defiSec, methodStart, setMany]);
+
+  const methodSec = Number(recorded) || 0;
+  const measured = defiSec > 0 && methodSec > 0;
+  const saved = Math.max(0, defiSec - methodSec);
+  const max = Math.max(defiSec, methodSec, 1);
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Temps gagné</p>
+        <h1 className={TITLE}>{b.tache}</h1>
+      </div>
+      {measured ? (
+        <>
+          <div className="space-y-4 rounded-xl border bg-card p-5">
+            {[
+              { label: "À votre façon (défi)", sec: defiSec, className: "bg-muted-foreground/40" },
+              { label: "Avec la méthode", sec: methodSec, className: "bg-primary" },
+            ].map((row, i) => (
+              <div key={row.label} className="space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span>{row.label}</span>
+                  <span className="font-medium tabular-nums">{formatSeconds(row.sec)}</span>
+                </div>
+                <div className="h-3 overflow-hidden rounded-full bg-muted">
+                  <motion.div
+                    className={cn("h-full rounded-full", row.className)}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(row.sec / max) * 100}%` }}
+                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 + i * 0.25 }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-xl border bg-card p-5">
+              <p className="text-sm text-muted-foreground">Gagné sur cette tâche</p>
+              <p className="mt-1 text-3xl font-semibold tracking-tight text-primary">{formatSeconds(saved)}</p>
+            </div>
+            <div className="rounded-xl border bg-primary p-5 text-primary-foreground">
+              <p className="text-sm opacity-85">Temps gagné depuis le début</p>
+              <p className="mt-1 text-3xl font-semibold tracking-tight">
+                <CountUp value={Math.round(ctx.savedTotalSec / 60)} /> min
+              </p>
+            </div>
+          </div>
+          {saved === 0 && (
+            <p className="text-sm text-muted-foreground">
+              Pas de gain cette fois : c&apos;est normal au premier essai. La méthode se rentabilise dès la deuxième utilisation.
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="rounded-lg border border-dashed px-4 py-3 text-body text-muted-foreground">
+          {recorded === "pause"
+            ? "La session a été interrompue trop longtemps : le temps avec la méthode n'a pas pu être mesuré."
+            : "Le défi n'a pas été chronométré : le temps gagné n'est pas mesuré pour cette session."}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Fiche et texte ---------------- */
+
+function Fiche({ b }: { b: FicheBlock }) {
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-medium text-primary">Fiche juste-à-temps</p>
+        <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground">
+          Rangée dans Ma boîte à outils
+        </span>
+      </div>
+      <article className="rounded-xl border bg-card p-6 shadow-sm">
+        <h1 className="text-heading">{b.titre}</h1>
+        <ol className="mt-4 space-y-2.5 text-body">
+          {b.etapes.map((s, i) => (
+            <li key={i} className="flex gap-3">
+              <span className="font-semibold text-primary tabular-nums">{i + 1}.</span>
+              <span>{s}</span>
+            </li>
+          ))}
+        </ol>
+        {b.pieges.length > 0 && (
+          <div className="mt-6 rounded-lg bg-warning/10 p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold">
+              <AlertTriangleIcon className="size-4 text-warning" aria-hidden /> Pièges
+            </p>
+            <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+              {b.pieges.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </article>
+    </div>
+  );
+}
+
+function Texte({ b }: { b: TexteBlock }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-sm font-medium text-primary">À savoir</p>
+      <p className="text-2xl leading-snug font-medium text-balance whitespace-pre-line">{b.contenu}</p>
+    </div>
+  );
+}
+
+export function BlockView({ block, ctx, active }: { block: SessionBlock; ctx: BlockCtx; active: boolean }) {
+  switch (block.type) {
+    case "mission":
+      return <Mission b={block} />;
+    case "defi":
+      return <Defi b={block} ctx={ctx} />;
+    case "prompt":
+      return <Prompt b={block} ctx={ctx} />;
+    case "collage":
+      return <Collage b={block} ctx={ctx} />;
+    case "controle":
+      return <Controle b={block} ctx={ctx} />;
+    case "repere-erreur":
+      return <RepereErreur b={block} ctx={ctx} />;
+    case "outil":
+      return <Outil b={block} ctx={ctx} />;
+    case "gain":
+      return <Gain b={block} ctx={ctx} active={active} />;
+    case "fiche":
+      return <Fiche b={block} />;
+    case "texte":
+      return <Texte b={block} />;
+  }
+}

@@ -1,0 +1,82 @@
+﻿Compte;Libelle;Solde debiteur 2025;Solde crediteur 2025;Solde debiteur 2024;Solde crediteur 2024
+101300;Capital souscrit, appelé, versé;;500000;;500000
+106100;Réserve légale;;50000;;50000
+106800;Autres réserves;;1707600;;1550000
+151100;Provisions pour litiges;;45000;;45000
+164000;Emprunt Banque Littorale des Flandres n° 4471;;880000;;380000
+168840;Intérêts courus sur emprunts;;4600;;2100
+213500;Installations générales, agencements;410000;;410000;
+215400;Matériel industriel (rayonnages, chariots);1140000;;520000;
+218200;Matériel de transport;286000;;286000;
+218300;Matériel de bureau et informatique;163000;;148000;
+275000;Dépôts et cautionnements versés;42000;;42000;
+281350;Amortissements des agencements;;287000;;246000
+281540;Amortissements du matériel industriel;;377000;;312000
+281820;Amortissements du matériel de transport;;171600;;114400
+281830;Amortissements du matériel de bureau et informatique;;127000;;97000
+371000;Stock de marchandises - fournitures de bureau;560000;;520000;
+372000;Stock de marchandises - mobilier de bureau;930000;;610000;
+373000;Stock de marchandises - consommables informatiques;230000;;210000;
+397000;Dépréciations des stocks de marchandises;;34000;;34000
+401000;Fournisseurs;;1455000;;1420000
+408100;Fournisseurs - factures non parvenues;;38000;;214000
+409100;Fournisseurs - avances et acomptes versés;9000;;12000;
+411000;Clients;2660000;;1985000;
+416000;Clients douteux ou litigieux;98000;;96000;
+418100;Clients - factures à établir;44000;;41000;
+419100;Clients - avances et acomptes reçus;;26000;;22000
+421000;Personnel - rémunérations dues;;4500;;4200
+428200;Dettes provisionnées pour congés payés;;146000;;142000
+431000;Sécurité sociale (URSSAF);;121000;;118000
+437000;Autres organismes sociaux;;66000;;64000
+438200;Charges sociales sur congés payés;;60000;;58000
+444000;État - impôt sur les bénéfices;;126400;;12000
+445510;TVA à décaisser;;81000;;74000
+445860;TVA sur factures non parvenues;6300;;35700;
+445870;TVA sur factures à établir;;7300;;6800
+447000;Autres impôts, taxes et versements assimilés;;13000;;12000
+455000;Compte courant d'associé - M. Verhaeghe;;150000;;150000
+471000;Compte d'attente;86400;;;
+486000;Charges constatées d'avance;67000;;64000;
+491000;Dépréciations des comptes clients;;52000;;71000
+512000;Banque;433800;;975200;
+530000;Caisse;900;;1200;
+603710;Variation des stocks - fournitures de bureau;;40000;;20000
+603720;Variation des stocks - mobilier de bureau;;320000;;25000
+603730;Variation des stocks - consommables informatiques;;20000;;5000
+606100;Fournitures non stockables (électricité, gaz);80000;;58000;
+606300;Fournitures d'entretien et de petit équipement;23000;;21000;
+606400;Fournitures administratives;9400;;9000;
+607110;Achats de marchandises - fournitures de bureau;3950000;;3600000;
+607120;Achats de marchandises - mobilier de bureau;2710000;;2740000;
+607130;Achats de marchandises - consommables informatiques;1690000;;1440000;
+609700;Rabais, remises et ristournes obtenus sur achats;;99000;;96000
+613200;Locations immobilières - SCI des Peupliers (entrepôt);318000;;312000;
+613500;Locations mobilières;22000;;38000;
+615500;Entretien et réparations;47000;;44000;
+616000;Primes d'assurance;55000;;52000;
+622600;Honoraires;71000;;68000;
+623000;Publicité, salons et catalogues;92000;;86000;
+624200;Transports sur ventes;436000;;402000;
+625100;Voyages et déplacements;63000;;61000;
+626000;Frais postaux et de télécommunications;18500;;18000;
+627000;Services bancaires;15000;;14000;
+633300;Participation à la formation professionnelle;25000;;24000;
+635110;Contribution économique territoriale;44000;;46000;
+641100;Salaires et appointements;1548000;;1512000;
+645100;Cotisations à l'URSSAF;439000;;428000;
+645300;Cotisations aux caisses de retraite et prévoyance;197000;;192000;
+647500;Médecine du travail;5300;;5200;
+654100;Pertes sur créances irrécouvrables;4000;;18000;
+661100;Intérêts des emprunts;27000;;11000;
+681120;Dotations aux amortissements des immobilisations corporelles;193200;;190400;
+681740;Dotations aux dépréciations des créances;;;26000;
+695000;Impôt sur les bénéfices;212200;;85800;
+707110;Ventes de marchandises - fournitures de bureau;;5610000;;5240000
+707120;Ventes de marchandises - mobilier de bureau;;4270000;;4130000
+707130;Ventes de marchandises - consommables informatiques;;2600000;;2250000
+708500;Ports et frais accessoires facturés;;151000;;148000
+709700;Rabais, remises et ristournes accordés;205000;;186000;
+758000;Produits divers de gestion courante;;5000;;6000
+768000;Autres produits financiers;;2000;;3000
+781740;Reprises sur dépréciations des créances;;19000;;22000
