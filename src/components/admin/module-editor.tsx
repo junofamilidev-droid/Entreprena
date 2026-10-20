@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { PlusIcon } from "lucide-react";
+import Link from "next/link";
+import { FileJsonIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createStep, deleteRow, move, setStatus, updateRow } from "@/lib/admin/actions";
@@ -24,10 +25,12 @@ export function ModuleEditor({
   module: mod,
   formation,
   steps,
+  sessions,
 }: {
   module: Module;
   formation: { id: string; slug: string; title: string };
   steps: ModuleWithSteps["steps"];
+  sessions: { id: string; number: number; title: string; duration_min: number; status: "draft" | "published" }[];
 }) {
   const router = useRouter();
   const { run, pending } = useAction();
@@ -91,7 +94,44 @@ export function ModuleEditor({
         <TextField label="Le livrable" value={draft.deliverable} onChange={(v) => set("deliverable", v)} multiline />
       </Section>
 
-      <Section title="Étapes">
+      <Section
+        title="Sessions en blocs"
+        aside={
+          <Button asChild size="sm">
+            <Link href="/admin/sessions/importer">
+              <FileJsonIcon /> Importer une session (JSON)
+            </Link>
+          </Button>
+        }
+      >
+        {sessions.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Aucune session pour ce module. Importez un fichier JSON dont « formation » vaut{" "}
+            <span className="font-mono">{formation.slug}</span> et « module » vaut <span className="font-mono">{mod.slug}</span>.
+          </p>
+        ) : (
+          <>
+            <ol className="divide-y rounded-md border">
+              {sessions.map((s) => (
+                <li key={s.id} className="flex items-center gap-3 px-3 py-2.5">
+                  <span className="w-6 shrink-0 text-right font-mono text-sm text-muted-foreground tabular-nums">{s.number}</span>
+                  <Link href={`/admin/sessions/${s.id}`} className="min-w-0 flex-1 hover:underline">
+                    <span className="block truncate font-medium">{s.title}</span>
+                    <span className="block text-caption text-muted-foreground">{s.duration_min} min</span>
+                  </Link>
+                  <StatusBadge status={s.status} />
+                </li>
+              ))}
+            </ol>
+            <p className="text-caption text-muted-foreground">
+              Durée du module calculée depuis les sessions publiées :{" "}
+              {sessions.filter((s) => s.status === "published").reduce((t, s) => t + s.duration_min, 0)} min.
+            </p>
+          </>
+        )}
+      </Section>
+
+      <Section title="Étapes (ancien format)">
         {steps.length > 0 && (
           <ol className="divide-y rounded-md border">
             {steps.map((s, i) => (

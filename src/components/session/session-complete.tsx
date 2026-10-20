@@ -8,6 +8,7 @@ import { DrawCheck } from "@/components/motion/draw-check";
 import { CountUp } from "@/components/motion/count-up";
 import { duration, ease, stagger } from "@/lib/motion";
 import { formatSeconds } from "@/lib/sessions/progress";
+import { recordDownload, useDownloads } from "@/lib/sessions/downloads";
 import type { FicheBlock, OutilBlock, Session } from "@/lib/sessions/types";
 import type { ExerciseInputs } from "@/lib/content/types";
 
@@ -24,10 +25,6 @@ const item: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: duration.lent, ease: ease.out } },
 };
 
-function minutes(sec: number) {
-  return Math.round(sec / 60);
-}
-const minLabel = (n: number) => `${n} min`;
 
 // Fin de session : la réussite est ancrée (coche, chiffres réels), puis on montre la suite.
 export function SessionComplete({
@@ -49,20 +46,24 @@ export function SessionComplete({
   next: NextSession | null;
   onReview: () => void;
 }) {
+  const downloads = useDownloads();
   const start = Number(inputs["session:debut"]) || 0;
   const end = Number(inputs["session:fin"]) || 0;
   const realSec = start && end > start ? (end - start) / 1000 : 0;
   const gainSec = Number(inputs.gain_sec) || 0;
+  const found = Number(inputs["score:trouvees"]);
+  const outOf = Number(inputs["score:total"]) || 0;
   const tools = session.blocs.filter((b): b is OutilBlock => b.type === "outil");
   const fiches = session.blocs.filter((b): b is FicheBlock => b.type === "fiche");
 
   const stats = [
     realSec > 0 && { label: "Durée réelle", value: Math.round(realSec), format: formatSeconds, sub: `pour ${session.duree_min} min prévues` },
     gainSec > 0 && { label: "Gagné sur la tâche", value: gainSec, format: formatSeconds, sub: "par rapport à votre défi" },
-    savedTotalSec >= 60 && {
+    outOf > 0 && { label: "Réponses du défi", value: found, format: (n: number) => `${n} sur ${outOf}`, sub: "trouvées à votre façon" },
+    savedTotalSec > 0 && {
       label: "Temps gagné depuis le début",
-      value: minutes(savedTotalSec),
-      format: minLabel,
+      value: Math.round(savedTotalSec),
+      format: formatSeconds,
       sub: "toutes sessions confondues",
       strong: true,
     },
@@ -85,7 +86,7 @@ export function SessionComplete({
         <h1 className="mt-1 text-title text-balance">Session terminée : {session.titre.charAt(0).toLowerCase() + session.titre.slice(1)}</h1>
 
         <motion.div variants={list} initial="hidden" animate="show" className="mt-10 space-y-10">
-          <motion.dl variants={item} className={stats.length > 2 ? "grid gap-3 sm:grid-cols-3" : "grid gap-3 sm:grid-cols-2"}>
+          <motion.dl variants={item} className={stats.length === 3 ? "grid gap-3 sm:grid-cols-3" : "grid gap-3 sm:grid-cols-2"}>
             {stats.map((s) => (
               <div
                 key={s.label}
@@ -108,7 +109,12 @@ export function SessionComplete({
               <ul className="divide-y overflow-hidden rounded-xl border bg-card">
                 {tools.map((t) => (
                   <li key={t.fichier}>
-                    <a href={fileUrl(t.fichier)} download className="group flex items-center gap-3 px-4 py-3 hover:bg-muted/60">
+                    <a
+                      href={fileUrl(t.fichier)}
+                      download
+                      onClick={() => recordDownload({ name: t.fichier, href: fileUrl(t.fichier), source: `Session ${session.session} : ${session.titre}` }, downloads)}
+                      className="group flex items-center gap-3 px-4 py-3 hover:bg-muted/60"
+                    >
                       <FileSpreadsheetIcon className="size-5 shrink-0 text-primary" aria-hidden />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium">{t.fichier}</span>

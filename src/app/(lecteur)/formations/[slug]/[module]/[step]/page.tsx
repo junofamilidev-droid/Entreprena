@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { atLeastOne, PLACEHOLDER } from "@/lib/content/static-params";
 import { notFound } from "next/navigation";
 import { StepView } from "@/components/reader/step-view";
 import { getFormation, getModule, listFormations } from "@/lib/content/source";
@@ -17,7 +18,7 @@ export async function generateStaticParams() {
       for (const s of mod?.steps ?? []) params.push({ slug: f.slug, module: m.slug, step: s.slug });
     }
   }
-  return params;
+  return atLeastOne(params, { slug: PLACEHOLDER, module: PLACEHOLDER, step: PLACEHOLDER });
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {

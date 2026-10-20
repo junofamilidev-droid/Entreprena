@@ -5,10 +5,11 @@ import { AI_TOOLS, type Session, type SessionBlock } from "./types";
 
 export type ParseResult = { ok: true; session: Session } | { ok: false; errors: string[] };
 
-type Field = "texte" | "nombre" | "liste";
-const BLOCK_FIELDS: Record<SessionBlock["type"], Record<string, Field>> = {
+export type Field = "texte" | "nombre" | "liste" | "liste?";
+/** Champs de chaque type de bloc, dans l'ordre du format (sert aussi à l'éditeur). */
+export const BLOCK_FIELDS: Record<SessionBlock["type"], Record<string, Field>> = {
   mission: { expediteur: "texte", objet: "texte", message: "texte", echeance: "texte", livrable: "texte" },
-  defi: { consigne: "texte", donnees: "texte", temps_cible_min: "nombre", criteres: "liste" },
+  defi: { consigne: "texte", donnees: "texte", temps_cible_min: "nombre", criteres: "liste", reponses_attendues: "liste?" },
   prompt: { texte: "texte", usage: "texte", resultat_attendu: "texte" },
   collage: { consigne: "texte", a_verifier: "liste" },
   controle: { items: "liste" },
@@ -77,10 +78,12 @@ export function parseSession(input: string | unknown): ParseResult {
       const w = `${where} (${b.type})`;
       for (const [name, kind] of Object.entries(fields)) {
         const v = b[name];
-        if (v === undefined) errors.push(`${w} : champ « ${name} » manquant.`);
+        if (v === undefined) {
+          if (kind !== "liste?") errors.push(`${w} : champ « ${name} » manquant.`);
+        }
         else if (kind === "texte") text(v, `${w}, « ${name} »`);
         else if (kind === "nombre" && typeof v !== "number") errors.push(`${w} : « ${name} » doit être un nombre, sans guillemets.`);
-        else if (kind === "liste" && (!Array.isArray(v) || v.some((x) => typeof x !== "string" || !x.trim())))
+        else if ((kind === "liste" || kind === "liste?") && (!Array.isArray(v) || v.some((x) => typeof x !== "string" || !x.trim())))
           errors.push(`${w} : « ${name} » doit être une liste de textes non vides, entre [ et ].`);
       }
       for (const name of Object.keys(b)) {
@@ -96,11 +99,7 @@ export function parseSession(input: string | unknown): ParseResult {
         else if (!Number.isInteger(b.ligne_fautive) || b.ligne_fautive < 1 || b.ligne_fautive > b.lignes.length)
           errors.push(`${w} : « ligne_fautive » doit être le numéro d'une des lignes, de 1 à ${b.lignes.length}.`);
       }
-      if (b.type === "gain") {
-        if (b.reference !== "defi") errors.push(`${w} : « reference » doit valoir « defi ».`);
-        else if (!blocs.slice(0, i).some((x) => isRecord(x) && x.type === "defi"))
-          errors.push(`${w} : il faut un bloc « defi » avant ce bloc, pour mesurer le temps gagné.`);
-      }
+      if (b.type === "gain" && b.reference !== "defi") errors.push(`${w} : « reference » doit valoir « defi ».`);
     });
   }
 

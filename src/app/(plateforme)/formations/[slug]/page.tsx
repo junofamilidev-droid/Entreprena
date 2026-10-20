@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { atLeastOne, PLACEHOLDER } from "@/lib/content/static-params";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LockIcon } from "lucide-react";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/platform/page-header";
 import { getFormation, listFormations } from "@/lib/content/source";
+import { durationText, formationDurations } from "@/lib/content/durations";
 import { Marked, unmark } from "@/components/ui/marked";
 import { site } from "@/lib/site";
 
@@ -15,7 +17,7 @@ import { site } from "@/lib/site";
 export const instant = false;
 
 export async function generateStaticParams() {
-  return (await listFormations()).map((f) => ({ slug: f.slug }));
+  return atLeastOne((await listFormations()).map((f) => ({ slug: f.slug })), { slug: PLACEHOLDER });
 }
 
 export async function generateMetadata(props: PageProps<"/formations/[slug]">): Promise<Metadata> {
@@ -31,6 +33,9 @@ export default async function FormationPage(props: PageProps<"/formations/[slug]
 
   const base = `/formations/${formation.slug}`;
   const firstOpen = formation.modules.find((m) => m.availability === "open");
+  // Durées calculées depuis le contenu publié (sessions, ou étapes à défaut).
+  const durations = await formationDurations(formation);
+  const openMinutes = Object.values(durations).reduce((t, d) => t + d.minutes, 0);
 
   return (
     <>
@@ -38,7 +43,8 @@ export default async function FormationPage(props: PageProps<"/formations/[slug]
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
         <header className="max-w-3xl space-y-4">
           <p className="text-sm text-muted-foreground">
-            {formation.domain}, pour les {formation.audience.toLowerCase()}
+            {formation.domain}, pour les {formation.audience.toLowerCase()} · {formation.modules.length} modules
+            {openMinutes > 0 && ` · ${durationText(openMinutes)} ouverts aujourd'hui`}
           </p>
           <h1 className="text-display text-balance">{formation.title}</h1>
           <p className="text-lead text-muted-foreground">
@@ -91,7 +97,9 @@ export default async function FormationPage(props: PageProps<"/formations/[slug]
                             <Button asChild size="sm">
                               <Link href={`${base}/${m.slug}`}>Ouvrir le module</Link>
                             </Button>
-                            {m.durationLabel && <span className="text-caption text-muted-foreground">{m.durationLabel}</span>}
+                            {(durations[m.slug]?.label ?? m.durationLabel) && (
+                              <span className="text-caption text-muted-foreground">{durations[m.slug]?.label ?? m.durationLabel}</span>
+                            )}
                           </div>
                         )}
                       </div>

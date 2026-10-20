@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { DownloadIcon, PlusIcon } from "lucide-react";
+import { BarChart3Icon, DownloadIcon, FileJsonIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createFormation, importFromFiles } from "@/lib/admin/actions";
@@ -32,8 +32,7 @@ export function AdminHome({
       <Section title="Formations">
         {formations.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Aucune formation dans la base pour l&apos;instant. Le site affiche celles des fichiers du projet : importez-les
-            ci-dessous pour pouvoir les modifier ici.
+            Aucune formation dans la base pour l&apos;instant : le site n&apos;affiche rien. Importez le contenu initial ci-dessous.
           </p>
         ) : (
           <ul className="divide-y rounded-md border">
@@ -65,11 +64,29 @@ export function AdminHome({
         </form>
       </Section>
 
-      <Section title="Importer le contenu des fichiers">
+      <Section title="Sessions en blocs">
         <p className="text-sm text-muted-foreground">
-          Copie dans la base les formations rédigées dans les fichiers du projet (dossier content/). Les éléments déjà
-          présents avec le même identifiant sont remplacés par la version des fichiers ; rien n&apos;est supprimé. Dès
-          qu&apos;une formation publiée est dans la base, le site affiche le contenu de la base.
+          Collez le fichier JSON d&apos;une session : il est vérifié, prévisualisé, puis publié dans son module.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link href="/admin/sessions/importer">
+              <FileJsonIcon /> Importer une session (JSON)
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/mesure">
+              <BarChart3Icon /> Mesure des sessions
+            </Link>
+          </Button>
+        </div>
+      </Section>
+
+      <Section title="Importer le contenu initial">
+        <p className="text-sm text-muted-foreground">
+          Le site affiche uniquement le contenu de la base. Ce bouton y copie une fois le contenu de départ rédigé dans
+          les fichiers du projet (dossier content/). Les éléments déjà présents avec le même identifiant sont remplacés ;
+          rien n&apos;est supprimé.
         </p>
         <Button
           variant="outline"
@@ -79,7 +96,7 @@ export function AdminHome({
             run(importFromFiles, undefined, (d) => d && toast.success(`Import terminé : ${d.formations} formation(s), ${d.modules} module(s), ${d.steps} étape(s).`));
           }}
         >
-          <DownloadIcon /> {pending ? "Import…" : "Importer depuis les fichiers"}
+          <DownloadIcon /> {pending ? "Import…" : "Importer le contenu initial"}
         </Button>
       </Section>
     </div>

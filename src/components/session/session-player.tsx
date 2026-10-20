@@ -14,7 +14,9 @@ import { sessionKey, totalSavedSec } from "@/lib/sessions/progress";
 import { duration, ease } from "@/lib/motion";
 import { blockLabel, type Session } from "@/lib/sessions/types";
 import type { ExerciseInputs, ExerciseValue } from "@/lib/content/types";
-import { BlockView, blockGate, type BlockCtx } from "./blocks";
+import { BlockView, blockGate, methodSpan, useNow, type BlockCtx } from "./blocks";
+import { forLearner } from "@/lib/sessions/display";
+import { trackSession } from "@/lib/sessions/track";
 import { SessionComplete, type NextSession } from "./session-complete";
 
 function AiToolDialog({ open, current, onClose }: { open: boolean; current: AiChoice | null; onClose: () => void }) {
@@ -97,11 +99,14 @@ function Segments({
 
 // Lecteur d'une session : un écran par bloc, bouton Suivant, barre de progression.
 export function SessionPlayer({
-  session,
+  session: raw,
   moduleLabel,
   exitHref,
   fileBase,
   next,
+  keyPrefix = "",
+  measure = true,
+  askAiTool = true,
 }: {
   session: Session;
   moduleLabel: string;
@@ -110,13 +115,23 @@ export function SessionPlayer({
   fileBase: string;
   /** Session suivante, montrée à la fin pour donner envie de continuer. */
   next?: NextSession | null;
+  /** Préfixe de la progression : « apercu- » dans l'espace réservé, pour ne pas la mêler au site. */
+  keyPrefix?: string;
+  /** Envoie la mesure anonyme (désactivé pour les aperçus). */
+  measure?: boolean;
+  /** Demande l'outil d'IA dès l'ouverture (désactivé dans l'aperçu intégré de l'import). */
+  askAiTool?: boolean;
 }) {
   const router = useRouter();
   const reduce = useReducedMotion();
+  // Côté apprenant, les mentions « (À vérifier) » des rédacteurs sont masquées.
+  const session = React.useMemo(() => forLearner(raw), [raw]);
+  const span = methodSpan(session.blocs);
   const ready = useProgressReady();
   const progress = useProgress();
   const aiTool = useAiTool();
-  const key = sessionKey(session.formation, session.module, session.session);
+  const baseKey = sessionKey(session.formation, session.module, session.session);
+  const key = keyPrefix + baseKey;
   const saved = progress[key];
   const inputs = React.useMemo(() => saved?.inputs ?? {}, [saved?.inputs]);
   const total = session.blocs.length;
@@ -125,6 +140,10 @@ export function SessionPlayer({
   const [direction, setDirection] = React.useState(1);
   const [picking, setPicking] = React.useState(false);
   const [review, setReview] = React.useState(false);
+  const methodRunning = Boolean(inputs["methode:debut"]) && !inputs["methode:fin"] && !inputs["gain:methode_sec"];
+  const now = useNow(methodRunning);
+  const methodSec = methodRunning && now ? Math.max(0, Math.floor((now - Number(inputs["methode:debut"])) / 1000)) : 0;
+
   // « Enregistré » s'affiche brièvement après chaque saisie.
   const [showSaved, setShowSaved] = React.useState(false);
   const savedTimer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -162,19 +181,35 @@ export function SessionPlayer({
     if (t === current) return;
     setDirection(t > current ? 1 : -1);
     setIndex(t);
+    const now = String(Date.now());
+    if (!inputs["session:debut"] && measure) trackSession(baseKey, "started");
     saveStep(key, {
       screen: t,
       inputs: {
         ...inputs,
         "session:max": String(Math.max(furthest, t)),
-        ...(inputs["session:debut"] ? {} : { "session:debut": String(Date.now()) }),
+        ...(inputs["session:debut"] ? {} : { "session:debut": now }),
+        // Chrono « avec la méthode » : démarre à l'ouverture de l'outil...
+        ...(t === span.outil && !inputs["methode:debut"] ? { "methode:debut": now } : {}),
+        // ... et s'arrête quand l'apprenant valide le contrôle qui suit.
+        ...(current === span.controle && t > current && inputs["methode:debut"] && !inputs["methode:fin"] ? { "methode:fin": now } : {}),
       },
     });
     top.current?.scrollIntoView({ block: "start" });
   }
 
   function finish() {
-    saveStep(key, { done: true, inputs: { ...inputs, "session:max": String(total - 1), "session:fin": String(Date.now()) } });
+    const end = Date.now();
+    saveStep(key, { done: true, inputs: { ...inputs, "session:max": String(total - 1), "session:fin": String(end) } });
+    if (measure) {
+      const start = Number(inputs["session:debut"]) || 0;
+      trackSession(baseKey, "completed", {
+        duration_sec: start ? (end - start) / 1000 : undefined,
+        gain_sec: inputs.gain_sec !== undefined ? Number(inputs.gain_sec) : undefined,
+        found: inputs["score:total"] ? Number(inputs["score:trouvees"]) : undefined,
+        expected: inputs["score:total"] ? Number(inputs["score:total"]) : undefined,
+      });
+    }
     setReview(false);
     window.scrollTo({ top: 0 });
   }
@@ -207,6 +242,11 @@ export function SessionPlayer({
         exitHref={exitHref}
         next={next ?? null}
         onReview={() => {
+          // En revue, les cases des contrôles repartent décochées.
+          const cleared = Object.fromEntries(
+            Object.entries(inputs).filter(([id]) => !session.blocs.some((b, i) => b.type === "controle" && id === `b${i}:coches`)),
+          );
+          saveStep(key, { inputs: cleared });
           setReview(true);
           setIndex(0);
         }}
@@ -243,6 +283,15 @@ export function SessionPlayer({
               </motion.span>
             )}
           </AnimatePresence>
+          {methodRunning && (
+            <span
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-2 py-1 font-mono text-xs font-medium text-accent-foreground tabular-nums"
+              title="Temps avec la méthode, comparé ensuite à votre défi"
+            >
+              <span className="size-1.5 animate-pulse rounded-full bg-primary" aria-hidden />
+              {String(Math.floor(methodSec / 60)).padStart(2, "0")}:{String(methodSec % 60).padStart(2, "0")}
+            </span>
+          )}
           {aiTool !== undefined && (
             <button
               type="button"
@@ -266,18 +315,16 @@ export function SessionPlayer({
             {current + 1} / {total}
           </span>
         </div>
-        <AnimatePresence mode="wait" initial={false} custom={direction}>
-          <motion.div
-            key={current}
-            initial={reduce ? false : { opacity: 0, x: 16 * direction }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={reduce ? undefined : { opacity: 0, x: -16 * direction }}
-            transition={{ duration: duration.standard, ease: ease.out }}
-            className={cn("mx-auto max-w-2xl", !ready && "invisible")}
-          >
-            <BlockView block={block} ctx={ctx} active={ready} />
-          </motion.div>
-        </AnimatePresence>
+        {/* L'écran suivant s'affiche tout de suite : il glisse légèrement en entrant, sans attendre la sortie du précédent. */}
+        <motion.div
+          key={current}
+          initial={reduce || !ready ? false : { opacity: 0.4, x: 12 * direction }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: duration.rapide, ease: ease.out }}
+          className={cn("mx-auto max-w-2xl", !ready && "invisible")}
+        >
+          <BlockView block={block} ctx={ctx} active={ready} />
+        </motion.div>
         <p className="mx-auto mt-12 max-w-2xl text-caption text-muted-foreground">
           Contenu à jour au {new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(session.maj))}. Données
           fictives, version de test.
@@ -299,7 +346,7 @@ export function SessionPlayer({
         </div>
       </footer>
 
-      <AiToolDialog open={aiTool === null || picking} current={aiTool ?? null} onClose={() => setPicking(false)} />
+      <AiToolDialog open={(askAiTool && aiTool === null) || picking} current={aiTool ?? null} onClose={() => setPicking(false)} />
     </div>
   );
 }

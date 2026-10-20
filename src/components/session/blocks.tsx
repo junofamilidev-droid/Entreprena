@@ -23,6 +23,8 @@ import { DrawCheck } from "@/components/motion/draw-check";
 import { CountUp } from "@/components/motion/count-up";
 import { aiLabel, type AiChoice } from "@/lib/sessions/ai-tool";
 import { formatSeconds } from "@/lib/sessions/progress";
+import { scoreAnswers } from "@/lib/sessions/score";
+import { recordDownload, useDownloads } from "@/lib/sessions/downloads";
 import type {
   CollageBlock,
   ControleBlock,
@@ -117,8 +119,9 @@ function Mission({ b }: { b: MissionBlock }) {
 
 /* ---------------- Défi ---------------- */
 
-function useNow(active: boolean) {
-  const [now, setNow] = React.useState(() => Date.now());
+/** Heure courante, rafraîchie quatre fois par seconde tant que `active` ; 0 avant le premier tic. */
+export function useNow(active: boolean) {
+  const [now, setNow] = React.useState(0);
   React.useEffect(() => {
     if (!active) return;
     const t = setInterval(() => setNow(Date.now()), 250);
@@ -143,12 +146,10 @@ function Defi({ b, ctx }: { b: DefiBlock; ctx: BlockCtx }) {
   const stopped = str(ctx.inputs[`${k}:sec`]);
   const running = start > 0 && !stopped;
   const now = useNow(running);
-  const sec = stopped ? Number(stopped) : running ? (now - start) / 1000 : 0;
+  const sec = stopped ? Number(stopped) : running ? Math.max(0, ((now || start) - start) / 1000) : 0;
 
   function stop() {
-    const end = Date.now();
-    // Le temps « avec la méthode » se mesure à partir de la fin du défi.
-    ctx.setMany({ [`${k}:sec`]: String(Math.round((end - start) / 1000)), "methode:debut": String(end) });
+    ctx.set(`${k}:sec`, String(Math.round((Date.now() - start) / 1000)));
   }
 
   return (
@@ -214,21 +215,19 @@ function Defi({ b, ctx }: { b: DefiBlock; ctx: BlockCtx }) {
             : `${formatSeconds(sec)} : au-delà des ${b.temps_cible_min} min visées. C'est le temps que la méthode va vous faire gagner.`}
         </motion.p>
       )}
-      {start > 0 && (
-        <div className="space-y-2">
-          <label htmlFor={`${k}-reponse`} className="text-sm font-medium">
-            Votre réponse
-          </label>
-          <Textarea
-            id={`${k}-reponse`}
-            rows={4}
-            value={str(ctx.inputs[`${k}:reponse`])}
-            onChange={(e) => ctx.set(`${k}:reponse`, e.target.value)}
-            placeholder="Notez ce que vous avez trouvé."
-            className="bg-card"
-          />
-        </div>
-      )}
+      <div className="space-y-2">
+        <label htmlFor={`${k}-reponse`} className="text-sm font-medium">
+          Votre réponse <span className="font-normal text-muted-foreground">· un élément par ligne</span>
+        </label>
+        <Textarea
+          id={`${k}-reponse`}
+          rows={5}
+          value={str(ctx.inputs[`${k}:reponse`])}
+          onChange={(e) => ctx.set(`${k}:reponse`, e.target.value)}
+          placeholder={"Par exemple :\n411000 Clients\n408100 Factures non parvenues"}
+          className="bg-card"
+        />
+      </div>
 
       {b.criteres.length > 0 && (
         <div className="space-y-2">
@@ -580,6 +579,8 @@ function RepereErreur({ b, ctx }: { b: RepereErreurBlock; ctx: BlockCtx }) {
 /* ---------------- Outil ---------------- */
 
 function Outil({ b, ctx }: { b: OutilBlock; ctx: BlockCtx }) {
+  const downloads = useDownloads();
+  const source = `Session ${ctx.session.session} : ${ctx.session.titre}`;
   const steps = b.mode_emploi.split("\n").map((s) => s.trim()).filter(Boolean);
   return (
     <div className="space-y-5">
@@ -590,6 +591,7 @@ function Outil({ b, ctx }: { b: OutilBlock; ctx: BlockCtx }) {
       <a
         href={ctx.fileUrl(b.fichier)}
         download
+        onClick={() => recordDownload({ name: b.fichier, href: ctx.fileUrl(b.fichier), source }, downloads)}
         className="group flex items-center gap-4 rounded-xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
       >
         <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
@@ -634,26 +636,93 @@ function Outil({ b, ctx }: { b: OutilBlock; ctx: BlockCtx }) {
 
 /* ---------------- Gain ---------------- */
 
-/** Temps du défi et temps avec la méthode, calculés à l'arrivée sur le bloc puis figés. */
+const NONE: string[] = [];
+
+/** Où commence et s'arrête le chrono « avec la méthode » dans une session. */
+export function methodSpan(blocs: SessionBlock[]) {
+  const outil = blocs.findIndex((b) => b.type === "outil");
+  const controle = outil === -1 ? -1 : blocs.findIndex((b, i) => i > outil && b.type === "controle");
+  return { outil, controle };
+}
+
+function AnswersCompare({ expected, text }: { expected: string[]; text: string }) {
+  const score = scoreAnswers(text, expected);
+  return (
+    <section aria-labelledby="reponses" className="space-y-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id="reponses" className="font-semibold">
+          Vos réponses au défi
+        </h2>
+        <p className="text-sm font-medium tabular-nums">
+          {score.count} sur {score.total} trouvée{score.count > 1 ? "s" : ""}
+        </p>
+      </div>
+      <ul className="space-y-1.5">
+        {expected.map((e, i) => (
+          <motion.li
+            key={e}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: duration.standard, ease: ease.out, delay: 0.9 + i * 0.05 }}
+            className={cn(
+              "flex items-start gap-2.5 rounded-lg border px-3.5 py-2.5 text-sm",
+              score.found[i] ? "border-success/40 bg-success/10" : "border-warning/50 bg-warning/10",
+            )}
+          >
+            {score.found[i] ? (
+              <CheckIcon className="mt-0.5 size-4 shrink-0 text-success" aria-label="trouvée" />
+            ) : (
+              <AlertTriangleIcon className="mt-0.5 size-4 shrink-0 text-warning" aria-label="manquée" />
+            )}
+            <span className="flex-1">{e}</span>
+            <span className="shrink-0 text-caption text-muted-foreground">{score.found[i] ? "Trouvée" : "Manquée"}</span>
+          </motion.li>
+        ))}
+      </ul>
+      {score.extra.length > 0 && (
+        <p className="text-sm text-muted-foreground">
+          Vous aviez aussi noté : {score.extra.join(" ; ")}. À garder si vous pouvez le justifier.
+        </p>
+      )}
+      {!text.trim() && <p className="text-sm text-muted-foreground">Vous n&apos;aviez rien noté pendant le défi.</p>}
+    </section>
+  );
+}
+
+/**
+ * Temps du défi et temps avec la méthode (de l'ouverture de l'outil à la validation du contrôle
+ * qui suit), figés à l'arrivée sur le bloc ; puis les réponses comparées aux réponses attendues.
+ */
 function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean }) {
-  const defiIndex = ctx.session.blocs.slice(0, ctx.index).map((x) => x.type).lastIndexOf("defi");
+  const blocs = ctx.session.blocs;
+  const defiIndex = blocs.findIndex((x) => x.type === "defi");
+  const defi = defiIndex === -1 ? null : (blocs[defiIndex] as DefiBlock);
   const defiSec = Number(str(ctx.inputs[`b${defiIndex}:sec`])) || 0;
+  const answer = str(ctx.inputs[`b${defiIndex}:reponse`]);
+  const expected = defi?.reponses_attendues ?? NONE;
   const methodStart = Number(str(ctx.inputs["methode:debut"])) || 0;
+  const methodEnd = Number(str(ctx.inputs["methode:fin"])) || 0;
   const recorded = str(ctx.inputs["gain:methode_sec"]);
   const { setMany } = ctx;
 
   React.useEffect(() => {
-    if (!active || recorded || !defiSec || !methodStart) return;
-    const methodSec = Math.round((Date.now() - methodStart) / 1000);
+    if (!active || recorded) return;
+    const score = expected.length ? scoreAnswers(answer, expected) : null;
+    const scoreValues: ExerciseInputs = score ? { "score:trouvees": String(score.count), "score:total": String(score.total) } : {};
+    if (!methodStart) return void setMany({ "gain:methode_sec": "non-mesure", ...scoreValues });
+    const methodSec = Math.round(((methodEnd || Date.now()) - methodStart) / 1000);
     // Au-delà d'une heure, l'apprenant a fait une pause : la mesure n'a plus de sens.
-    if (methodSec > 3600) return void setMany({ "gain:methode_sec": "pause" });
-    setMany({ "gain:methode_sec": String(methodSec), gain_sec: String(Math.max(0, defiSec - methodSec)) });
-  }, [active, recorded, defiSec, methodStart, setMany]);
+    if (methodSec > 3600) return void setMany({ "gain:methode_sec": "pause", ...scoreValues });
+    setMany({
+      "gain:methode_sec": String(methodSec),
+      ...(defiSec ? ({ gain_sec: String(Math.max(0, defiSec - methodSec)) } as ExerciseInputs) : {}),
+      ...scoreValues,
+    });
+  }, [active, recorded, defiSec, methodStart, methodEnd, answer, expected, setMany]);
 
   const methodSec = Number(recorded) || 0;
   const measured = defiSec > 0 && methodSec > 0;
   const saved = Math.max(0, defiSec - methodSec);
-  const max = Math.max(defiSec, methodSec, 1);
   const pct = defiSec ? Math.round((saved / defiSec) * 100) : 0;
 
   return (
@@ -662,57 +731,59 @@ function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean
         <p className="text-sm font-medium text-primary">Temps gagné</p>
         <h1 className={TITLE}>{b.tache}</h1>
       </div>
+
       {measured ? (
         <>
-          <div className="space-y-4 rounded-xl border bg-card p-5">
+          <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "À votre façon (défi)", sec: defiSec, className: "bg-muted-foreground/40" },
-              { label: "Avec la méthode", sec: methodSec, className: "bg-primary" },
+              { label: "Défi, à votre façon", sec: defiSec, bar: "bg-muted-foreground/40" },
+              { label: "Avec la méthode", sec: methodSec, bar: "bg-primary" },
             ].map((row, i) => (
-              <div key={row.label} className="space-y-1.5">
-                <div className="flex justify-between text-sm">
-                  <span>{row.label}</span>
-                  <span className="font-medium tabular-nums">{formatSeconds(row.sec)}</span>
-                </div>
-                <div className="h-3 overflow-hidden rounded-full bg-muted">
+              <div key={row.label} className="rounded-xl border bg-card p-4">
+                <p className="text-sm text-muted-foreground">{row.label}</p>
+                <p className="mt-1 font-mono text-2xl font-semibold tabular-nums sm:text-3xl">
+                  {String(Math.floor(row.sec / 60)).padStart(2, "0")}:{String(row.sec % 60).padStart(2, "0")}
+                </p>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
                   <motion.div
-                    className={cn("h-full rounded-full", row.className)}
+                    className={cn("h-full rounded-full", row.bar)}
                     initial={{ width: 0 }}
-                    animate={{ width: `${(row.sec / max) * 100}%` }}
+                    animate={{ width: `${(row.sec / Math.max(defiSec, methodSec)) * 100}%` }}
                     transition={{ duration: duration.recompense, ease: ease.out, delay: 0.15 + i * 0.3 }}
                   />
                 </div>
               </div>
             ))}
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-xl border bg-card p-5">
               <p className="text-sm text-muted-foreground">Gagné sur cette tâche</p>
               <p className="mt-1 text-3xl font-semibold tracking-tight text-primary">
                 <CountUp value={saved} format={formatSeconds} duration={duration.recompense} />
               </p>
-              {pct > 0 && <p className="mt-1 text-sm text-muted-foreground">soit {pct} % de temps en moins</p>}
+              <p className="mt-1 text-sm text-muted-foreground">
+                {pct > 0 ? `soit ${pct} % de temps en moins` : "Pas de gain au premier essai : la méthode se rentabilise à la suivante."}
+              </p>
             </div>
             <div className="rounded-xl border bg-primary p-5 text-primary-foreground">
               <p className="text-sm opacity-85">Temps gagné depuis le début</p>
               <p className="mt-1 text-3xl font-semibold tracking-tight">
-                <CountUp value={Math.round(ctx.savedTotalSec / 60)} /> min
+                <CountUp value={ctx.savedTotalSec} format={formatSeconds} />
               </p>
             </div>
           </div>
-          {saved === 0 && (
-            <p className="text-sm text-muted-foreground">
-              Pas de gain cette fois : c&apos;est normal au premier essai. La méthode se rentabilise dès la deuxième utilisation.
-            </p>
-          )}
         </>
       ) : (
         <p className="rounded-lg border border-dashed px-4 py-3 text-body text-muted-foreground">
           {recorded === "pause"
             ? "La session a été interrompue trop longtemps : le temps avec la méthode n'a pas pu être mesuré."
-            : "Le défi n'a pas été chronométré : le temps gagné n'est pas mesuré pour cette session."}
+            : !defiSec
+              ? "Le défi n'a pas été chronométré : le temps gagné n'est pas mesuré pour cette session."
+              : "Le temps avec la méthode n'a pas pu être mesuré pour cette session."}
         </p>
       )}
+
+      {expected.length > 0 && <AnswersCompare expected={expected} text={answer} />}
     </div>
   );
 }

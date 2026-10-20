@@ -13,12 +13,11 @@ import type {
   ModuleWithSteps,
   Step,
 } from "./types";
+import type { Session } from "@/lib/sessions/types";
 
-// Point d'accès unique au contenu.
-// - Dès que la base contient une formation publiée (importée depuis l'espace réservé) :
-//   tout est lu dans la base de données.
-// - Sinon, ou si la base est injoignable : lecture des fichiers du dossier content/.
-// CONTENT_SOURCE=files force la lecture des fichiers.
+// Point d'accès unique au contenu : la base de données, alimentée depuis l'espace réservé.
+// Le dossier content/ ne sert qu'à l'import initial (bouton « Importer le contenu initial »),
+// et au travail local sans base : sans Supabase configuré, ou avec CONTENT_SOURCE=files.
 
 /* ---------------- Base de données ---------------- */
 
@@ -177,20 +176,9 @@ function localFormation(p: ContentPackage): FormationWithModules {
 
 export const CONTENT_TAG = "content";
 
-/** La base de données sert-elle le contenu ? Oui dès qu'elle contient une formation publiée. */
+/** La base sert le contenu dès que Supabase est configuré ; les fichiers seulement en local. */
 async function fromDb(): Promise<boolean> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(CONTENT_TAG);
-  if (!hasSupabase || process.env.CONTENT_SOURCE === "files") return false;
-  try {
-    const { count, error } = await createPublicClient()
-      .from("formations")
-      .select("id", { count: "exact", head: true });
-    return !error && (count ?? 0) > 0;
-  } catch {
-    return false;
-  }
+  return hasSupabase && process.env.CONTENT_SOURCE !== "files";
 }
 
 export async function listFormations(): Promise<FormationWithModules[]> {
@@ -244,4 +232,72 @@ export async function getModule(formationSlug: string, moduleSlug: string): Prom
       .sort((a, b) => a.position - b.position)
       .map((s) => ({ ...s, id: `${id}-${s.slug}`, moduleId: id })),
   };
+}
+
+/* ---------------- Sessions en blocs ---------------- */
+
+export interface SessionSummary {
+  id: string;
+  moduleId: string;
+  number: number;
+  title: string;
+  durationMin: number;
+  status: Step["status"];
+}
+export interface SessionRecord extends SessionSummary {
+  content: Session;
+}
+
+export function mapSession(r: Row): SessionRecord {
+  return {
+    id: r.id as string,
+    moduleId: r.module_id as string,
+    number: r.number as number,
+    title: r.title as string,
+    durationMin: r.duration_min as number,
+    status: r.status as Step["status"],
+    content: r.content as Session,
+  };
+}
+
+/** Sessions publiées d'un module, dans l'ordre (sans leurs blocs). */
+export async function listSessions(formationSlug: string, moduleSlug: string): Promise<SessionSummary[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CONTENT_TAG);
+  if (!(await fromDb())) return [];
+  const formation = await getFormation(formationSlug);
+  const mod = formation?.modules.find((m) => m.slug === moduleSlug);
+  if (!mod) return [];
+  const { data, error } = await createPublicClient()
+    .from("sessions")
+    .select("id, module_id, number, title, duration_min, status")
+    .eq("module_id", mod.id)
+    .eq("status", "published")
+    .order("number");
+  if (error) throw error;
+  return (data ?? []).map((r) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { content, ...summary } = mapSession({ ...r, content: null });
+    return summary;
+  });
+}
+
+export async function getSession(formationSlug: string, moduleSlug: string, n: number): Promise<SessionRecord | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CONTENT_TAG);
+  if (!(await fromDb())) return null;
+  const formation = await getFormation(formationSlug);
+  const mod = formation?.modules.find((m) => m.slug === moduleSlug);
+  if (!mod) return null;
+  const { data, error } = await createPublicClient()
+    .from("sessions")
+    .select("*")
+    .eq("module_id", mod.id)
+    .eq("number", n)
+    .eq("status", "published")
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapSession(data) : null;
 }

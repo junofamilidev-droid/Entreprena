@@ -19,6 +19,8 @@ export interface DefiBlock {
   donnees: string;
   temps_cible_min: number;
   criteres: string[];
+  /** Réponses attendues, montrées seulement sur l'écran du gain. */
+  reponses_attendues?: string[];
 }
 export interface PromptBlock {
   type: "prompt";

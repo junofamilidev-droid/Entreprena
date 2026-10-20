@@ -88,7 +88,7 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
               active={pathname.startsWith("/formations/")}
             />
             <NavItem href="/projets" label="Projets pratiques" icon={<SquarePenIcon />} active={pathname === "/projets"} />
-            <NavItem href="/ressources" label="Ressources" icon={<FolderIcon />} active={pathname === "/ressources"} />
+            <NavItem href="/boite-a-outils" label="Ma boîte à outils" icon={<FolderIcon />} active={pathname === "/boite-a-outils"} />
             <NavItem href="/certificat" label="Certificat" icon={<AwardIcon />} active={pathname === "/certificat"} />
             <NavItem href="/catalogue" label="Catalogue" icon={<LibraryIcon />} active={pathname === "/catalogue"} />
           </SidebarMenu>

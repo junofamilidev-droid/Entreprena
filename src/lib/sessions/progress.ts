@@ -9,7 +9,8 @@ export function sessionKey(formation: string, module: string, n: number) {
 export function totalSavedSec(progress: ProgressState) {
   let total = 0;
   for (const [key, p] of Object.entries(progress)) {
-    if (!/\/session-\d+$/.test(key)) continue;
+    // Les aperçus de l'espace réservé (« apercu-… ») ne comptent pas.
+    if (!/\/session-\d+$/.test(key) || key.startsWith("apercu-")) continue;
     const v = Number(p.inputs?.gain_sec);
     if (Number.isFinite(v) && v > 0) total += v;
   }

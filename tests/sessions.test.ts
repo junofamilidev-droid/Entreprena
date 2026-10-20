@@ -10,6 +10,15 @@ describe("parseSession", () => {
     expect(r.ok ? [] : r.errors).toEqual([]);
   });
 
+  it("accepte « reponses_attendues » dans un défi, facultatif mais contrôlé", () => {
+    const s = JSON.parse(demo);
+    s.blocs[2].reponses_attendues = ["411000", ""];
+    const r = parseSession(s);
+    expect(r.ok ? [] : r.errors).toEqual(["Bloc 3 (defi) : « reponses_attendues » doit être une liste de textes non vides, entre [ et ]."]);
+    delete s.blocs[2].reponses_attendues;
+    expect(parseSession(s).ok).toBe(true);
+  });
+
   it("signale un JSON mal écrit", () => {
     const r = parseSession('{ "titre": "x", }');
     expect(r.ok).toBe(false);
@@ -31,7 +40,7 @@ describe("parseSession", () => {
     expect(r.errors.some((e) => e.includes("ne doit pas dépasser 15 minutes"))).toBe(true);
   });
 
-  it("refuse un texte de plus de 3 lignes et un gain sans défi", () => {
+  it("refuse un texte de plus de 3 lignes, mais laisse les blocs dans n'importe quel ordre", () => {
     const r = parseSession({
       formation: "f", module: "m", session: 1, titre: "t", duree_min: 10, maj: "2026-10-19",
       blocs: [{ type: "texte", contenu: "a\nb\nc\nd" }, { type: "gain", tache: "x", reference: "defi" }],
@@ -39,7 +48,22 @@ describe("parseSession", () => {
     expect(r.ok).toBe(false);
     if (!r.ok) {
       expect(r.errors).toContain("Bloc 1 (texte) : 3 lignes maximum.");
-      expect(r.errors.some((e) => e.includes("il faut un bloc « defi » avant"))).toBe(true);
+      expect(r.errors).toEqual(["Bloc 1 (texte) : 3 lignes maximum."]);
     }
+  });
+});
+
+import { scoreAnswers } from "@/lib/sessions/score";
+
+describe("scoreAnswers", () => {
+  const expected = ["411000 Clients", "408100 Factures non parvenues", "Stock de mobilier"];
+  it("reconnaît un compte par son numéro et ignore accents et puces", () => {
+    const r = scoreAnswers("- 411000 +34 %\n2) facture NON parvenues 408100\nCompte 999", expected);
+    expect(r.found).toEqual([true, true, false]);
+    expect(r.count).toBe(2);
+    expect(r.extra).toEqual(["Compte 999"]);
+  });
+  it("reconnaît un libellé sans numéro", () => {
+    expect(scoreAnswers("le stock de mobilier a bondi", expected).found[2]).toBe(true);
   });
 });

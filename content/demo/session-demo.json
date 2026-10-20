@@ -27,6 +27,13 @@
         "Chaque écart est calculé en euros et en pourcentage.",
         "Seuil de signification appliqué : 50 000 €.",
         "5 comptes retenus, chacun avec une raison en une ligne."
+      ],
+      "reponses_attendues": [
+        "411000 Clients",
+        "408100 Factures non parvenues",
+        "372000 Stock de mobilier de bureau",
+        "215400 Matériel industriel",
+        "164000 Emprunt bancaire"
       ]
     },
     {
@@ -67,7 +74,11 @@
       "type": "outil",
       "fichier": "modele-revue-analytique.xlsx",
       "description": "Un modèle de tableur qui calcule les écarts et signale ceux qui dépassent votre seuil",
-      "champs_a_adapter": ["Seuil de signification (cellule B1)", "Nom du dossier (cellule B2)", "Balance collée à partir de la ligne 5"],
+      "champs_a_adapter": [
+        "Seuil de signification (cellule B1)",
+        "Nom du dossier (cellule B2)",
+        "Balance collée à partir de la ligne 5"
+      ],
       "mode_emploi": "Ouvrez le fichier dans Excel ou LibreOffice.\nSaisissez votre seuil en B1.\nCollez la balance anonymisée à partir de la ligne 5.\nFiltrez la colonne « À creuser » sur « Oui », puis triez par écart.\nAucune donnée n'est envoyée à une IA : tout se calcule sur votre poste."
     },
     {
