@@ -38,6 +38,8 @@ import type {
   TexteBlock,
 } from "@/lib/sessions/types";
 import type { ExerciseInputs, ExerciseValue } from "@/lib/content/types";
+import { Input } from "@/components/ui/input";
+import { duration, ease } from "@/lib/motion";
 
 export interface BlockCtx {
   /** Position du bloc dans la session (préfixe de ses saisies). */
@@ -67,7 +69,7 @@ export function blockGate(block: SessionBlock, ctx: Pick<BlockCtx, "index" | "in
     const checks = rec(ctx.inputs[`${k}:coches`]);
     if (block.items.some((_, i) => checks[i] !== "1")) return "Cochez chaque vérification pour continuer.";
   }
-  if (block.type === "repere-erreur" && !str(ctx.inputs[`${k}:trouve`]) && Number(str(ctx.inputs[`${k}:essais`]) || 0) < 2)
+  if (block.type === "repere-erreur" && !str(ctx.inputs[`${k}:trouve`]) && !str(ctx.inputs[`${k}:solution`]))
     return "Cliquez sur la ligne qui contient l'erreur.";
   return null;
 }
@@ -192,6 +194,27 @@ function Defi({ b, ctx }: { b: DefiBlock; ctx: BlockCtx }) {
       </div>
 
       {start > 0 && (
+        <div className="-mt-3 h-1 overflow-hidden rounded-full bg-muted" aria-hidden>
+          <div
+            className={cn("h-full rounded-full transition-[width] duration-300 ease-linear", sec > b.temps_cible_min * 60 ? "bg-warning" : "bg-primary")}
+            style={{ width: `${Math.min(100, (sec / (b.temps_cible_min * 60)) * 100)}%` }}
+          />
+        </div>
+      )}
+      {stopped && (
+        <motion.p
+          role="status"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: duration.standard, ease: ease.out }}
+          className="text-sm text-muted-foreground"
+        >
+          {sec <= b.temps_cible_min * 60
+            ? `${formatSeconds(sec)} : dans le temps cible. Voyons si la méthode fait mieux.`
+            : `${formatSeconds(sec)} : au-delà des ${b.temps_cible_min} min visées. C'est le temps que la méthode va vous faire gagner.`}
+        </motion.p>
+      )}
+      {start > 0 && (
         <div className="space-y-2">
           <label htmlFor={`${k}-reponse`} className="text-sm font-medium">
             Votre réponse
@@ -235,17 +258,33 @@ function Defi({ b, ctx }: { b: DefiBlock; ctx: BlockCtx }) {
 
 /* ---------------- Prompt ---------------- */
 
-/** Met en valeur les [champs à remplir] du prompt. */
-function withFields(text: string) {
-  return text.split(/(\[[^\]\n]+\])/g).map((part, i) =>
-    /^\[.*\]$/.test(part) ? (
+const FIELD = /(\[[^\]\n]+\])/g;
+
+/** Champs que l'apprenant remplit sur la page ; « [Collez …] » reste à compléter dans son outil d'IA. */
+function promptFields(text: string) {
+  const names = [...text.matchAll(FIELD)].map((m) => m[1].slice(1, -1));
+  return [...new Set(names)].filter((n) => !/^coll/i.test(n));
+}
+
+function fillPrompt(text: string, values: Record<string, string>) {
+  return text.replace(FIELD, (m) => values[m.slice(1, -1)]?.trim() || m);
+}
+
+/** Met en valeur les champs : à remplir (jaune) ou remplis (couleur de marque). */
+function withFields(text: string, values: Record<string, string>) {
+  return text.split(FIELD).map((part, i) => {
+    if (!/^\[.*\]$/.test(part)) return <React.Fragment key={i}>{part}</React.Fragment>;
+    const v = values[part.slice(1, -1)]?.trim();
+    return v ? (
+      <mark key={i} className="rounded bg-accent px-0.5 font-semibold text-accent-foreground">
+        {v}
+      </mark>
+    ) : (
       <mark key={i} className="rounded bg-warning/25 px-0.5 text-foreground">
         {part}
       </mark>
-    ) : (
-      <React.Fragment key={i}>{part}</React.Fragment>
-    ),
-  );
+    );
+  });
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -292,6 +331,10 @@ function ToolNote({ ctx }: { ctx: BlockCtx }) {
 }
 
 function Prompt({ b, ctx }: { b: PromptBlock; ctx: BlockCtx }) {
+  const k = `b${ctx.index}`;
+  const values = rec(ctx.inputs[`${k}:champs`]);
+  const fields = promptFields(b.texte);
+  const filled = fillPrompt(b.texte, values);
   return (
     <div className="space-y-5">
       <div className="space-y-2">
@@ -301,13 +344,34 @@ function Prompt({ b, ctx }: { b: PromptBlock; ctx: BlockCtx }) {
       <figure className="overflow-hidden rounded-xl border bg-card">
         <figcaption className="flex items-center justify-between gap-3 border-b px-4 py-2.5">
           <span className="text-sm font-medium">Prompt à copier</span>
-          <CopyButton text={b.texte} />
+          <CopyButton text={filled} />
         </figcaption>
+        {fields.length > 0 && (
+          <div className="grid gap-3 border-b bg-muted/30 px-4 py-4 sm:grid-cols-2">
+            {fields.map((f) => (
+              <div key={f} className="space-y-1">
+                <label htmlFor={`${k}-${f}`} className="text-caption font-medium text-muted-foreground">
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </label>
+                <Input
+                  id={`${k}-${f}`}
+                  value={values[f] ?? ""}
+                  onChange={(e) => ctx.set(`${k}:champs`, { ...values, [f]: e.target.value })}
+                  className="h-9 bg-card"
+                />
+              </div>
+            ))}
+          </div>
+        )}
         <pre className="max-h-72 overflow-auto px-4 py-4 font-mono text-[0.8125rem] leading-relaxed whitespace-pre-wrap">
-          {withFields(b.texte)}
+          {withFields(b.texte, values)}
         </pre>
       </figure>
-      <p className="text-caption text-muted-foreground">Remplacez les passages surlignés entre crochets avant d&apos;envoyer.</p>
+      <p className="text-caption text-muted-foreground">
+        {fields.length > 0
+          ? "Remplissez les champs : le prompt se complète, et le bouton Copier prend votre version."
+          : "Remplacez les passages surlignés entre crochets avant d'envoyer."}
+      </p>
       <ToolNote ctx={ctx} />
       <div className="space-y-1.5">
         <p className="text-sm font-medium">Ce que vous devez obtenir</p>
@@ -358,22 +422,33 @@ function Checklist({
 function Collage({ b, ctx }: { b: CollageBlock; ctx: BlockCtx }) {
   const k = `b${ctx.index}`;
   const checks = rec(ctx.inputs[`${k}:coches`]);
+  // Résultat attendu du dernier prompt : affiché à côté de la réponse collée, pour comparer.
+  const expected = [...ctx.session.blocs.slice(0, ctx.index)].reverse().find((x): x is PromptBlock => x.type === "prompt")
+    ?.resultat_attendu;
   return (
     <div className="space-y-5">
       <div className="space-y-2">
         <p className="text-sm font-medium text-primary">Réponse de votre IA</p>
         <h1 className={TITLE}>{b.consigne}</h1>
       </div>
+      <div className={cn("grid gap-4", expected && "md:grid-cols-[3fr_2fr]")}>
       <div className="relative">
         <ClipboardPasteIcon className="pointer-events-none absolute top-3 left-3 size-4 text-muted-foreground" aria-hidden />
         <Textarea
-          rows={7}
+          rows={8}
           aria-label="Réponse de votre IA"
           value={str(ctx.inputs[`${k}:texte`])}
           onChange={(e) => ctx.set(`${k}:texte`, e.target.value)}
           placeholder="Collez ici la réponse de votre IA"
-          className="bg-card pl-9 font-mono text-[0.8125rem]"
+          className="h-full bg-card pl-9 font-mono text-[0.8125rem]"
         />
+      </div>
+      {expected && (
+        <aside className="rounded-lg border border-dashed bg-muted/30 px-4 py-3">
+          <p className="text-caption font-medium text-muted-foreground">À comparer avec le résultat attendu</p>
+          <p className="mt-1.5 text-sm whitespace-pre-line text-muted-foreground">{expected}</p>
+        </aside>
+      )}
       </div>
       {b.a_verifier.length > 0 && (
         <div className="space-y-2">
@@ -422,7 +497,7 @@ function RepereErreur({ b, ctx }: { b: RepereErreurBlock; ctx: BlockCtx }) {
   const found = str(ctx.inputs[`${k}:trouve`]) === "1";
   const tries = Number(str(ctx.inputs[`${k}:essais`]) || 0);
   const [wrong, setWrong] = React.useState<number | null>(null);
-  const reveal = found || tries >= 2;
+  const reveal = found || str(ctx.inputs[`${k}:solution`]) === "1";
   const faulty = b.ligne_fautive - 1;
 
   function pick(i: number) {
@@ -469,7 +544,16 @@ function RepereErreur({ b, ctx }: { b: RepereErreurBlock; ctx: BlockCtx }) {
           );
         })}
       </ol>
-      {!reveal && wrong !== null && <p className="text-sm text-muted-foreground">Celle-ci est juste. Encore un essai.</p>}
+      {!reveal && tries > 0 && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <p className="text-muted-foreground">
+            {wrong !== null ? `La ligne ${wrong + 1} est juste.` : ""} Regardez les calculs, pas seulement les libellés.
+          </p>
+          <button type="button" onClick={() => ctx.set(`${k}:solution`, "1")} className="font-medium text-primary underline-offset-4 hover:underline">
+            Voir la solution
+          </button>
+        </div>
+      )}
       {reveal && (
         <motion.div
           role="status"
@@ -570,6 +654,7 @@ function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean
   const measured = defiSec > 0 && methodSec > 0;
   const saved = Math.max(0, defiSec - methodSec);
   const max = Math.max(defiSec, methodSec, 1);
+  const pct = defiSec ? Math.round((saved / defiSec) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -594,7 +679,7 @@ function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean
                     className={cn("h-full rounded-full", row.className)}
                     initial={{ width: 0 }}
                     animate={{ width: `${(row.sec / max) * 100}%` }}
-                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 + i * 0.25 }}
+                    transition={{ duration: duration.recompense, ease: ease.out, delay: 0.15 + i * 0.3 }}
                   />
                 </div>
               </div>
@@ -603,7 +688,10 @@ function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border bg-card p-5">
               <p className="text-sm text-muted-foreground">Gagné sur cette tâche</p>
-              <p className="mt-1 text-3xl font-semibold tracking-tight text-primary">{formatSeconds(saved)}</p>
+              <p className="mt-1 text-3xl font-semibold tracking-tight text-primary">
+                <CountUp value={saved} format={formatSeconds} duration={duration.recompense} />
+              </p>
+              {pct > 0 && <p className="mt-1 text-sm text-muted-foreground">soit {pct} % de temps en moins</p>}
             </div>
             <div className="rounded-xl border bg-primary p-5 text-primary-foreground">
               <p className="text-sm opacity-85">Temps gagné depuis le début</p>

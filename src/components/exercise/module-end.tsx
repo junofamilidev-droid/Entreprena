@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { formatPoints } from "@/lib/exercise/self-review";
 import { saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
 import type { ModuleEndContent } from "@/lib/content/types";
-import { celebrate } from "@/components/motion/celebrate";
 import { DrawCheck } from "@/components/motion/draw-check";
 
 export function ModuleEnd({
@@ -34,11 +33,6 @@ export function ModuleEnd({
   const result = progress[reviewKey]?.inputs?.result as Record<string, string> | undefined;
 
   const passed = result?.passed === "1";
-  // Confettis la première fois que l'apprenant arrive sur son module validé.
-  const firstVisit = ready && passed && !progress[progressKey]?.done;
-  React.useEffect(() => {
-    if (firstVisit) celebrate();
-  }, [firstVisit]);
 
   function finish() {
     saveStep(progressKey, { done: true });

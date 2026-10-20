@@ -20,5 +20,13 @@ export default function DemoSessionPage() {
       </main>
     );
   }
-  return <SessionPlayer session={parsed.session} moduleLabel="Module 1 : Revue analytique" exitHref="/" fileBase="/demo" />;
+  return (
+    <SessionPlayer
+      session={parsed.session}
+      moduleLabel="Module 1 : Revue analytique"
+      exitHref="/"
+      fileBase="/demo"
+      next={{ titre: "Qualifier les écarts avec le client", duree_min: 15 }}
+    />
+  );
 }
