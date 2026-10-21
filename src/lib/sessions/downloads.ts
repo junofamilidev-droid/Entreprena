@@ -5,7 +5,8 @@ import { saveStep, useProgress } from "@/lib/progress/store";
 // Outils téléchargés par l'apprenant, du plus récent au plus ancien : rangés avec sa progression
 // (donc dans son compte quand il est connecté), affichés sur l'accueil.
 
-const KEY = "boite-a-outils";
+// Trois parties, comme toutes les clés de progression rangées dans le compte.
+const KEY = "compte/boite-a-outils/telechargements";
 
 export interface Download {
   name: string;

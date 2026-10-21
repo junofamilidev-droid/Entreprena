@@ -64,7 +64,7 @@ export function CertificateShowcase({
   const ready = useProgressReady();
   const progress = useProgress();
   const auth = useAuth();
-  const nameKey = `${formationSlug}/certificat`;
+  const nameKey = `${formationSlug}/certificat/nom`;
 
   const statuses = modules.map((m) => moduleStatus(progress, m));
   const validated = statuses.filter((s) => s.validated).length;

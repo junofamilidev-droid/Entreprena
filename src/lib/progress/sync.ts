@@ -26,13 +26,16 @@ function warn() {
   toast.error("Votre progression n'a pas pu être enregistrée dans votre compte. Elle reste sur cet appareil.");
 }
 
+// Clés acceptées par la base (« formation/module/étape ») ; les autres restent sur l'appareil.
+const KEY_FORMAT = /^[a-z0-9-]+\/[a-z0-9-]+\/[a-z0-9-]+$/;
+
 function row(key: string, value: StepProgress) {
   return { user_id: userId, step_key: key, data: value, updated_at: new Date(value.updatedAt).toISOString() };
 }
 
 async function push(keys: string[]) {
   if (!sb || !userId || keys.length === 0) return;
-  const rows = keys.flatMap((k) => (pending.has(k) ? [row(k, pending.get(k)!)] : []));
+  const rows = keys.flatMap((k) => (pending.has(k) && KEY_FORMAT.test(k) ? [row(k, pending.get(k)!)] : []));
   keys.forEach((k) => {
     pending.delete(k);
     clearTimeout(timers.get(k));
