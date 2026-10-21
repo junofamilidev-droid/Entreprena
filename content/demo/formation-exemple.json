@@ -1,0 +1,31 @@
+{
+  "formation": {
+    "identifiant": "controleur-gestion-ia",
+    "titre": "Contrôleur de gestion augmenté par l'IA",
+    "domaine": "Contrôle de gestion",
+    "public": "Contrôleurs de gestion juniors et seniors",
+    "promesse": "Produisez vos analyses d'écarts ==deux fois plus vite==, sans exposer une donnée de l'entreprise.",
+    "resume": "Cinq modules, une tâche réelle par module, sur des données fictives.",
+    "pour_qui": ["Vous êtes contrôleur de gestion, avec 0 à 5 ans d'expérience."],
+    "ce_que_ce_n_est_pas": ["Ce n'est pas une formation homologuée."]
+  },
+  "modules": [
+    { "identifiant": "analyse-ecarts", "titre": "Analyse des écarts budgétaires", "resume": "Un budget, un réel, 40 lignes.", "livrable": "Une note d'écarts commentée.", "ouvert": true },
+    { "identifiant": "reporting-mensuel", "titre": "Reporting mensuel", "resume": "Un tableau de bord à produire.", "livrable": "Un reporting prêt à envoyer.", "ouvert": false }
+  ],
+  "sessions": [
+    {
+      "formation": "controleur-gestion-ia",
+      "module": "analyse-ecarts",
+      "session": 1,
+      "titre": "Repérer les écarts qui comptent",
+      "duree_min": 15,
+      "maj": "2026-10-21",
+      "blocs": [
+        { "type": "mission", "expediteur": "Sophie Laurent, DAF", "objet": "Écarts de septembre", "message": "Bonjour,\nPouvez-vous me dire d'ici demain quels écarts expliquer au comité ?", "echeance": "demain 10 h", "livrable": "Les 3 écarts à expliquer." },
+        { "type": "texte", "contenu": "Un écart n'est utile que s'il change une décision." }
+      ],
+      "consignes_outils_ia": {}
+    }
+  ]
+}

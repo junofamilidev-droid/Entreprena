@@ -49,6 +49,15 @@ export function AdminHome({
             ))}
           </ul>
         )}
+        <div className="flex flex-wrap items-center gap-3">
+          <Button asChild>
+            <Link href="/admin/formations/importer">
+              <FileJsonIcon /> Importer une formation (JSON)
+            </Link>
+          </Button>
+          <span className="text-sm text-muted-foreground">Le fichier préparé par Claude : la formation, ses modules et ses sessions.</span>
+        </div>
+        <p className="text-caption text-muted-foreground">Ou créez une formation vide, à remplir à la main :</p>
         <form
           className="flex flex-col gap-2 sm:flex-row"
           onSubmit={(e) => {
@@ -66,7 +75,8 @@ export function AdminHome({
 
       <Section title="Sessions en blocs">
         <p className="text-sm text-muted-foreground">
-          Collez le fichier JSON d&apos;une session : il est vérifié, prévisualisé, puis publié dans son module.
+          Pour ajouter ou remplacer une seule session dans un module existant : collez son fichier JSON, il est vérifié,
+          prévisualisé, puis publié.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button asChild>

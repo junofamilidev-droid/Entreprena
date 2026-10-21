@@ -67,3 +67,32 @@ describe("scoreAnswers", () => {
     expect(scoreAnswers("le stock de mobilier a bondi", expected).found[2]).toBe(true);
   });
 });
+
+import { parseFormationFile } from "@/lib/sessions/formation-format";
+
+describe("parseFormationFile", () => {
+  const example = readFileSync(new URL("../content/demo/formation-exemple.json", import.meta.url), "utf8");
+  it("accepte le fichier d'exemple", () => {
+    const r = parseFormationFile(example);
+    expect(r.ok ? [] : r.errors).toEqual([]);
+    if (r.ok) expect([r.file.modules.length, r.file.sessions.length]).toEqual([2, 1]);
+  });
+  it("dit quoi corriger", () => {
+    const f = JSON.parse(example);
+    f.modules[1].identifiant = "analyse-ecarts";
+    f.modules[0].ouvert = "oui";
+    f.sessions[0].module = "inconnu";
+    f.sessions[0].blocs[1].contenu = "";
+    const r = parseFormationFile(f);
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.errors).toContain("Module 2 : l'identifiant « analyse-ecarts » est déjà pris par un autre module.");
+    expect(r.errors).toContain("Module 1, « ouvert » : true (ouvert aux apprenants) ou false (à venir), sans guillemets.");
+    expect(r.errors).toContain("Session 1 (inconnu, n° 1) : le module « inconnu » n'est pas dans la liste « modules ».");
+    expect(r.errors.some((e) => e.startsWith("Session 1 (inconnu, n° 1) · Bloc 2 (texte)"))).toBe(true);
+  });
+  it("reconnaît une session collée au mauvais endroit", () => {
+    const r = parseFormationFile(readFileSync(new URL("../content/demo/session-demo.json", import.meta.url), "utf8"));
+    expect(r.ok ? [] : r.errors).toEqual(["Ce fichier est une session, pas une formation : utilisez « Importer une session (JSON) »."]);
+  });
+});
