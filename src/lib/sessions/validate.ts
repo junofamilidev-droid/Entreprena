@@ -43,6 +43,11 @@ export function parseSession(input: string | unknown): ParseResult {
     }
   }
   if (!isRecord(data)) return { ok: false, errors: ["Le fichier doit commencer par { et décrire une seule session."] };
+  if (isRecord(data.formation) && Array.isArray(data.modules))
+    return {
+      ok: false,
+      errors: ["Ce fichier est une formation, pas une session : utilisez « Importer une formation (JSON) », depuis l'accueil de l'espace réservé."],
+    };
 
   const errors: string[] = [];
   const text = (v: unknown, where: string, required = true) => {

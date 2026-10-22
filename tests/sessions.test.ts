@@ -116,3 +116,12 @@ describe("fichiers de l'audit à importer", () => {
     expect(s.ok ? [] : s.errors).toEqual([]);
   });
 });
+
+describe("fichier au mauvais endroit", () => {
+  it("une formation collée dans l'import de session est reconnue", () => {
+    const r = parseSession(readFileSync(new URL("../content/imports/auditeur-augmente-ia/formation-auditeur-augmente-ia.json", import.meta.url), "utf8"));
+    expect(r.ok ? [] : r.errors).toEqual([
+      "Ce fichier est une formation, pas une session : utilisez « Importer une formation (JSON) », depuis l'accueil de l'espace réservé.",
+    ]);
+  });
+});
