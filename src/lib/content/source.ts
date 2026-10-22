@@ -14,6 +14,7 @@ import type {
   Step,
 } from "./types";
 import type { Session } from "@/lib/sessions/types";
+import { stripReviewMarks } from "@/lib/sessions/display";
 
 // Point d'accès unique au contenu : la base de données, alimentée depuis l'espace réservé.
 // Le dossier content/ ne sert qu'à l'import initial (bouton « Importer le contenu initial »),
@@ -57,11 +58,27 @@ export function mapModule(r: Row): Module {
   };
 }
 
+// Côté site, les mentions « (À valider) » des rédacteurs sont retirées (l'espace réservé les garde).
+function forSite(f: Formation): Formation {
+  return {
+    ...f,
+    domain: stripReviewMarks(f.domain),
+    audience: stripReviewMarks(f.audience),
+    promise: stripReviewMarks(f.promise),
+    summary: stripReviewMarks(f.summary),
+    forWhom: f.forWhom.map(stripReviewMarks),
+    notThis: f.notThis.map(stripReviewMarks),
+  };
+}
+
 function withModules(r: Row): FormationWithModules {
-  const modules = ((r.modules as Row[]) ?? []).map(mapModule).sort((a, b) => a.position - b.position);
+  const modules = ((r.modules as Row[]) ?? [])
+    .map(mapModule)
+    .map((m) => ({ ...m, title: stripReviewMarks(m.title), summary: stripReviewMarks(m.summary), deliverable: stripReviewMarks(m.deliverable) }))
+    .sort((a, b) => a.position - b.position);
   const diags = (r.diagnostics as Row[] | Row | null) ?? [];
   return {
-    ...mapFormation(r),
+    ...forSite(mapFormation(r)),
     modules,
     hasDiagnostic: Array.isArray(diags) ? diags.length > 0 : Boolean(diags),
   };

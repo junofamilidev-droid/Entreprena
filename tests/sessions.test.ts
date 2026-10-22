@@ -96,3 +96,23 @@ describe("parseFormationFile", () => {
     expect(r.ok ? [] : r.errors).toEqual(["Ce fichier est une session, pas une formation : utilisez « Importer une session (JSON) »."]);
   });
 });
+
+import { stripReviewMarks } from "@/lib/sessions/display";
+
+describe("stripReviewMarks", () => {
+  it("retire « (À vérifier) » et « (À valider) »", () => {
+    expect(stripReviewMarks("Auditeurs juniors et seniors (À valider)")).toBe("Auditeurs juniors et seniors");
+    expect(stripReviewMarks("Vous êtes auditeur junior (À valider).")).toBe("Vous êtes auditeur junior.");
+    expect(stripReviewMarks("Ouvrez une conversation. (À vérifier)")).toBe("Ouvrez une conversation.");
+  });
+});
+
+describe("fichiers de l'audit à importer", () => {
+  const dir = new URL("../content/imports/auditeur-augmente-ia/", import.meta.url);
+  it("la formation et la session passent le contrôle", () => {
+    const f = parseFormationFile(readFileSync(new URL("formation-auditeur-augmente-ia.json", dir), "utf8"));
+    const s = parseSession(readFileSync(new URL("session-revue-analytique-1.json", dir), "utf8"));
+    expect(f.ok ? [] : f.errors).toEqual([]);
+    expect(s.ok ? [] : s.errors).toEqual([]);
+  });
+});

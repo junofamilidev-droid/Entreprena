@@ -1,0 +1,122 @@
+{
+  "formation": "auditeur-augmente-ia",
+  "module": "revue-analytique",
+  "session": 1,
+  "titre": "Repérer les comptes à creuser d'une balance",
+  "duree_min": 15,
+  "maj": "2026-10-21",
+  "blocs": [
+    {
+      "type": "mission",
+      "expediteur": "Claire Moreau, cheffe de mission",
+      "objet": "Nordelia Distribution — comptes à creuser avant jeudi",
+      "message": "Bonjour,\nJe vois le DAF de Nordelia jeudi. Selon lui : chiffre d'affaires en hausse d'environ 6 %, effectif, conditions de paiement et prestataires inchangés.\nPeux-tu me dire quels comptes de la balance 2025 il faut creuser (seuils : 50 000 € et 10 %) ?\nPrépare-moi une question au client pour chacun.\nMerci, Claire",
+      "echeance": "Aujourd'hui, 17 h",
+      "livrable": "Les 5 comptes à creuser et une question au client pour chacun."
+    },
+    {
+      "type": "defi",
+      "consigne": "Ouvrez la balance de Nordelia (81 comptes, soldes N et N-1). Lancez le chrono.\nSans calculatrice ni tableur, à l'œil, notez les 5 comptes à creuser en priorité : ceux dont la variation atteint 50 000 € et 10 % sans être expliquée par l'activité.\nUn compte par ligne, puis arrêtez le chrono.",
+      "donnees": "balance-nordelia-2025.csv",
+      "temps_cible_min": 3,
+      "criteres": [
+        "5 comptes notés en 3 minutes au plus",
+        "Chaque compte atteint 50 000 € et 10 % de variation (un compte parti de zéro : dès 50 000 €)",
+        "Aucun compte noté ne s'explique par la hausse d'activité d'environ 6 %"
+      ],
+      "reponses_attendues": [
+        "408100 Fournisseurs - factures non parvenues",
+        "411000 Clients",
+        "471000 Compte d'attente",
+        "622600 Honoraires",
+        "645100 Cotisations à l'URSSAF"
+      ]
+    },
+    {
+      "type": "texte",
+      "contenu": "Convention unique : débit en positif, crédit en négatif ; écart = solde N - solde N-1.\nUn compte est à creuser s'il atteint les deux seuils : 50 000 € et 10 % (un compte parti de zéro, dès 50 000 €).\nLe tableur calcule sur votre poste : aucune donnée n'est envoyée à une IA."
+    },
+    {
+      "type": "outil",
+      "fichier": "modele-revue-analytique.xlsx",
+      "description": "Calcule sur votre poste l'écart en euros et en % de chaque compte, et marque « OUI » ceux qui atteignent les deux seuils. Aucune donnée n'est envoyée à une IA.",
+      "champs_a_adapter": [
+        "B1 : seuil en euros (50 000 dans ce cas)",
+        "B2 : nom du dossier, sans le nom du client",
+        "B3 : seuil en % (10 % dans ce cas)"
+      ],
+      "mode_emploi": "Collez la balance, sans l'en-tête, en A5 du modèle.\nVérifiez que E1 et E2 valent 0.\nFiltrez la colonne G sur « OUI » : E3 donne le nombre de comptes.\nGardez ces seules lignes pour le prompt."
+    },
+    {
+      "type": "controle",
+      "items": [
+        "E1 et E2 valent 0 dans le tableur",
+        "Le tableur signale 5 comptes (E3 = 5)",
+        "J'ai noté les 5 comptes marqués « OUI »"
+      ]
+    },
+    {
+      "type": "prompt",
+      "texte": "Tu es auditeur financier. À partir des lignes ci-dessous, issues d'une revue analytique, rédige une question à poser au client pour chaque compte.\n\nConvention : soldes au débit en positif, au crédit en négatif ; écart = solde N - solde N-1.\nSeuils retenus : [seuil en euros] € et [seuil en %] %.\nContexte connu de l'exercice : [contexte donné par le client].\n\nPour chaque compte, une ligne : le compte, les soldes N et N-1, l'écart en euros et en %, une question au client, le document justificatif à demander.\n\nRègles : ne traite que les lignes fournies. Ne recalcule rien, reprends les montants tels quels. N'invente aucun fait sur l'entité ou son secteur. Ton : [ton souhaité].\n\nLignes retenues :\n[Collez ici les lignes « À creuser » du tableur]",
+      "usage": "Rédiger les questions au client — anonymisez avant de coller (nom, SIREN, adresse)",
+      "resultat_attendu": "408100 Fournisseurs - factures non parvenues : solde -38 000 € contre -214 000 €, écart +176 000 € (+82,2 %). Question : quelles factures de 2025 restaient à recevoir à la clôture ? Document : factures fournisseurs reçues début 2026.\n411000 Clients : solde 2 660 000 € contre 1 985 000 €, écart +675 000 € (+34,0 %), pour un chiffre d'affaires en hausse d'environ 6 %. Question : qu'est-ce qui explique cette hausse, à conditions de paiement inchangées ? Document : balance âgée au 31/12/2025.\n471000 Compte d'attente : solde 86 400 € contre 0 €, écart +86 400 €. Question : à quelle opération correspond ce montant ? Document : détail du compte et pièce justificative.\n622600 Honoraires : solde 158 000 € contre 68 000 €, écart +90 000 € (+132,4 %). Question : quelles prestations expliquent cette hausse ? Document : factures d'honoraires 2025.\n645100 Cotisations à l'URSSAF : solde 343 000 € contre 428 000 €, écart -85 000 € (-19,9 %), alors que l'effectif est inchangé. Question : qu'est-ce qui explique cette baisse des cotisations ? Document : récapitulatif annuel des cotisations URSSAF 2025."
+    },
+    {
+      "type": "collage",
+      "consigne": "Collez ici la réponse de votre IA, puis comparez-la au résultat attendu.",
+      "a_verifier": [
+        "Une ligne par compte retenu, et seulement les 5 comptes du tableur",
+        "Chaque solde, écart et pourcentage est identique au tableur, signe compris",
+        "Aucun fait absent de la balance et du contexte",
+        "Une question et un document justificatif par ligne"
+      ]
+    },
+    {
+      "type": "controle",
+      "items": [
+        "Je n'ai collé dans l'IA ni nom, ni SIREN, ni adresse",
+        "Chaque question est ouverte et ne suggère pas la réponse",
+        "Les lignes sont prêtes à envoyer à la cheffe de mission"
+      ]
+    },
+    {
+      "type": "repere-erreur",
+      "lignes": [
+        "411000 Clients : solde 2 660 000 € contre 1 985 000 €, écart +675 000 € (+34,0 %), pour un chiffre d'affaires en hausse d'environ 6 %. Question : qu'est-ce qui explique cette hausse, à conditions de paiement inchangées ? Document : balance âgée au 31/12/2025.",
+        "622600 Honoraires : solde 158 000 € contre 68 000 €, écart +90 000 € (+232,4 %). Question : quelles prestations expliquent cette hausse ? Document : factures d'honoraires 2025.",
+        "645100 Cotisations à l'URSSAF : solde 343 000 € contre 428 000 €, écart -85 000 € (-19,9 %), alors que l'effectif est inchangé. Question : qu'est-ce qui explique cette baisse des cotisations ? Document : récapitulatif annuel des cotisations URSSAF 2025."
+      ],
+      "ligne_fautive": 2,
+      "explication": "L'écart des honoraires vaut +90 000 € pour un solde N-1 de 68 000 €, soit +132,4 %. L'IA a divisé le solde N par le solde N-1 (158 000 / 68 000 = 232,4 %) : c'est un rapport, pas un écart. Comparez toujours avec la colonne F du tableur."
+    },
+    {
+      "type": "gain",
+      "tache": "Repérer les comptes à creuser d'une balance de 81 comptes",
+      "reference": "defi"
+    },
+    {
+      "type": "fiche",
+      "titre": "Revue analytique : repérer les comptes à creuser",
+      "etapes": [
+        "Fixer les deux seuils avec le chef de mission (euros et %)",
+        "Coller la balance N et N-1 en A5 du modèle, sans l'en-tête",
+        "Vérifier que E1 et E2 valent 0",
+        "Filtrer la colonne G sur « OUI »",
+        "Anonymiser les lignes retenues, puis les coller dans le prompt de questions au client",
+        "Comparer chaque montant de la réponse au tableur avant envoi"
+      ],
+      "pieges": [
+        "Coller toute la balance dans l'IA : seules les lignes retenues, anonymisées, en sortent",
+        "Lire un écart sans son signe : un compte au crédit qui augmente a un écart négatif",
+        "Croire un % recalculé par l'IA : la colonne F du tableur fait foi",
+        "Prendre une variation signalée pour une anomalie : c'est une question au client, pas une conclusion"
+      ]
+    }
+  ],
+  "consignes_outils_ia": {
+    "claude": "Ouvrez une nouvelle conversation, ou un Projet si votre cabinet en fournit un, collez le prompt complété, puis les lignes retenues à la place du champ « Collez ». Utilisez uniquement le compte autorisé par votre cabinet. (À vérifier)",
+    "chatgpt": "Ouvrez une nouvelle conversation dans l'espace de travail autorisé par votre cabinet, collez le prompt complété, puis les lignes retenues. Vérifiez dans les réglages que vos données ne servent pas à entraîner le modèle. (À vérifier)",
+    "copilot": "Utilisez Copilot avec votre compte professionnel si votre cabinet l'autorise, collez le prompt complété, puis les lignes retenues. Ne joignez pas le fichier de balance complet. (À vérifier)",
+    "lechat": "Ouvrez une nouvelle conversation dans Le Chat, avec le compte autorisé par votre cabinet, collez le prompt complété, puis les lignes retenues. Vérifiez les réglages de conservation des données. (À vérifier)"
+  }
+}

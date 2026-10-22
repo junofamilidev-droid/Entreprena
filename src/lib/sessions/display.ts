@@ -1,8 +1,9 @@
 import type { Session } from "./types";
 
-const REVIEW_MARK = /\s*\(\s*[àa] v[ée]rifier\s*\)\.?/gi;
+// « (À vérifier) », « (À valider) » : notes des rédacteurs, à ne pas montrer aux apprenants.
+const REVIEW_MARK = /\s*\(\s*[àa] (?:v[ée]rifier|valider)\s*\)/gi;
 
-/** Retire les mentions « (À vérifier) » laissées par les rédacteurs. */
+/** Retire les mentions « (À vérifier) » et « (À valider) » laissées par les rédacteurs. */
 export function stripReviewMarks(text: string) {
   return text.replace(REVIEW_MARK, "").trim();
 }

@@ -1,0 +1,59 @@
+{
+  "formation": {
+    "identifiant": "auditeur-augmente-ia",
+    "titre": "Auditeur augmenté par l'IA",
+    "domaine": "Audit légal et commissariat aux comptes",
+    "public": "Auditeurs juniors et seniors, de 0 à 5 ans d'expérience, en cabinet (À valider)",
+    "promesse": "Préparez vos travaux d'audit avec ==des outils qui tournent sur votre poste==, et ==sans envoyer une donnée client== à une IA.",
+    "resume": "Cinq modules, une tâche réelle de l'audit par module, sur le dossier fictif d'un négociant B2B. Vous repartez de chaque module avec un outil prêt à l'emploi.",
+    "pour_qui": [
+      "Vous êtes auditeur junior ou senior, avec 0 à 5 ans d'expérience (À valider).",
+      "Vous passez des heures sur la revue analytique, les tests et la documentation des dossiers (À valider).",
+      "Votre cabinet encadre, voire limite, l'usage de l'IA sur les données des clients."
+    ],
+    "ce_que_ce_n_est_pas": [
+      "Ce n'est pas une formation certifiante : l'attestation, adossée à votre livrable, n'a aucune valeur officielle.",
+      "Ce n'est pas une préparation au DEC ni au CAFCAC.",
+      "Ce n'est pas un cours d'introduction à l'IA.",
+      "Vous ne traitez jamais de données réelles sur la plateforme : tous les cas sont fictifs.",
+      "Ce n'est pas un avis sur les règles de votre cabinet : sa charte IA prime toujours."
+    ]
+  },
+  "modules": [
+    {
+      "identifiant": "revue-analytique",
+      "titre": "Revue analytique",
+      "resume": "Nordelia Distribution, négociant B2B fictif : une balance 2025/2024 de 81 comptes, cinq anomalies cachées.",
+      "livrable": "Un modèle de tableur qui calcule les écarts et marque les comptes à creuser, et une trame de questions au client.",
+      "ouvert": true
+    },
+    {
+      "identifiant": "tests-ecritures",
+      "titre": "Tests sur les écritures comptables",
+      "resume": "Le FEC fictif de Nordelia, environ 3 000 écritures, dont quelques écritures inhabituelles.",
+      "livrable": "Un tableur qui contrôle un FEC et sélectionne les écritures selon des critères paramétrables.",
+      "ouvert": false
+    },
+    {
+      "identifiant": "tests-de-detail",
+      "titre": "Tests de détail et sondage",
+      "resume": "Le journal des ventes de Nordelia et 25 factures fictives à pointer.",
+      "livrable": "Un tableur de tirage d'échantillon et de pointage des pièces.",
+      "ouvert": false
+    },
+    {
+      "identifiant": "circularisation",
+      "titre": "Circularisation des tiers",
+      "resume": "La balance fournisseurs de Nordelia et les réponses de six tiers fictifs.",
+      "livrable": "Une trame de lettre et un tableur de suivi et de rapprochement des réponses.",
+      "ouvert": false
+    },
+    {
+      "identifiant": "synthese-de-mission",
+      "titre": "Synthèse de mission",
+      "resume": "Les travaux des quatre premiers modules sur Nordelia, à synthétiser pour le chef de mission.",
+      "livrable": "Une trame de note de synthèse et votre assistant d'audit configuré.",
+      "ouvert": false
+    }
+  ]
+}
