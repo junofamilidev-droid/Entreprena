@@ -2452,7 +2452,7 @@
       "status": "published"
     },
     {
-      "slug": "tests-de-detail",
+      "slug": "tests-detail",
       "position": 3,
       "title": "Tests de détail et sondage",
       "summary": "Un journal des ventes et 25 factures.",
@@ -2472,7 +2472,7 @@
       "status": "published"
     },
     {
-      "slug": "synthese-de-mission",
+      "slug": "synthese-mission",
       "position": 5,
       "title": "Synthèse de mission",
       "summary": "Les quatre livrables précédents et un projet d'annexe.",

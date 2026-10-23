@@ -35,7 +35,7 @@
       "ouvert": false
     },
     {
-      "identifiant": "tests-de-detail",
+      "identifiant": "tests-detail",
       "titre": "Tests de détail et sondage",
       "resume": "Le journal des ventes de Nordelia et 25 factures fictives à pointer.",
       "livrable": "Un tableur de tirage d'échantillon et de pointage des pièces.",
@@ -49,7 +49,7 @@
       "ouvert": false
     },
     {
-      "identifiant": "synthese-de-mission",
+      "identifiant": "synthese-mission",
       "titre": "Synthèse de mission",
       "resume": "Les travaux des quatre premiers modules sur Nordelia, à synthétiser pour le chef de mission.",
       "livrable": "Une trame de note de synthèse et votre assistant d'audit configuré.",
