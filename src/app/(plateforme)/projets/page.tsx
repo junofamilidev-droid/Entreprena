@@ -4,6 +4,8 @@ import { ChevronRightIcon, LockIcon } from "lucide-react";
 import { PageHeader } from "@/components/platform/page-header";
 import { StepStatus } from "@/components/platform/step-status";
 import { openModules } from "@/lib/content/library";
+import { listSessions } from "@/lib/content/source";
+import { sessionKey } from "@/lib/sessions/progress";
 
 export const metadata: Metadata = { title: "Projets pratiques" };
 
@@ -12,6 +14,10 @@ export default async function ProjectsPage() {
   const projects = open.flatMap((o) =>
     o.module.steps.filter((s) => s.kind === "exercise").map((s) => ({ o, s })),
   );
+  // Modules au format en sessions : chaque session est une mission pratique.
+  const sessions = (
+    await Promise.all(open.map(async (o) => (await listSessions(o.formationSlug, o.module.slug)).map((s) => ({ o, s }))))
+  ).flat();
   return (
     <>
       <PageHeader crumbs={[{ label: "Accueil", href: "/" }, { label: "Projets pratiques" }]} />
@@ -35,6 +41,24 @@ export default async function ProjectsPage() {
                   <span className="mt-1 block text-sm text-muted-foreground">Livrable : {o.module.deliverable}</span>
                 </span>
                 <StepStatus stepKey={`${o.formationSlug}/${o.module.slug}/${s.slug}`} />
+                <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+              </Link>
+            </li>
+          ))}
+          {sessions.map(({ o, s }) => (
+            <li key={s.id} className="border-b last:border-b-0">
+              <Link
+                href={`/formations/${o.formationSlug}/${o.module.slug}/session/${s.number}`}
+                className="flex items-center gap-4 px-4 py-4 hover:bg-muted/60 sm:px-5"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium">{s.title}</span>
+                  <span className="block text-sm text-muted-foreground">
+                    Module {o.module.position}, session {s.number} · {s.durationMin} min
+                  </span>
+                  <span className="mt-1 block text-sm text-muted-foreground">Livrable du module : {o.module.deliverable}</span>
+                </span>
+                <StepStatus stepKey={sessionKey(o.formationSlug, o.module.slug, s.number)} />
                 <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
               </Link>
             </li>

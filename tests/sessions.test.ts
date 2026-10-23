@@ -125,3 +125,13 @@ describe("fichier au mauvais endroit", () => {
     ]);
   });
 });
+
+import { methodSpan } from "@/components/session/blocks";
+
+describe("chrono « avec la méthode »", () => {
+  it("va de l'outil au dernier contrôle avant le gain", () => {
+    const s = JSON.parse(readFileSync(new URL("../content/imports/auditeur-augmente-ia/session-revue-analytique-1.json", import.meta.url), "utf8"));
+    // mission, defi, texte, outil(3), controle(4), prompt, collage, controle(7), repere, gain(9), fiche
+    expect(methodSpan(s.blocs)).toEqual({ outil: 3, controle: 7 });
+  });
+});

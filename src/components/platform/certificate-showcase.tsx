@@ -20,17 +20,22 @@ export interface CertificateModule {
   ref: ModuleRef | null;
   /** Clé de l'auto-correction du module, quand il en a une : elle doit être validée. */
   reviewKey: string | null;
+  /** Clés de progression des sessions publiées du module : toutes doivent être terminées. */
+  sessionKeys: string[];
 }
 
 function moduleStatus(progress: ProgressState, m: CertificateModule) {
-  if (!m.ref) return { ratio: 0, validated: false, soon: true, lastActivity: 0 };
-  const st = moduleState(progress, m.ref);
+  if (!m.ref && m.sessionKeys.length === 0) return { ratio: 0, validated: false, soon: true, lastActivity: 0 };
+  const st = m.ref ? moduleState(progress, m.ref) : null;
   const passed = !m.reviewKey || (progress[m.reviewKey]?.inputs?.result as Record<string, string> | undefined)?.passed === "1";
+  const sessionsDone = m.sessionKeys.filter((k) => progress[k]?.done).length;
+  const total = (m.ref?.steps.length ?? 0) + m.sessionKeys.length;
+  const done = (st?.doneCount ?? 0) + sessionsDone;
   return {
-    ratio: m.ref.steps.length ? st.doneCount / m.ref.steps.length : 0,
-    validated: st.finished && passed,
+    ratio: total ? done / total : 0,
+    validated: (!st || (st.finished && passed)) && sessionsDone === m.sessionKeys.length,
     soon: false,
-    lastActivity: st.lastActivity,
+    lastActivity: Math.max(st?.lastActivity ?? 0, ...m.sessionKeys.map((k) => progress[k]?.updatedAt ?? 0)),
   };
 }
 

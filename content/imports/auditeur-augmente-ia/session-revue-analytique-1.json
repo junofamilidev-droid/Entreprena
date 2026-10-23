@@ -4,7 +4,7 @@
   "session": 1,
   "titre": "Repérer les comptes à creuser d'une balance",
   "duree_min": 15,
-  "maj": "2026-10-21",
+  "maj": "2026-10-23",
   "blocs": [
     {
       "type": "mission",
@@ -16,13 +16,14 @@
     },
     {
       "type": "defi",
-      "consigne": "Ouvrez la balance de Nordelia (81 comptes, soldes N et N-1). Lancez le chrono.\nSans calculatrice ni tableur, à l'œil, notez les 5 comptes à creuser en priorité : ceux dont la variation atteint 50 000 € et 10 % sans être expliquée par l'activité.\nUn compte par ligne, puis arrêtez le chrono.",
+      "consigne": "Ouvrez la balance de Nordelia (81 comptes, soldes N et N-1). Lancez le chrono.\nSans tableur ni IA, faites le livrable demandé : les 5 comptes à creuser en priorité (variation d'au moins 50 000 € et 10 %, non expliquée par l'activité) et, pour chacun, la question à poser au client.\nUn compte et sa question par ligne, puis arrêtez le chrono.",
       "donnees": "balance-nordelia-2025.csv",
-      "temps_cible_min": 3,
+      "temps_cible_min": 6,
       "criteres": [
-        "5 comptes notés en 3 minutes au plus",
+        "5 comptes et 5 questions en 6 minutes au plus",
         "Chaque compte atteint 50 000 € et 10 % de variation (un compte parti de zéro : dès 50 000 €)",
-        "Aucun compte noté ne s'explique par la hausse d'activité d'environ 6 %"
+        "Aucun compte noté ne s'explique par la hausse d'activité d'environ 6 %",
+        "Chaque question est ouverte et précise le document à demander"
       ],
       "reponses_attendues": [
         "408100 Fournisseurs - factures non parvenues",
@@ -50,9 +51,8 @@
     {
       "type": "controle",
       "items": [
-        "E1 et E2 valent 0 dans le tableur",
-        "Le tableur signale 5 comptes (E3 = 5)",
-        "J'ai noté les 5 comptes marqués « OUI »"
+        "Je ne colle dans l'IA que les 5 lignes marquées « OUI » par le tableur",
+        "Ces lignes ne contiennent ni nom, ni SIREN, ni adresse du client"
       ]
     },
     {
@@ -74,7 +74,8 @@
     {
       "type": "controle",
       "items": [
-        "Je n'ai collé dans l'IA ni nom, ni SIREN, ni adresse",
+        "E1 et E2 valent 0 dans le tableur, et E3 = 5",
+        "Chaque montant de la réponse de l'IA est identique au tableur, signe compris",
         "Chaque question est ouverte et ne suggère pas la réponse",
         "Les lignes sont prêtes à envoyer à la cheffe de mission"
       ]

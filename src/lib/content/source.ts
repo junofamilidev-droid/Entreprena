@@ -232,7 +232,13 @@ export async function getModule(formationSlug: string, moduleSlug: string): Prom
   "use cache";
   cacheLife("hours");
   cacheTag(CONTENT_TAG);
-  if (await fromDb()) return dbGetModule(formationSlug, moduleSlug);
+  if (await fromDb()) {
+    const mod = await dbGetModule(formationSlug, moduleSlug);
+    // Un module qui a des sessions publiées passe au format en sessions : ses anciennes étapes
+    // (leçons, exercice…) ne sont plus montrées aux apprenants. Elles restent dans l'espace réservé.
+    if (mod && (await listSessions(formationSlug, moduleSlug)).length) return { ...mod, steps: [] };
+    return mod;
+  }
   const p = (await readLocalPackages()).find((x) => x.formation.slug === formationSlug);
   if (!p || p.formation.status !== "published") return null;
   const raw = p.modules.find((m) => m.slug === moduleSlug);

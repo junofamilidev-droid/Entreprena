@@ -638,10 +638,16 @@ function Outil({ b, ctx }: { b: OutilBlock; ctx: BlockCtx }) {
 
 const NONE: string[] = [];
 
-/** Où commence et s'arrête le chrono « avec la méthode » dans une session. */
+/**
+ * Où commence et s'arrête le chrono « avec la méthode » : de l'ouverture du premier outil à la
+ * validation du dernier contrôle placé entre cet outil et l'écran du gain (toute la méthode).
+ */
 export function methodSpan(blocs: SessionBlock[]) {
   const outil = blocs.findIndex((b) => b.type === "outil");
-  const controle = outil === -1 ? -1 : blocs.findIndex((b, i) => i > outil && b.type === "controle");
+  const gain = blocs.findIndex((b, i) => i > outil && b.type === "gain");
+  const end = gain === -1 ? blocs.length : gain;
+  let controle = -1;
+  if (outil !== -1) for (let i = outil + 1; i < end; i++) if (blocs[i].type === "controle") controle = i;
   return { outil, controle };
 }
 

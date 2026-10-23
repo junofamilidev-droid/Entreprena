@@ -1,4 +1,4 @@
-# Format d'une session Entreprena (JSON) — à jour au 20 octobre 2026
+# Format d'une session Entreprena (JSON) — à jour au 23 octobre 2026
 
 Une session = un fichier JSON, collé dans l'espace réservé (**Importer une session (JSON)**).
 Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corriger.
@@ -58,7 +58,8 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
   - `mode_emploi` s'écrit avec une étape par ligne (`\n`).
 - `gain` :
   - Il compare le temps du défi au temps « avec la méthode ».
-  - Le temps « avec la méthode » se mesure de l'ouverture du premier bloc `outil` jusqu'à la validation du premier bloc `controle` placé après lui. Sans contrôle après l'outil, il s'arrête à l'arrivée sur le bloc `gain`.
+  - Le temps « avec la méthode » se mesure de l'ouverture du premier bloc `outil` jusqu'à la validation du **dernier** bloc `controle` placé entre cet outil et le bloc `gain`. Sans contrôle dans cet intervalle, il s'arrête à l'arrivée sur le bloc `gain`.
+  - Pour une mesure juste, le `defi` doit demander le même livrable que celui produit avec la méthode.
   - `reference` vaut toujours « defi ».
 - `fiche` : fiche juste-à-temps, rangée aussi dans « Ma boîte à outils » une fois la session terminée.
 - `texte` : 3 lignes et 400 caractères au maximum.
