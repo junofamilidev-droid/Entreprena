@@ -129,7 +129,10 @@ export function SessionPlayer({
   const span = methodSpan(session.blocs);
   const ready = useProgressReady();
   const progress = useProgress();
-  const aiTool = useAiTool();
+  const chosenTool = useAiTool();
+  // Session écrite pour Claude seul : pas de choix d'outil, l'outil est Claude.
+  const claudeOnly = Object.keys(raw.consignes_outils_ia ?? {}).join() === "claude";
+  const aiTool = claudeOnly ? "claude" : chosenTool;
   const baseKey = sessionKey(session.formation, session.module, session.session);
   const key = keyPrefix + baseKey;
   const saved = progress[key];
@@ -292,7 +295,7 @@ export function SessionPlayer({
               {String(Math.floor(methodSec / 60)).padStart(2, "0")}:{String(methodSec % 60).padStart(2, "0")}
             </span>
           )}
-          {aiTool !== undefined && (
+          {!claudeOnly && aiTool !== undefined && (
             <button
               type="button"
               onClick={() => setPicking(true)}
@@ -346,7 +349,7 @@ export function SessionPlayer({
         </div>
       </footer>
 
-      <AiToolDialog open={(askAiTool && aiTool === null) || picking} current={aiTool ?? null} onClose={() => setPicking(false)} />
+      <AiToolDialog open={(askAiTool && !claudeOnly && aiTool === null) || picking} current={aiTool ?? null} onClose={() => setPicking(false)} />
     </div>
   );
 }

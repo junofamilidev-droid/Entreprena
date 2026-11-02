@@ -1,4 +1,4 @@
-# Format d'une session Entreprena (JSON) — à jour au 23 octobre 2026
+# Format d'une session Entreprena (JSON) — à jour au 2 novembre 2026
 
 Une session = un fichier JSON, collé dans l'espace réservé (**Importer une session (JSON)**).
 Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corriger.
@@ -21,7 +21,9 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
     { "type": "outil", "fichier": "", "description": "", "champs_a_adapter": [], "mode_emploi": "" },
     { "type": "gain", "tache": "", "reference": "defi" },
     { "type": "fiche", "titre": "", "etapes": [], "pieges": [] },
-    { "type": "texte", "contenu": "" }
+    { "type": "texte", "contenu": "" },
+    { "type": "schema", "titre": "", "etapes": ["Nom de l'étape : une phrase"] },
+    { "type": "coulisses", "passages": ["extrait || explication"], "a_juger": "", "verifications": [] }
   ],
   "consignes_outils_ia": { "claude": "", "chatgpt": "", "copilot": "", "lechat": "" }
 }
@@ -32,12 +34,12 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
 **En-tête**
 - `formation`, `module` : identifiants existants sur la plateforme (minuscules et tirets). Le module doit déjà exister.
 - `session` : numéro entier à partir de 1. Importer une session qui porte le même numéro dans le même module la remplace.
-- `duree_min` : 15 au maximum.
+- `duree_min` : 60 au maximum.
 - `maj` : date de mise à jour, format AAAA-MM-JJ.
 
 **Blocs**
 - Les blocs s'affichent dans l'ordre de la liste, un écran par bloc. Tous les ordres sont acceptés (un texte après le défi, un outil avant le prompt…).
-- Tous les champs sont obligatoires et non vides, sauf `reponses_attendues` (facultatif). Les listes s'écrivent entre `[ ]`, chaque élément entre guillemets. Les nombres s'écrivent sans guillemets.
+- Tous les champs sont obligatoires et non vides, sauf `reponses_attendues` (bloc `defi`) et `champs_a_adapter` (bloc `outil`), qui sont facultatifs. Les listes s'écrivent entre `[ ]`, chaque élément entre guillemets. Les nombres s'écrivent sans guillemets.
 - Un retour à la ligne dans un texte s'écrit `\n`.
 
 **Par type**
@@ -55,6 +57,7 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
 - `repere-erreur` : `ligne_fautive` est le numéro de la ligne fausse, en comptant à partir de 1.
 - `outil` :
   - `fichier` est le nom exact du fichier, téléversé ensuite dans l'espace réservé.
+  - `champs_a_adapter` est facultatif : absent ou vide, la rubrique « Champs à adapter » n'est pas affichée.
   - `mode_emploi` s'écrit avec une étape par ligne (`\n`).
 - `gain` :
   - Il compare le temps du défi au temps « avec la méthode ».
@@ -63,7 +66,13 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
   - `reference` vaut toujours « defi ».
 - `fiche` : fiche juste-à-temps, rangée aussi dans « Ma boîte à outils » une fois la session terminée.
 - `texte` : 3 lignes et 400 caractères au maximum.
+- `schema` (écran « Ce que l'outil va faire ») : de 2 à 6 `etapes`, chacune écrite « Nom de l'étape : une phrase » (le « : » est obligatoire). Elles s'affichent en frise numérotée : horizontale sur ordinateur, verticale sur téléphone.
+- `coulisses` (écran « Les coulisses ») :
+  - `passages` : de 1 à 5 textes, chacun écrit « extrait || explication » (le « || » est obligatoire). L'extrait s'affiche surligné, son explication juste en dessous.
+  - `a_juger` : ce que l'outil ne peut pas juger seul, affiché dans un encadré.
+  - `verifications` : au moins une case à cocher. Suivant reste bloqué tant que tout n'est pas coché.
 
 **Consignes par outil d'IA**
+- Si `consignes_outils_ia` ne contient que la clé `claude`, l'apprenant n'a pas à choisir d'outil : la session considère que c'est Claude.
 - Affichées sous le prompt selon l'outil choisi par l'apprenant (claude, chatgpt, copilot, lechat). Pour « un autre outil », un texte générique s'affiche.
 - La mention « (À vérifier) » peut rester dans le texte : elle est masquée pour les apprenants et visible dans l'espace réservé.

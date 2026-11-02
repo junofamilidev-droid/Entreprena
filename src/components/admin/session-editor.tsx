@@ -38,7 +38,10 @@ const FIELD_LABEL: Record<string, string> = {
   explication: "Explication",
   fichier: "Fichier de l'outil (nom exact)",
   description: "Description",
-  champs_a_adapter: "Champs à adapter",
+  champs_a_adapter: "Champs à adapter (facultatif)",
+  passages: "Passages, un par ligne : « extrait || explication »",
+  a_juger: "Ce que l'outil ne peut pas juger seul",
+  verifications: "Vérifications à cocher",
   mode_emploi: "Mode d'emploi (une étape par ligne)",
   tache: "Tâche mesurée",
   reference: "Référence",
@@ -47,7 +50,7 @@ const FIELD_LABEL: Record<string, string> = {
   pieges: "Pièges",
   contenu: "Contenu (3 lignes maximum)",
 };
-const LONG = new Set(["message", "texte", "explication", "mode_emploi", "resultat_attendu", "contenu", "consigne"]);
+const LONG = new Set(["message", "texte", "explication", "mode_emploi", "resultat_attendu", "contenu", "consigne", "a_juger"]);
 const TOOL_LABEL: Record<(typeof AI_TOOLS)[number], string> = { claude: "Claude", chatgpt: "ChatGPT", copilot: "Microsoft Copilot", lechat: "Le Chat" };
 
 function emptyBlock(type: BlockType): SessionBlock {

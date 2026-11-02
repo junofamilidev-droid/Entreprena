@@ -28,6 +28,7 @@ import { recordDownload, useDownloads } from "@/lib/sessions/downloads";
 import type {
   CollageBlock,
   ControleBlock,
+  CoulissesBlock,
   DefiBlock,
   FicheBlock,
   GainBlock,
@@ -35,6 +36,7 @@ import type {
   OutilBlock,
   PromptBlock,
   RepereErreurBlock,
+  SchemaBlock,
   Session,
   SessionBlock,
   TexteBlock,
@@ -70,6 +72,10 @@ export function blockGate(block: SessionBlock, ctx: Pick<BlockCtx, "index" | "in
   if (block.type === "controle") {
     const checks = rec(ctx.inputs[`${k}:coches`]);
     if (block.items.some((_, i) => checks[i] !== "1")) return "Cochez chaque vérification pour continuer.";
+  }
+  if (block.type === "coulisses") {
+    const checks = rec(ctx.inputs[`${k}:coches`]);
+    if (block.verifications.some((_, i) => checks[i] !== "1")) return "Cochez chaque vérification pour continuer.";
   }
   if (block.type === "repere-erreur" && !str(ctx.inputs[`${k}:trouve`]) && !str(ctx.inputs[`${k}:solution`]))
     return "Cliquez sur la ligne qui contient l'erreur.";
@@ -605,11 +611,11 @@ function Outil({ b, ctx }: { b: OutilBlock; ctx: BlockCtx }) {
           <DownloadIcon className="size-4 transition-transform group-hover:translate-y-0.5" aria-hidden /> Télécharger
         </span>
       </a>
-      {b.champs_a_adapter.length > 0 && (
+      {(b.champs_a_adapter?.length ?? 0) > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium">Champs à adapter</p>
           <ul className="flex flex-wrap gap-2">
-            {b.champs_a_adapter.map((c) => (
+            {(b.champs_a_adapter ?? []).map((c) => (
               <li key={c} className="rounded-md border bg-warning/15 px-2.5 py-1 text-sm">
                 {c}
               </li>
@@ -794,6 +800,99 @@ function Gain({ b, ctx, active }: { b: GainBlock; ctx: BlockCtx; active: boolean
   );
 }
 
+/* ---------------- Ce que l'outil va faire ---------------- */
+
+/** « Nom de l'étape : une phrase » → nom et phrase. */
+function splitStep(s: string) {
+  const i = s.indexOf(":");
+  return i === -1 ? { name: s.trim(), text: "" } : { name: s.slice(0, i).trim(), text: s.slice(i + 1).trim() };
+}
+
+// Frise numérotée : horizontale sur ordinateur, verticale sur téléphone.
+function Schema({ b }: { b: SchemaBlock }) {
+  const steps = b.etapes.map(splitStep);
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Ce que l&apos;outil va faire</p>
+        <h1 className={TITLE}>{b.titre}</h1>
+      </div>
+      <ol
+        className="grid md:gap-6 md:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
+        style={{ "--cols": steps.length } as React.CSSProperties}
+      >
+        {steps.map((s, i) => (
+          <motion.li
+            key={i}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: duration.standard, ease: ease.out, delay: i * 0.06 }}
+            className="relative flex gap-4 pb-6 last:pb-0 md:flex-col md:gap-3 md:pb-0"
+          >
+            {/* Trait qui relie les étapes : vertical sur téléphone, horizontal sur ordinateur. */}
+            {i < steps.length - 1 && (
+              <span
+                className="absolute top-9 bottom-0 left-[1.0625rem] w-0.5 bg-primary/25 md:top-[1.0625rem] md:right-[-1.5rem] md:bottom-auto md:left-9 md:h-0.5 md:w-auto"
+                aria-hidden
+              />
+            )}
+            <span className="relative grid size-9 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground tabular-nums">
+              {i + 1}
+            </span>
+            <span className="min-w-0 pt-1.5 md:pt-0">
+              <span className="block font-semibold">{s.name}</span>
+              {s.text && <span className="mt-0.5 block text-sm text-muted-foreground">{s.text}</span>}
+            </span>
+          </motion.li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+/* ---------------- Les coulisses ---------------- */
+
+function Coulisses({ b, ctx }: { b: CoulissesBlock; ctx: BlockCtx }) {
+  const k = `b${ctx.index}`;
+  const checks = rec(ctx.inputs[`${k}:coches`]);
+  const passages = b.passages.map((p) => {
+    const i = p.indexOf("||");
+    return { extract: p.slice(0, i).trim(), why: p.slice(i + 2).trim() };
+  });
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-primary">Les coulisses</p>
+        <h1 className={TITLE}>Ce que l&apos;outil a fait, et pourquoi</h1>
+        <p className="text-sm text-muted-foreground">Retrouvez ces passages dans votre propre livrable.</p>
+      </div>
+      <ol className="space-y-4">
+        {passages.map((p, i) => (
+          <li key={i} className="rounded-xl border bg-card p-5">
+            <p className="text-body leading-relaxed">
+              <mark className="marker bg-transparent">{p.extract}</mark>
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">{p.why}</p>
+          </li>
+        ))}
+      </ol>
+      <aside className="rounded-lg border-l-2 border-warning bg-warning/10 px-4 py-3">
+        <p className="text-sm font-semibold">Ce que l&apos;outil ne peut pas juger seul</p>
+        <p className="mt-1 text-body whitespace-pre-line text-muted-foreground">{b.a_juger}</p>
+      </aside>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">À vérifier avant de continuer</p>
+        <Checklist
+          items={b.verifications}
+          checks={checks}
+          idPrefix={k}
+          onToggle={(i, v) => ctx.set(`${k}:coches`, { ...checks, [i]: v ? "1" : "0" })}
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ---------------- Fiche et texte ---------------- */
 
 function Fiche({ b }: { b: FicheBlock }) {
@@ -863,5 +962,9 @@ export function BlockView({ block, ctx, active }: { block: SessionBlock; ctx: Bl
       return <Fiche b={block} />;
     case "texte":
       return <Texte b={block} />;
+    case "schema":
+      return <Schema b={block} />;
+    case "coulisses":
+      return <Coulisses b={block} ctx={ctx} />;
   }
 }

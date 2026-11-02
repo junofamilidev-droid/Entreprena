@@ -48,7 +48,8 @@ export interface OutilBlock {
   type: "outil";
   fichier: string;
   description: string;
-  champs_a_adapter: string[];
+  /** Facultatif : la rubrique n'est pas affichée si la liste est absente ou vide. */
+  champs_a_adapter?: string[];
   mode_emploi: string;
 }
 export interface GainBlock {
@@ -68,6 +69,23 @@ export interface TexteBlock {
   contenu: string;
 }
 
+/** « Ce que l'outil va faire » : 2 à 6 étapes, chacune « Nom de l'étape : une phrase ». */
+export interface SchemaBlock {
+  type: "schema";
+  titre: string;
+  etapes: string[];
+}
+/**
+ * « Les coulisses » : des extraits du livrable expliqués (« extrait || explication »), ce que
+ * l'outil ne peut pas juger seul, et des vérifications à cocher.
+ */
+export interface CoulissesBlock {
+  type: "coulisses";
+  passages: string[];
+  a_juger: string;
+  verifications: string[];
+}
+
 export type SessionBlock =
   | MissionBlock
   | DefiBlock
@@ -78,7 +96,9 @@ export type SessionBlock =
   | OutilBlock
   | GainBlock
   | FicheBlock
-  | TexteBlock;
+  | TexteBlock
+  | SchemaBlock
+  | CoulissesBlock;
 
 export type BlockType = SessionBlock["type"];
 
@@ -105,4 +125,6 @@ export const blockLabel: Record<BlockType, string> = {
   gain: "Temps gagné",
   fiche: "Fiche",
   texte: "À savoir",
+  schema: "Ce que l'outil va faire",
+  coulisses: "Les coulisses",
 };

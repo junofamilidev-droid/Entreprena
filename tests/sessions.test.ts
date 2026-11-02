@@ -30,14 +30,14 @@ describe("parseSession", () => {
     s.blocs[2].temps_cible_min = "5";
     s.blocs[6].ligne_fautive = 9;
     s.blocs.push({ type: "video" });
-    s.duree_min = 25;
+    s.duree_min = 61;
     const r = parseSession(s);
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.errors).toContain("Bloc 3 (defi) : « temps_cible_min » doit être un nombre, sans guillemets.");
     expect(r.errors).toContain("Bloc 7 (repere-erreur) : « ligne_fautive » doit être le numéro d'une des lignes, de 1 à 4.");
     expect(r.errors.some((e) => e.startsWith("Bloc 11 : type « video » inconnu"))).toBe(true);
-    expect(r.errors.some((e) => e.includes("ne doit pas dépasser 15 minutes"))).toBe(true);
+    expect(r.errors.some((e) => e.includes("ne doit pas dépasser 60 minutes"))).toBe(true);
   });
 
   it("refuse un texte de plus de 3 lignes, mais laisse les blocs dans n'importe quel ordre", () => {
@@ -133,5 +133,67 @@ describe("chrono « avec la méthode »", () => {
     const s = JSON.parse(readFileSync(new URL("../content/imports/auditeur-augmente-ia/session-revue-analytique-1.json", import.meta.url), "utf8"));
     // mission, defi, texte, outil(3), controle(4), prompt, collage, controle(7), repere, gain(9), fiche
     expect(methodSpan(s.blocs)).toEqual({ outil: 3, controle: 7 });
+  });
+});
+
+describe("blocs schema et coulisses, durée, consigne Claude seule", () => {
+  const exemple = () => JSON.parse(readFileSync(new URL("../content/demo/session-exemple-claude.json", import.meta.url), "utf8"));
+
+  it("accepte la session d'exemple (schema, coulisses, 45 min, outil sans champs à adapter, Claude seul)", () => {
+    const r = parseSession(exemple());
+    expect(r.ok ? [] : r.errors).toEqual([]);
+    if (r.ok) expect(Object.keys(r.session.consignes_outils_ia)).toEqual(["claude"]);
+  });
+
+  it("durée : 45 acceptée, 61 refusée", () => {
+    const s = exemple();
+    s.duree_min = 45;
+    expect(parseSession(s).ok).toBe(true);
+    s.duree_min = 61;
+    const r = parseSession(s);
+    expect(r.ok ? [] : r.errors).toEqual(["« duree_min » : 61 minutes, une session ne doit pas dépasser 60 minutes."]);
+  });
+
+  it("schema : de 2 à 6 étapes, chacune avec « : »", () => {
+    const s = exemple();
+    s.blocs[2].etapes = ["Lire la balance sans deux-points"];
+    const r = parseSession(s);
+    expect(r.ok ? [] : r.errors).toEqual([
+      "Bloc 3 (schema) : de 2 à 6 étapes (ici 1).",
+      "Bloc 3 (schema), étape 1 : écrivez « Nom de l'étape : une phrase » (le « : » manque).",
+    ]);
+    s.blocs[2].etapes = Array.from({ length: 7 }, (_, i) => `Étape ${i + 1} : texte`);
+    const r7 = parseSession(s);
+    expect(r7.ok ? [] : r7.errors).toEqual(["Bloc 3 (schema) : de 2 à 6 étapes (ici 7)."]);
+  });
+
+  it("coulisses : « || » dans chaque passage, 1 à 5 passages, au moins une vérification", () => {
+    const s = exemple();
+    s.blocs[3].passages = ["extrait sans séparateur"];
+    s.blocs[3].verifications = [];
+    const r = parseSession(s);
+    expect(r.ok ? [] : r.errors).toEqual([
+      "Bloc 4 (coulisses), passage 1 : écrivez « extrait || explication » (le « || » manque).",
+      "Bloc 4 (coulisses) : au moins une vérification à cocher.",
+    ]);
+    s.blocs[3].passages = Array.from({ length: 6 }, () => "a || b");
+    s.blocs[3].verifications = ["ok"];
+    const r6 = parseSession(s);
+    expect(r6.ok ? [] : r6.errors).toEqual(["Bloc 4 (coulisses) : de 1 à 5 passages (ici 6)."]);
+  });
+
+  it("outil : champs_a_adapter facultatif, mais une liste valide s'il est présent", () => {
+    const s = exemple();
+    expect(parseSession(s).ok).toBe(true);
+    s.blocs[1].champs_a_adapter = [""];
+    const r = parseSession(s);
+    expect(r.ok ? [] : r.errors).toEqual(["Bloc 2 (outil) : « champs_a_adapter » doit être une liste de textes non vides, entre [ et ]."]);
+  });
+
+  it("les sessions existantes s'importent toujours", () => {
+    for (const f of ["../content/demo/session-demo.json", "../content/imports/auditeur-augmente-ia/session-revue-analytique-1.json"]) {
+      const r = parseSession(readFileSync(new URL(f, import.meta.url), "utf8"));
+      expect(r.ok ? [] : r.errors).toEqual([]);
+    }
   });
 });

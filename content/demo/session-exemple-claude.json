@@ -1,0 +1,63 @@
+{
+  "formation": "auditeur-augmente-ia",
+  "module": "revue-analytique",
+  "session": 9,
+  "titre": "Exemple : l'outil Claude de revue analytique",
+  "duree_min": 45,
+  "maj": "2026-11-02",
+  "blocs": [
+    {
+      "type": "mission",
+      "expediteur": "Claire Moreau, cheffe de mission",
+      "objet": "Nordelia : la revue analytique avec l'outil",
+      "message": "Bonjour,\nCette fois, utilise l'outil de revue analytique du cabinet sur la balance de Nordelia.\nEnvoie-moi la note produite, relue.\nMerci, Claire",
+      "echeance": "Aujourd'hui, 17 h",
+      "livrable": "La note de revue analytique relue."
+    },
+    {
+      "type": "outil",
+      "fichier": "outil-revue-analytique.md",
+      "description": "Les instructions de l'outil, à coller dans un Projet Claude.",
+      "mode_emploi": "Créez un Projet dans Claude.\nCollez les instructions du fichier.\nJoignez la balance anonymisée et lancez l'analyse."
+    },
+    {
+      "type": "schema",
+      "titre": "Quatre étapes, de la balance à la note",
+      "etapes": [
+        "Lire la balance : l'outil vérifie que les soldes s'équilibrent.",
+        "Calculer les écarts : en euros et en %, pour chaque compte.",
+        "Retenir les comptes : ceux qui dépassent les deux seuils.",
+        "Rédiger la note : une question au client par compte retenu."
+      ]
+    },
+    {
+      "type": "coulisses",
+      "passages": [
+        "411000 Clients : +675 000 € (+34,0 %) || L'outil compare l'écart à la hausse d'activité annoncée (environ 6 %) : c'est ce décalage qui justifie la question.",
+        "471000 Compte d'attente : 86 400 € contre 0 € || Un compte parti de zéro n'a pas de pourcentage : l'outil le retient sur le seul seuil en euros."
+      ],
+      "a_juger": "Si l'explication du client est suffisante : l'outil pose la question, il ne conclut pas.",
+      "verifications": [
+        "J'ai retrouvé ces deux passages dans ma note",
+        "J'ai recalculé un écart à la main"
+      ]
+    },
+    {
+      "type": "controle",
+      "items": ["Les montants de la note correspondent à la balance", "Aucune donnée identifiant le client n'est présente"]
+    },
+    {
+      "type": "texte",
+      "contenu": "L'outil prépare la revue ; le jugement reste le vôtre."
+    },
+    {
+      "type": "fiche",
+      "titre": "Revue analytique avec l'outil Claude",
+      "etapes": ["Anonymiser la balance", "Lancer l'outil dans le Projet", "Relire la note avant envoi"],
+      "pieges": ["Envoyer la note sans recalculer un écart"]
+    }
+  ],
+  "consignes_outils_ia": {
+    "claude": "Ouvrez le Projet créé à l'écran Outil et joignez la balance anonymisée. (À vérifier)"
+  }
+}

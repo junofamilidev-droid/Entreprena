@@ -14,10 +14,12 @@ export const BLOCK_FIELDS: Record<SessionBlock["type"], Record<string, Field>> =
   collage: { consigne: "texte", a_verifier: "liste" },
   controle: { items: "liste" },
   "repere-erreur": { lignes: "liste", ligne_fautive: "nombre", explication: "texte" },
-  outil: { fichier: "texte", description: "texte", champs_a_adapter: "liste", mode_emploi: "texte" },
+  outil: { fichier: "texte", description: "texte", champs_a_adapter: "liste?", mode_emploi: "texte" },
   gain: { tache: "texte", reference: "texte" },
   fiche: { titre: "texte", etapes: "liste", pieges: "liste" },
   texte: { contenu: "texte" },
+  schema: { titre: "texte", etapes: "liste" },
+  coulisses: { passages: "liste", a_juger: "texte", verifications: "liste" },
 };
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -64,7 +66,7 @@ export function parseSession(input: string | unknown): ParseResult {
     errors.push("« session » : numéro entier à partir de 1.");
   text(data.titre, "« titre »");
   if (typeof data.duree_min !== "number" || data.duree_min <= 0) errors.push("« duree_min » : nombre de minutes, par exemple 15.");
-  else if (data.duree_min > 15) errors.push(`« duree_min » : ${data.duree_min} minutes, une session ne doit pas dépasser 15 minutes.`);
+  else if (data.duree_min > 60) errors.push(`« duree_min » : ${data.duree_min} minutes, une session ne doit pas dépasser 60 minutes.`);
   if (typeof data.maj !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data.maj) || Number.isNaN(Date.parse(data.maj)))
     errors.push("« maj » : date au format AAAA-MM-JJ, par exemple 2026-10-19.");
 
@@ -99,6 +101,23 @@ export function parseSession(input: string | unknown): ParseResult {
       if (b.type === "texte" && typeof b.contenu === "string" && b.contenu.length > 400)
         errors.push(`${w} : ${b.contenu.length} caractères, 400 au maximum (environ 3 lignes).`);
       if (b.type === "controle" && Array.isArray(b.items) && b.items.length === 0) errors.push(`${w} : au moins une case à cocher.`);
+      if (b.type === "schema" && Array.isArray(b.etapes)) {
+        if (b.etapes.length < 2 || b.etapes.length > 6) errors.push(`${w} : de 2 à 6 étapes (ici ${b.etapes.length}).`);
+        b.etapes.forEach((e, j) => {
+          if (typeof e === "string" && !e.includes(":"))
+            errors.push(`${w}, étape ${j + 1} : écrivez « Nom de l'étape : une phrase » (le « : » manque).`);
+        });
+      }
+      if (b.type === "coulisses") {
+        if (Array.isArray(b.passages)) {
+          if (b.passages.length < 1 || b.passages.length > 5) errors.push(`${w} : de 1 à 5 passages (ici ${b.passages.length}).`);
+          b.passages.forEach((e, j) => {
+            if (typeof e === "string" && !e.includes("||"))
+              errors.push(`${w}, passage ${j + 1} : écrivez « extrait || explication » (le « || » manque).`);
+          });
+        }
+        if (Array.isArray(b.verifications) && b.verifications.length === 0) errors.push(`${w} : au moins une vérification à cocher.`);
+      }
       if (b.type === "repere-erreur" && Array.isArray(b.lignes) && typeof b.ligne_fautive === "number") {
         if (b.lignes.length < 2) errors.push(`${w} : au moins 2 lignes, dont une fautive.`);
         else if (!Number.isInteger(b.ligne_fautive) || b.ligne_fautive < 1 || b.ligne_fautive > b.lignes.length)
