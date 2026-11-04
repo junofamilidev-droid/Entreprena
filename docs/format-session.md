@@ -82,7 +82,7 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
 # Format atelier — à jour au 4 novembre 2026
 
 Le format « atelier » est un second lecteur de session, inspiré de DataCamp et de Brilliant :
-- la mission reste visible en haut ;
+- une cheffe de mission confie une mission (avec des relances en cours de route) ;
 - à gauche, un tuteur (senior fictif) guide une étape à la fois ;
 - à droite, l'espace de travail change selon l'étape.
 
@@ -124,7 +124,7 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
 - `duree_min` : 60 au maximum.
 - `accueil` : l'écran affiché avant la première étape. Il présente ce qu'on va faire, ce qu'on emporte (liste), pourquoi c'est utile, la durée et le plan des étapes (calculé).
 - `mission` :
-  - le message de la cheffe de mission, toujours visible en haut et repliable ;
+  - le message de la cheffe de mission : il ouvre le fil du tuteur et reste relisible à tout moment avec le bouton « Mission » de la barre de droite ;
   - le bouton « Copier le contexte » copie le texte de `a_copier`, à coller dans Claude.
 - `tuteur` : nom et rôle du senior fictif qui guide (par exemple « Marc », « Senior manager »).
 - `commandes` (facultatif) : les commandes de l'outil, résumées dans la bulle « Les commandes de l'outil » de la barre de droite. Chaque commande : `{ "commande": "/approfondir <compte>", "quand": "…", "rend": "…" }`.
