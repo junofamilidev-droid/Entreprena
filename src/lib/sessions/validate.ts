@@ -1,4 +1,5 @@
-import { AI_TOOLS, type Session, type SessionBlock } from "./types";
+import { AI_TOOLS, type AnySession, type Session, type SessionBlock } from "./types";
+import { parseAtelier } from "./atelier-validate";
 
 // Contrôle d'un fichier de session collé dans l'espace réservé.
 // Chaque erreur est écrite pour être comprise sans connaître le code : où, et quoi corriger.
@@ -139,4 +140,26 @@ export function parseSession(input: string | unknown): ParseResult {
 
   if (errors.length) return { ok: false, errors };
   return { ok: true, session: { consignes_outils_ia: {}, ...data } as unknown as Session };
+}
+
+export type AnyParseResult = { ok: true; session: AnySession } | { ok: false; errors: string[] };
+
+/**
+ * Point d'entrée de l'import : reconnaît le format (« atelier » si "format": "atelier", classique
+ * sinon) et vérifie le fichier selon ce format.
+ */
+export function parseSessionFile(input: string | unknown): AnyParseResult {
+  let data: unknown = input;
+  if (typeof input === "string") {
+    try {
+      data = JSON.parse(input);
+    } catch {
+      return parseSession(input);
+    }
+  }
+  if (isRecord(data) && data.format !== undefined) {
+    if (data.format === "atelier") return parseAtelier(data);
+    return { ok: false, errors: [`« format » : « ${String(data.format)} » inconnu. Écrivez « atelier », ou retirez ce champ pour le format classique.`] };
+  }
+  return parseSession(data);
 }

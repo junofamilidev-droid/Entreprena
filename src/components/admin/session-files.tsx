@@ -6,7 +6,7 @@ import { CheckIcon, ExternalLinkIcon, Trash2Icon, UploadIcon } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/auth/session";
 import { FILES_BUCKET, filesBase, filesPrefix, requiredFiles } from "@/lib/sessions/files";
-import type { Session } from "@/lib/sessions/types";
+import type { AnySession } from "@/lib/sessions/types";
 
 interface Stored {
   name: string;
@@ -18,7 +18,7 @@ function size(n: number) {
 }
 
 // Fichiers de la session : ceux que citent les blocs (défi, outil), téléversés sous leur nom exact.
-export function SessionFiles({ session }: { session: Session }) {
+export function SessionFiles({ session }: { session: AnySession }) {
   const prefix = filesPrefix(session);
   const [stored, setStored] = React.useState<Stored[] | null>(null);
   const [busy, setBusy] = React.useState<string | null>(null);

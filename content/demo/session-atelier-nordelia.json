@@ -1,0 +1,189 @@
+{
+  "format": "atelier",
+  "formation": "auditeur-augmente-ia",
+  "module": "revue-analytique",
+  "session": 2,
+  "titre": "Revue analytique avec votre outil Claude",
+  "duree_min": 45,
+  "maj": "2026-11-04",
+  "accueil": {
+    "ce_que_vous_allez_faire": "Installer dans votre Claude un outil de revue analytique, le tester sur la balance de Nordelia Distribution, puis l'adapter à votre cabinet.",
+    "ce_que_vous_emportez": [
+      "Un skill Claude de revue analytique, prêt à l'emploi",
+      "Une note de revue analytique sur un cas complet",
+      "Une fiche pour vous en servir en mission"
+    ],
+    "pourquoi": "Sur une balance de 80 comptes, repérer les variations à creuser et rédiger les questions au client prend une à deux heures. L'outil le fait en quelques minutes ; votre travail devient la vérification et le jugement."
+  },
+  "mission": {
+    "expediteur": "Claire Moreau, cheffe de mission",
+    "objet": "Nordelia Distribution : revue analytique avant jeudi",
+    "message": "Bonjour,\nJe vois le DAF de Nordelia jeudi. Selon lui : chiffre d'affaires en hausse d'environ 6 %, effectif, conditions de paiement et prestataires inchangés.\nPeux-tu me préparer la revue analytique de la balance 2025, seuils 50 000 € et 10 %, avec une question au client par compte retenu ?\nMerci, Claire",
+    "echeance": "Aujourd'hui, 17 h",
+    "livrable": "La note de revue analytique : comptes à creuser et questions au client.",
+    "a_copier": "Contexte : Nordelia Distribution, négociant B2B fictif. Exercice 2025 comparé à 2024. Chiffre d'affaires en hausse d'environ 6 %. Effectif, conditions de paiement et prestataires inchangés selon le DAF. Seuils : 50 000 € et 10 %."
+  },
+  "tuteur": { "nom": "Marc", "role": "Senior manager" },
+  "etapes": [
+    {
+      "titre": "Le piège",
+      "objectif": "Repérer ce qui rend une variation intéressante.",
+      "pourquoi": "Une grosse variation n'est pas forcément une anomalie : ce qui compte, c'est l'écart à ce qu'on attendait.",
+      "a_faire": ["Lisez la question à droite.", "Choisissez la réponse qui vous semble juste."],
+      "aides": [
+        { "question": "Un indice ?", "reponse": "Comparez chaque variation à la hausse d'activité annoncée par le DAF : environ 6 %." }
+      ],
+      "panneau": {
+        "type": "quiz",
+        "question": "Le chiffre d'affaires augmente d'environ 6 %. Lequel de ces comptes faut-il creuser en priorité ?",
+        "choix": [
+          "707110 Ventes de fournitures : +315 000 € (+6,0 %)",
+          "411000 Clients : +675 000 € (+34,0 %)",
+          "401000 Fournisseurs : +90 000 € (+6,3 %)"
+        ],
+        "bonne": 1,
+        "explication": "Les ventes et les fournisseurs suivent l'activité. Les créances clients, elles, augmentent de 34 % pour une activité à +6 %, à conditions de paiement inchangées : c'est l'écart qui doit vous alerter."
+      }
+    },
+    {
+      "titre": "Votre outil",
+      "objectif": "Comprendre ce que fait l'outil, puis l'installer dans votre Claude.",
+      "pourquoi": "Un outil que vous comprenez, vous savez quand vous y fier et quand le vérifier.",
+      "a_faire": [
+        "Cliquez sur chaque règle pour voir ce qu'elle change.",
+        "Téléchargez l'outil.",
+        "Installez-le dans Claude en suivant le schéma, puis cochez « C'est installé »."
+      ],
+      "aides": [
+        { "question": "Je ne trouve pas les réglages de Claude", "reponse": "Dans Claude, cliquez sur vos initiales en bas à gauche, puis sur Réglages. Les skills se trouvent dans la rubrique Capacités." },
+        { "question": "Mes données partent-elles chez Claude ?", "reponse": "Oui, ce que vous collez dans Claude lui est envoyé. C'est pourquoi l'outil travaille sur une balance anonymisée, et que votre cabinet doit autoriser Claude." }
+      ],
+      "panneau": {
+        "type": "outil",
+        "fichier": "skill-revue-analytique.zip",
+        "presentation": "Un skill Claude qui calcule les écarts d'une balance N/N-1, retient les comptes qui dépassent vos deux seuils et rédige une question au client pour chacun.",
+        "regles": [
+          {
+            "titre": "Signe des écarts",
+            "extrait": "Écart = solde N - solde N-1 ; débit en positif, crédit en négatif.",
+            "avec": "408100 Factures non parvenues : -38 000 € contre -214 000 €, écart +176 000 € (+82,2 %).",
+            "sans": "408100 Factures non parvenues : 38 000 € contre 214 000 €, baisse de 176 000 € (-82,2 %).",
+            "explication": "Sans convention de signe, l'outil lit une dette qui diminue comme une baisse. Avec la règle, l'écart est cohérent avec le tableur et vous comparez des chiffres identiques."
+          },
+          {
+            "titre": "Deux seuils",
+            "extrait": "Retenir un compte seulement s'il atteint 50 000 € ET 10 %.",
+            "avec": "5 comptes retenus : 408100, 411000, 471000, 622600, 645100.",
+            "sans": "12 comptes retenus, dont les ventes et les achats qui suivent simplement l'activité.",
+            "explication": "Un seul seuil noie l'essentiel. Les deux seuils ensemble ne gardent que ce qui est à la fois significatif et inhabituel."
+          },
+          {
+            "titre": "Pas de conclusion",
+            "extrait": "Formuler une question au client, jamais une explication.",
+            "avec": "411000 Clients : qu'est-ce qui explique cette hausse, à conditions de paiement inchangées ?",
+            "sans": "411000 Clients : la hausse s'explique par un allongement des délais de paiement.",
+            "explication": "Sans la règle, l'outil invente une explication plausible. Avec elle, il pose la question et vous laisse le jugement."
+          }
+        ],
+        "installation": [
+          { "titre": "Télécharger", "detail": "Enregistrez le fichier skill-revue-analytique.zip sans le décompresser." },
+          { "titre": "Ouvrir les réglages", "detail": "Dans Claude : vos initiales en bas à gauche, puis Réglages, puis Capacités." },
+          { "titre": "Importer le skill", "detail": "Dans Skills, cliquez sur Importer et choisissez le fichier .zip." },
+          { "titre": "Activer", "detail": "Vérifiez que le skill « Revue analytique » est activé." }
+        ]
+      }
+    },
+    {
+      "titre": "Le test sur Nordelia",
+      "objectif": "Lancer l'outil sur la balance et vérifier sa note.",
+      "pourquoi": "C'est votre premier contrôle qualité : savoir ce que l'outil doit trouver avant de le croire.",
+      "a_faire": [
+        "Téléchargez la balance de Nordelia.",
+        "Dans Claude, joignez la balance et demandez la revue analytique, avec le contexte de la mission (bouton « Copier le contexte »).",
+        "Collez la réponse de Claude à droite, puis cliquez sur « Vérifier »."
+      ],
+      "aides": [
+        { "question": "Que dois-je écrire à Claude ?", "reponse": "« Fais la revue analytique de cette balance » puis collez le contexte copié depuis la mission. Le skill fait le reste." },
+        { "question": "Un voyant reste orange, c'est grave ?", "reponse": "Non : c'est un point à relire. Comparez la réponse de Claude au tableau et corrigez si besoin." }
+      ],
+      "relance": { "expediteur": "Claire Moreau", "message": "Creuse le 411000 : je veux une question précise sur la balance âgée." },
+      "panneau": {
+        "type": "test",
+        "fichier_donnees": "balance-nordelia-2025.csv",
+        "consigne": "Collez ici la note produite par Claude.",
+        "verifications": [
+          { "libelle": "Les 5 comptes à creuser", "mots_cles": ["408100", "411000", "471000", "622600", "645100"], "regle": "tous", "si_reussi": "Les cinq comptes y sont : l'outil a bien appliqué les deux seuils.", "si_manque": "Il manque au moins un compte. Vérifiez que vous avez donné les deux seuils (50 000 € et 10 %)." },
+          { "libelle": "L'écart du 411000 est juste", "mots_cles": ["675 000"], "regle": "tous", "si_reussi": "L'écart du 411000 est correct : 675 000 €.", "si_manque": "Je ne trouve pas 675 000 € pour le 411000 : recalculez 2 660 000 - 1 985 000." },
+          { "libelle": "Une question sur la balance âgée", "mots_cles": ["balance âgée", "antériorité"], "regle": "un", "si_reussi": "Bien : la question vise la balance âgée, comme le demandait Claire.", "si_manque": "Claire veut une question sur la balance âgée du 411000 : relancez Claude sur ce point." }
+        ]
+      }
+    },
+    {
+      "titre": "La réponse du DAF",
+      "objectif": "Mettre la note à jour avec une information du client.",
+      "pourquoi": "En mission, la note vit : chaque réponse du client la fait évoluer.",
+      "a_faire": [
+        "Lisez le message de Claire en haut.",
+        "Demandez à Claude de mettre la note à jour.",
+        "Collez la nouvelle note à droite et vérifiez-la."
+      ],
+      "aides": [
+        { "question": "Comment formuler la demande ?", "reponse": "« Le DAF indique que la hausse des honoraires vient d'un litige. Mets la note à jour : garde la question, ajoute le document à demander. »" }
+      ],
+      "relance": { "expediteur": "Claire Moreau", "message": "Le DAF répond que les honoraires viennent d'un litige. Mets la note à jour." },
+      "panneau": {
+        "type": "test",
+        "fichier_donnees": "balance-nordelia-2025.csv",
+        "consigne": "Collez ici la note mise à jour par Claude.",
+        "verifications": [
+          { "libelle": "Le litige est mentionné", "mots_cles": ["litige"], "regle": "tous", "si_reussi": "La note intègre la réponse du DAF.", "si_manque": "La note ne parle pas du litige : demandez à Claude de l'intégrer au 622600." },
+          { "libelle": "Un justificatif est demandé", "mots_cles": ["convention", "facture", "justificatif"], "regle": "un", "si_reussi": "Un document est demandé : c'est ce qui rendra la réponse vérifiable.", "si_manque": "Une explication sans pièce ne suffit pas : demandez la convention d'honoraires ou les factures." }
+        ]
+      }
+    },
+    {
+      "titre": "À votre cabinet",
+      "objectif": "Adapter l'outil à vos seuils et à votre façon de rédiger.",
+      "pourquoi": "Un outil qui parle comme votre cabinet sera utilisé ; un outil générique sera oublié.",
+      "a_faire": ["Copiez la commande.", "Collez-la dans Claude et répondez à ses questions.", "Cochez chaque point une fois fait."],
+      "aides": [
+        { "question": "Et si mon cabinet n'a pas de seuils écrits ?", "reponse": "Demandez à votre chef de mission ceux qu'il utilise : c'est une bonne question à poser, et la réponse vous servira sur tous vos dossiers." }
+      ],
+      "panneau": {
+        "type": "personnaliser",
+        "commande": "Adapte le skill Revue analytique à mon cabinet : demande-moi mes seuils habituels, mon ton de rédaction et le format de note attendu, puis propose la version modifiée.",
+        "etapes": ["Collez la commande dans Claude.", "Répondez à ses trois questions.", "Enregistrez la version proposée dans vos skills."],
+        "items": ["Mes seuils sont dans l'outil", "Le ton correspond à mon cabinet", "La nouvelle version est enregistrée"]
+      }
+    },
+    {
+      "titre": "Votre fiche",
+      "objectif": "Garder l'essentiel pour votre prochaine mission.",
+      "pourquoi": "Dans trois semaines, vous ne relirez pas la session : vous ouvrirez la fiche.",
+      "a_faire": ["Relisez la fiche.", "Retrouvez-la à tout moment dans Ma boîte à outils."],
+      "aides": [],
+      "panneau": {
+        "type": "fiche",
+        "titre": "Revue analytique avec l'outil Claude",
+        "etapes": [
+          "Anonymiser la balance (nom, SIREN, adresse)",
+          "Joindre la balance à Claude avec le contexte de la mission",
+          "Vérifier les comptes retenus et un écart recalculé à la main",
+          "Envoyer les questions au client, puis mettre la note à jour"
+        ],
+        "pieges": [
+          "Croire un pourcentage recalculé par Claude sans le vérifier",
+          "Prendre une question pour une conclusion"
+        ]
+      }
+    }
+  ],
+  "fin": {
+    "recapitulatif": [
+      "Un outil de revue analytique installé dans votre Claude",
+      "Une note complète sur Nordelia, mise à jour avec la réponse du DAF",
+      "Un outil adapté à votre cabinet",
+      "Une fiche rangée dans Ma boîte à outils"
+    ]
+  }
+}

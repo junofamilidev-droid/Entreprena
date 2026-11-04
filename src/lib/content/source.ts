@@ -13,7 +13,7 @@ import type {
   ModuleWithSteps,
   Step,
 } from "./types";
-import type { Session } from "@/lib/sessions/types";
+import type { AnySession } from "@/lib/sessions/types";
 import { stripReviewMarks } from "@/lib/sessions/display";
 
 // Point d'accès unique au contenu : la base de données, alimentée depuis l'espace réservé.
@@ -268,7 +268,7 @@ export interface SessionSummary {
   status: Step["status"];
 }
 export interface SessionRecord extends SessionSummary {
-  content: Session;
+  content: AnySession;
 }
 
 export function mapSession(r: Row): SessionRecord {
@@ -279,7 +279,7 @@ export function mapSession(r: Row): SessionRecord {
     title: r.title as string,
     durationMin: r.duration_min as number,
     status: r.status as Step["status"],
-    content: r.content as Session,
+    content: r.content as AnySession,
   };
 }
 

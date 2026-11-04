@@ -1,4 +1,5 @@
 import type { Session } from "./types";
+import type { AtelierSession } from "./atelier";
 
 // « (À vérifier) », « (À valider) » : notes des rédacteurs, à ne pas montrer aux apprenants.
 const REVIEW_MARK = /\s*\(\s*[àa] (?:v[ée]rifier|valider)\s*\)/gi;
@@ -15,7 +16,7 @@ function deep<T>(value: T): T {
   return value;
 }
 
-/** La session telle que l'apprenant la voit. */
-export function forLearner(session: Session): Session {
+/** La session telle que l'apprenant la voit (tous formats). */
+export function forLearner<T extends Session | AtelierSession>(session: T): T {
   return deep(session);
 }

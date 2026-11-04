@@ -1,5 +1,5 @@
-import { parseSession } from "./validate";
-import type { Session } from "./types";
+import { parseSessionFile } from "./validate";
+import type { AnySession } from "./types";
 
 // Fichier d'une formation complète, rédigé par Claude et collé dans l'espace réservé :
 // la fiche de la formation, ses modules dans l'ordre, et éventuellement ses sessions.
@@ -24,7 +24,7 @@ export interface FormationFile {
     /** Ouvert aux apprenants, ou visible dans le plan comme « à venir ». */
     ouvert: boolean;
   }[];
-  sessions: Session[];
+  sessions: AnySession[];
 }
 
 export type FormationParse = { ok: true; file: FormationFile } | { ok: false; errors: string[] };
@@ -90,14 +90,14 @@ export function parseFormationFile(input: string | unknown): FormationParse {
       for (const k of Object.keys(m)) if (!["identifiant", "titre", "resume", "livrable", "ouvert"].includes(k)) errors.push(`${w} : champ « ${k} » inconnu.`);
     });
 
-  const sessions: Session[] = [];
+  const sessions: AnySession[] = [];
   if (data.sessions !== undefined) {
     if (!Array.isArray(data.sessions)) errors.push("« sessions » : liste de sessions, entre [ et ], ou rien.");
     else {
       const seen = new Set<string>();
       data.sessions.forEach((s: unknown, i: number) => {
         const label = isRecord(s) ? `Session ${i + 1} (${String(s.module ?? "?")}, n° ${String(s.session ?? "?")})` : `Session ${i + 1}`;
-        const r = parseSession(s);
+        const r = parseSessionFile(s);
         if (!r.ok) errors.push(...r.errors.map((e) => `${label} · ${e}`));
         if (!isRecord(s)) return;
         // Cohérence avec la formation et ses modules, même si la session a d'autres erreurs.

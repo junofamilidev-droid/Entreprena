@@ -6,11 +6,12 @@ import { toast } from "sonner";
 import { AlertCircleIcon, CheckCircle2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { SessionPlayer } from "@/components/session/session-player";
+import { AnySessionPlayer } from "@/components/session/any-session-player";
 import { importSession } from "@/lib/admin/session-actions";
 import { filesBase, requiredFiles } from "@/lib/sessions/files";
-import { parseSession } from "@/lib/sessions/validate";
-import { blockLabel, type Session } from "@/lib/sessions/types";
+import { parseSessionFile } from "@/lib/sessions/validate";
+import { isAtelier, panneauLabel } from "@/lib/sessions/atelier";
+import { blockLabel, type AnySession } from "@/lib/sessions/types";
 import { Crumbs, Section } from "./kit";
 
 /** Liste d'erreurs du format, lisible sans connaître le JSON. */
@@ -31,10 +32,10 @@ export function FormatErrors({ errors }: { errors: string[] }) {
 }
 
 /** Aperçu de la session telle que l'apprenant la verra, dans un cadre défilant. */
-export function SessionPreviewFrame({ session, exitHref }: { session: Session; exitHref: string }) {
+export function SessionPreviewFrame({ session, exitHref }: { session: AnySession; exitHref: string }) {
   return (
     <div className="h-[44rem] overflow-y-auto rounded-lg border bg-background shadow-inner">
-      <SessionPlayer
+      <AnySessionPlayer
         session={session}
         moduleLabel={`Aperçu · ${session.module}`}
         exitHref={exitHref}
@@ -50,11 +51,11 @@ export function SessionPreviewFrame({ session, exitHref }: { session: Session; e
 export function SessionImport() {
   const router = useRouter();
   const [text, setText] = React.useState("");
-  const [checked, setChecked] = React.useState<{ errors: string[] } | { session: Session } | null>(null);
+  const [checked, setChecked] = React.useState<{ errors: string[] } | { session: AnySession } | null>(null);
   const [pending, start] = React.useTransition();
 
   function check() {
-    const r = parseSession(text);
+    const r = parseSessionFile(text);
     setChecked(r.ok ? { session: r.session } : { errors: r.errors });
   }
 
@@ -140,14 +141,31 @@ export function SessionImport() {
                 </dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="text-muted-foreground">{session.blocs.length} blocs, dans l&apos;ordre</dt>
-                <dd className="mt-1 flex flex-wrap gap-1.5">
-                  {session.blocs.map((b, i) => (
-                    <span key={i} className="rounded-md border bg-muted/40 px-2 py-0.5 text-caption">
-                      {i + 1}. {blockLabel[b.type]}
-                    </span>
-                  ))}
-                </dd>
+                {isAtelier(session) ? (
+                  <>
+                    <dt className="text-muted-foreground">
+                      Format atelier · {session.etapes.length} étapes · tuteur : {session.tuteur.nom}
+                    </dt>
+                    <dd className="mt-1 flex flex-wrap gap-1.5">
+                      {session.etapes.map((e, i) => (
+                        <span key={i} className="rounded-md border bg-muted/40 px-2 py-0.5 text-caption">
+                          {i + 1}. {e.titre} ({panneauLabel[e.panneau.type]})
+                        </span>
+                      ))}
+                    </dd>
+                  </>
+                ) : (
+                  <>
+                    <dt className="text-muted-foreground">{session.blocs.length} blocs, dans l&apos;ordre</dt>
+                    <dd className="mt-1 flex flex-wrap gap-1.5">
+                      {session.blocs.map((b, i) => (
+                        <span key={i} className="rounded-md border bg-muted/40 px-2 py-0.5 text-caption">
+                          {i + 1}. {blockLabel[b.type]}
+                        </span>
+                      ))}
+                    </dd>
+                  </>
+                )}
               </div>
               {requiredFiles(session).length > 0 && (
                 <div className="sm:col-span-2">

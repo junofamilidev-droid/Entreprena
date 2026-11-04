@@ -76,3 +76,88 @@ Il est vérifié avant l'import : chaque erreur dit quel bloc et quel champ corr
 - Si `consignes_outils_ia` ne contient que la clé `claude`, l'apprenant n'a pas à choisir d'outil : la session considère que c'est Claude.
 - Affichées sous le prompt selon l'outil choisi par l'apprenant (claude, chatgpt, copilot, lechat). Pour « un autre outil », un texte générique s'affiche.
 - La mention « (À vérifier) » peut rester dans le texte : elle est masquée pour les apprenants et visible dans l'espace réservé.
+
+---
+
+# Format atelier — à jour au 4 novembre 2026
+
+Le format « atelier » est un second lecteur de session, inspiré de DataCamp et de Brilliant :
+- la mission reste visible en haut ;
+- à gauche, un tuteur (senior fictif) guide une étape à la fois ;
+- à droite, l'espace de travail change selon l'étape.
+
+On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme guide, explique et vérifie, mais n'exécute aucune IA : l'apprenant lance l'outil dans son propre Claude, ouvert à côté.
+
+**Choix du lecteur.** Une session porte `"format": "atelier"` pour utiliser ce lecteur. Sans ce champ, le lecteur classique (un écran par bloc) s'applique, comme avant.
+
+**Écran.** Le format atelier se fait sur ordinateur : sous 1 024 px de large, l'apprenant voit « Cette session se fait sur ordinateur » et un lien vers l'accueil.
+
+**Outil d'IA.** Claude uniquement : la fenêtre « Quel outil d'IA… » ne s'ouvre pas.
+
+```json
+{
+  "format": "atelier",
+  "formation": "auditeur-augmente-ia",
+  "module": "revue-analytique",
+  "session": 2,
+  "titre": "",
+  "duree_min": 45,
+  "maj": "AAAA-MM-JJ",
+  "accueil": { "ce_que_vous_allez_faire": "", "ce_que_vous_emportez": [""], "pourquoi": "" },
+  "mission": { "expediteur": "", "objet": "", "message": "", "echeance": "", "livrable": "", "a_copier": "" },
+  "tuteur": { "nom": "", "role": "" },
+  "etapes": [
+    {
+      "titre": "", "objectif": "", "pourquoi": "", "a_faire": [""],
+      "aides": [ { "question": "", "reponse": "" } ],
+      "relance": { "expediteur": "", "message": "" },
+      "panneau": { "type": "quiz", "...": "voir ci-dessous" }
+    }
+  ],
+  "fin": { "recapitulatif": [""] }
+}
+```
+
+## En-tête et cadre
+- `formation`, `module`, `session`, `titre`, `maj` : comme au format classique.
+- `duree_min` : 60 au maximum.
+- `accueil` : l'écran affiché avant la première étape. Il présente ce qu'on va faire, ce qu'on emporte (liste), pourquoi c'est utile, la durée et le plan des étapes (calculé).
+- `mission` :
+  - le message de la cheffe de mission, toujours visible en haut et repliable ;
+  - le bouton « Copier le contexte » copie le texte de `a_copier`, à coller dans Claude.
+- `tuteur` : nom et rôle du senior fictif qui guide (par exemple « Marc », « Senior manager »).
+- `fin` : `recapitulatif` liste ce que l'apprenant a obtenu. L'écran de fin montre aussi la fiche et le téléchargement de l'outil.
+
+## Une étape
+- `titre`, `objectif`, `pourquoi`, `a_faire` (étapes numérotées) : ce que le tuteur affiche, à gauche.
+- `aides` : questions pré-écrites, proposées en boutons ; la réponse s'affiche comme un message du tuteur. La liste peut être vide.
+- `relance` (facultatif) : un nouveau message de la cheffe de mission, qui arrive quand l'apprenant atteint l'étape. Il s'ajoute en tête du panneau de mission.
+- `panneau` : l'espace de travail, à droite. Il doit avoir un `type` parmi ceux décrits ci-dessous.
+
+## Types de panneau
+- `quiz` : `{ "type": "quiz", "question", "choix": [textes], "bonne": index, "explication" }`.
+  - `bonne` se compte à partir de 0 (le premier choix vaut 0).
+  - Le retour est immédiat, et le tuteur affiche l'explication.
+- `outil` : `{ "type": "outil", "fichier", "presentation", "regles": [ { "titre", "extrait", "avec", "sans", "explication" } ], "installation": [ { "titre", "detail" } ] }`.
+  - Chaque règle est cliquable : un clic montre côte à côte la sortie avec (`avec`) et sans (`sans`) la règle, et le tuteur explique (`explication`).
+  - Viennent ensuite le téléchargement de `fichier` (un .zip est accepté), puis le schéma d'installation : une étape numérotée et illustrée par élément de `installation`, et la case « C'est installé ».
+  - L'icône de chaque étape d'installation est choisie d'après son titre : télécharger, réglages, importer, activer, tester.
+- `test` : `{ "type": "test", "fichier_donnees", "consigne", "verifications": [ { "libelle", "mots_cles": [textes], "regle": "tous" ou "un", "si_reussi", "si_manque" } ] }`.
+  - L'apprenant télécharge les données, colle la réponse de Claude, puis clique sur « Vérifier ».
+  - Chaque vérification devient un voyant vert ou ambre, calculé dans le navigateur :
+    - les mots-clés sont cherchés sans tenir compte des majuscules ni des accents ;
+    - les espaces dans les nombres sont ignorés (« 471 000 » = « 471000 ») ;
+    - `tous` exige chaque mot-clé, `un` au moins un.
+  - Les voyants ne bloquent pas. Le tuteur commente chaque voyant avec `si_reussi` ou `si_manque`.
+- `personnaliser` : `{ "type": "personnaliser", "commande", "etapes": [textes], "items": [textes] }`. La commande est à copier dans Claude, suivie des étapes et des cases à cocher.
+- `fiche` : `{ "type": "fiche", "titre", "etapes": [textes], "pieges": [textes] }`. Elle est rangée aussi dans « Ma boîte à outils » une fois la session terminée. `pieges` peut être vide.
+
+## Fichiers
+- Les fichiers cités par `outil.fichier` et `test.fichier_donnees` sont à téléverser dans l'éditeur de la session, comme au format classique.
+- Les .zip sont acceptés.
+
+## Dans l'espace réservé
+- **Importer une session (JSON)** reconnaît le format, vérifie le fichier et montre l'aperçu.
+- Une session au format atelier se modifie en JSON dans son éditeur, et non bloc par bloc.
+
+Exemple complet : `content/demo/session-atelier-nordelia.json`, visible sur `/demo-atelier`.

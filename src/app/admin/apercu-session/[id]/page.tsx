@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { SessionPlayer } from "@/components/session/session-player";
+import { AnySessionPlayer } from "@/components/session/any-session-player";
 import { requireAdmin } from "@/lib/admin/guard";
 import { mapSession } from "@/lib/content/source";
 import { filesBase } from "@/lib/sessions/files";
@@ -17,7 +17,7 @@ async function Preview({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       <p className="fixed right-3 bottom-20 z-50 rounded-md bg-foreground px-2.5 py-1 text-caption text-background shadow">Aperçu</p>
-      <SessionPlayer
+      <AnySessionPlayer
         session={s.content}
         moduleLabel={`Module ${m.position} : ${m.title}`}
         exitHref={`/admin/sessions/${id}`}

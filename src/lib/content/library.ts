@@ -2,9 +2,10 @@ import "server-only";
 import { getModule, getSession, listFormations, listSessions } from "./source";
 import type { FormationWithModules, LessonContent, ModuleWithSteps } from "./types";
 import type { SessionItem } from "@/components/platform/session-list";
-import type { FicheBlock, OutilBlock, PromptBlock, Session } from "@/lib/sessions/types";
+import type { FicheBlock, OutilBlock, PromptBlock } from "@/lib/sessions/types";
 import { forLearner } from "@/lib/sessions/display";
 import { filesBase } from "@/lib/sessions/files";
+import { isAtelier } from "@/lib/sessions/atelier";
 import { moduleDuration } from "./durations";
 
 export interface OpenModule {
@@ -69,12 +70,22 @@ export async function toolbox() {
       for (const summary of await listSessions(f.slug, m.slug)) {
         const record = await getSession(f.slug, m.slug, summary.number);
         if (!record) continue;
-        const s: Session = forLearner(record.content);
+        const s = forLearner(record.content);
         const base = {
           sessionKey: `${f.slug}/${m.slug}/session-${s.session}`,
           sessionLabel: `Module ${m.position} · session ${s.session} : ${s.titre}`,
           href: `/formations/${f.slug}/${m.slug}/session/${s.session}`,
         };
+        if (isAtelier(s)) {
+          // Format atelier : l'outil (le skill) et la fiche de la session.
+          for (const e of s.etapes) {
+            const p = e.panneau;
+            if (p.type === "outil")
+              tools.push({ ...base, block: { type: "outil", fichier: p.fichier, description: p.presentation, mode_emploi: "" }, fileUrl: `${filesBase(s)}/${encodeURIComponent(p.fichier)}` });
+            if (p.type === "fiche") fiches.push({ ...base, block: { type: "fiche", titre: p.titre, etapes: p.etapes, pieges: p.pieges } });
+          }
+          continue;
+        }
         for (const b of s.blocs) {
           if (b.type === "outil") tools.push({ ...base, block: b, fileUrl: `${filesBase(s)}/${encodeURIComponent(b.fichier)}` });
           if (b.type === "fiche") fiches.push({ ...base, block: b });

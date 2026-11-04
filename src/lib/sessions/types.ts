@@ -1,6 +1,8 @@
 // Session en blocs : le format JSON que l'on colle dans l'espace réservé.
 // Les noms des champs sont en français, tels qu'écrits dans le fichier.
 
+import type { AtelierSession } from "./atelier";
+
 export const AI_TOOLS = ["claude", "chatgpt", "copilot", "lechat"] as const;
 export type AiToolId = (typeof AI_TOOLS)[number];
 
@@ -128,3 +130,6 @@ export const blockLabel: Record<BlockType, string> = {
   schema: "Ce que l'outil va faire",
   coulisses: "Les coulisses",
 };
+
+/** Une session au format classique (un écran par bloc) ou au format « atelier ». */
+export type AnySession = Session | AtelierSession;

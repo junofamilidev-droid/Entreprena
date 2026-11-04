@@ -7,9 +7,9 @@ import { updateTag } from "next/cache";
 import { requireAdmin } from "./guard";
 import type { Result } from "./actions";
 import { CONTENT_TAG } from "@/lib/content/source";
-import { parseSession } from "@/lib/sessions/validate";
+import { parseSessionFile } from "@/lib/sessions/validate";
 import { parseFormationFile } from "@/lib/sessions/formation-format";
-import type { Session } from "@/lib/sessions/types";
+import type { AnySession } from "@/lib/sessions/types";
 import type { PublicationStatus } from "@/lib/content/types";
 
 type Client = Awaited<ReturnType<typeof requireAdmin>>["client"];
@@ -22,7 +22,7 @@ async function findModule(client: Client, formationSlug: string, moduleSlug: str
   return { moduleId: m.id as string };
 }
 
-async function upsertSession(client: Client, moduleId: string, s: Session, publish: boolean) {
+async function upsertSession(client: Client, moduleId: string, s: AnySession, publish: boolean) {
   const { data: existing } = await client.from("sessions").select("id").eq("module_id", moduleId).eq("number", s.session).maybeSingle();
   const { data, error } = await client
     .from("sessions")
@@ -37,7 +37,7 @@ async function upsertSession(client: Client, moduleId: string, s: Session, publi
 
 /** Importe une session collée. Si la session existe déjà (même module, même numéro), elle est remplacée. */
 export async function importSession(json: string, publish: boolean): Promise<Result<{ id: string; replaced: boolean }>> {
-  const parsed = parseSession(json);
+  const parsed = parseSessionFile(json);
   if (!parsed.ok) return { ok: false, error: parsed.errors.join("\n") };
   const s = parsed.session;
   const { client } = await requireAdmin();
@@ -117,7 +117,7 @@ export async function importFormation(
 
 /** Enregistre une session modifiée dans l'éditeur (le format est vérifié avant). */
 export async function saveSession(id: string, content: unknown): Promise<Result> {
-  const parsed = parseSession(content);
+  const parsed = parseSessionFile(content);
   if (!parsed.ok) return { ok: false, error: parsed.errors.join("\n") };
   const s = parsed.session;
   const { client } = await requireAdmin();

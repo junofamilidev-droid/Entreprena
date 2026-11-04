@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { atLeastOne, PLACEHOLDER } from "@/lib/content/static-params";
 import { notFound } from "next/navigation";
-import { SessionPlayer } from "@/components/session/session-player";
+import { AnySessionPlayer } from "@/components/session/any-session-player";
 import { getFormation, getSession, listFormations, listSessions } from "@/lib/content/source";
 import { filesBase } from "@/lib/sessions/files";
 
@@ -37,7 +37,7 @@ export default async function SessionPage(props: Props) {
   const moduleHref = `/formations/${slug}/${module}`;
 
   return (
-    <SessionPlayer
+    <AnySessionPlayer
       session={record.content}
       moduleLabel={`Module ${mod.position} : ${mod.title}`}
       exitHref={moduleHref}
