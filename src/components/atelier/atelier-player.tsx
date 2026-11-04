@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, LaptopIcon, MailIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, GraduationCapIcon, LaptopIcon, MailIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -87,12 +87,15 @@ function MissionMessage({ session, compact = false }: { session: AtelierSession;
   const m = session.mission;
   return (
     <div className="space-y-3 rounded-2xl bg-muted/60 p-4">
+      <p className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground">
+        <MailIcon className="size-3.5" aria-hidden /> Mission reçue · votre cheffe de mission vous écrit
+      </p>
       <div className="flex items-center gap-2.5">
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{initials(m.expediteur)}</span>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{m.expediteur}</p>
           <p className="truncate text-caption text-muted-foreground">
-            {m.objet} · pour {m.echeance}
+            Objet : {m.objet} · pour {m.echeance}
           </p>
         </div>
       </div>
@@ -462,10 +465,12 @@ export function AtelierPlayer({
 
           <div ref={thread} className="min-h-0 flex-1 overflow-y-auto px-8 pt-4 pb-8">
             <div className="flex items-center gap-2.5 pb-6">
-              <span className="grid size-8 place-items-center rounded-full bg-foreground text-xs font-semibold text-background">{initials(session.tuteur.nom)}</span>
-              <span className="text-sm">
-                <span className="font-semibold">{session.tuteur.nom}</span>
-                <span className="text-muted-foreground"> · {session.tuteur.role}</span>
+              <span className="grid size-8 place-items-center rounded-xl bg-foreground text-background" aria-hidden>
+                <GraduationCapIcon className="size-4" />
+              </span>
+              <span className="leading-tight">
+                <span className="block text-sm font-semibold">{session.tuteur.nom}, votre tuteur</span>
+                <span className="block text-caption text-muted-foreground">{session.tuteur.role} · il vous guide pas à pas</span>
               </span>
             </div>
             <AnimatePresence mode="wait" initial={false}>
@@ -484,7 +489,7 @@ export function AtelierPlayer({
                     <Appear delay={0.15}>
                       <TutorSays>
                         <p>
-                          Bonjour, je suis {session.tuteur.nom}, {session.tuteur.role.toLowerCase()}. Je vous accompagne pendant {session.duree_min} minutes.
+                          Bonjour, je suis {session.tuteur.nom}, votre tuteur pour cette session ({session.tuteur.role.toLowerCase()}). {session.mission.expediteur.split(",")[0]} vous a confié la mission ci-dessus : je vous accompagne pendant {session.duree_min} minutes pour la réaliser.
                         </p>
                         <p>
                           <Rich text={session.accueil.ce_que_vous_allez_faire} />
