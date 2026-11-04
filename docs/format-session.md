@@ -114,6 +114,7 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
       "panneau": { "type": "quiz", "...": "voir ci-dessous" }
     }
   ],
+  "commandes": [ { "commande": "", "quand": "", "rend": "" } ],
   "fin": { "recapitulatif": [""] }
 }
 ```
@@ -126,6 +127,10 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
   - le message de la cheffe de mission, toujours visible en haut et repliable ;
   - le bouton « Copier le contexte » copie le texte de `a_copier`, à coller dans Claude.
 - `tuteur` : nom et rôle du senior fictif qui guide (par exemple « Marc », « Senior manager »).
+- `commandes` (facultatif) : les commandes de l'outil, résumées dans la bulle « Les commandes de l'outil » de la barre de droite. Chaque commande : `{ "commande": "/approfondir <compte>", "quand": "…", "rend": "…" }`.
+  - `quand` dit à quel moment s'en servir, `rend` ce qu'elle produit : une phrase courte chacun.
+  - Un clic copie la commande. Les parties à compléter, écrites `<ainsi>`, ne sont pas copiées : l'apprenant les tape dans Claude.
+  - Les commandes doivent être celles que le fichier de l'outil (le skill) reconnaît vraiment.
 - `fin` : `recapitulatif` liste ce que l'apprenant a obtenu. L'écran de fin montre aussi la fiche et le téléchargement de l'outil.
 
 ## L'écran
@@ -134,7 +139,12 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
   - pour chaque étape : l'objectif, le pourquoi, les étapes à faire, les aides ouvertes et ses réactions.
   - Dans ces textes, les passages écrits `**ainsi**` sont en gras.
 - **Au centre**, l'espace de travail : une carte posée sur un fond d'ambiance dont la teinte suit l'état (attente, en cours, réussite, à revoir). Le fond est immobile si l'appareil réduit les animations.
-- **À droite**, une barre fine : la progression, la mission (relisible à tout moment) et le bouton pour copier le contexte.
+- **À droite**, une barre fine : la progression, la mission (relisible à tout moment), le bouton pour copier le contexte et, si la session a des `commandes`, la bulle « Les commandes de l'outil », d'une couleur distincte.
+
+## Revenir en arrière
+- Les réponses de l'apprenant sont gardées quand il revient sur une étape.
+- Une étape déjà commencée affiche « Refaire l'étape » : ses réponses, aides ouvertes et vérifications repartent à zéro (le quiz redevient cliquable).
+- À la fin, « Revoir » parcourt les étapes avec les réponses ; « Tout refaire » remet toutes les étapes à zéro. La session reste comptée comme terminée.
 
 ## Une étape
 - `titre`, `objectif`, `pourquoi`, `a_faire` (étapes numérotées) : ce que le tuteur affiche, à gauche.

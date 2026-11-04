@@ -38,7 +38,7 @@ export function parseAtelier(data: Record<string, unknown>): AtelierParse {
   else if (data.duree_min > 60) errors.push(`« duree_min » : ${data.duree_min} minutes, une session ne doit pas dépasser 60 minutes.`);
   if (typeof data.maj !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data.maj) || Number.isNaN(Date.parse(data.maj)))
     errors.push("« maj » : date au format AAAA-MM-JJ, par exemple 2026-11-04.");
-  const top = ["format", "formation", "module", "session", "titre", "duree_min", "maj", "accueil", "mission", "tuteur", "etapes", "fin"];
+  const top = ["format", "formation", "module", "session", "titre", "duree_min", "maj", "accueil", "mission", "tuteur", "etapes", "commandes", "fin"];
   for (const k of Object.keys(data)) if (!top.includes(k)) errors.push(`Champ « ${k} » inconnu au format atelier.`);
 
   const accueil = record(data.accueil, "« accueil »", ["ce_que_vous_allez_faire", "ce_que_vous_emportez", "pourquoi"]);
@@ -53,6 +53,16 @@ export function parseAtelier(data: Record<string, unknown>): AtelierParse {
   if (tuteur) for (const k of ["nom", "role"]) text(tuteur[k], `« tuteur », « ${k} »`);
   const fin = record(data.fin, "« fin »", ["recapitulatif"]);
   if (fin) list(fin.recapitulatif, "« fin », « recapitulatif »");
+
+  if (data.commandes !== undefined) {
+    if (!Array.isArray(data.commandes) || data.commandes.length === 0)
+      errors.push("« commandes » : liste d'au moins une commande, entre [ et ] (ou retirez le champ).");
+    else
+      data.commandes.forEach((c: unknown, j: number) => {
+        const cc = record(c, `« commandes », commande ${j + 1}`, ["commande", "quand", "rend"]);
+        if (cc) for (const k of ["commande", "quand", "rend"]) text(cc[k], `« commandes », commande ${j + 1}, « ${k} »`);
+      });
+  }
 
   // Étapes
   if (!Array.isArray(data.etapes) || data.etapes.length === 0) errors.push("« etapes » : liste d'au moins une étape, entre [ et ].");

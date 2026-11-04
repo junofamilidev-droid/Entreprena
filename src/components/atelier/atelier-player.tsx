@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, GraduationCapIcon, LaptopIcon, MailIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, GraduationCapIcon, LaptopIcon, MailIcon, RotateCcwIcon, TerminalIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -15,7 +15,7 @@ import { forLearner } from "@/lib/sessions/display";
 import { sessionKey } from "@/lib/sessions/progress";
 import { trackSession } from "@/lib/sessions/track";
 import { recordDownload, useDownloads } from "@/lib/sessions/downloads";
-import { panneauLabel, type AtelierEtape, type AtelierSession } from "@/lib/sessions/atelier";
+import { commandeACopier, panneauLabel, type AtelierEtape, type AtelierSession, type CommandeOutil } from "@/lib/sessions/atelier";
 import type { ExerciseInputs, ExerciseValue } from "@/lib/content/types";
 import {
   DownloadCard,
@@ -254,15 +254,90 @@ function ProgressRing({ pct }: { pct: number }) {
   );
 }
 
-function RailButton({ label, onClick, children, dot }: { label: string; onClick: () => void; children: React.ReactNode; dot?: boolean }) {
+function RailButton({
+  label,
+  onClick,
+  children,
+  dot,
+  title,
+  accent = false,
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+  dot?: boolean;
+  title?: string;
+  accent?: boolean;
+}) {
   return (
-    <button type="button" onClick={onClick} className="group flex flex-col items-center gap-1.5" aria-label={label}>
-      <span className="relative grid size-11 place-items-center rounded-full bg-muted/70 text-foreground/70 transition-colors group-hover:bg-muted group-hover:text-foreground">
+    <button type="button" onClick={onClick} className="group flex flex-col items-center gap-1.5" aria-label={title ?? label} title={title}>
+      <span
+        className={cn(
+          "relative grid size-11 place-items-center rounded-full transition-colors",
+          accent
+            ? "bg-primary text-primary-foreground shadow-[0_6px_20px_-6px] shadow-primary/50 group-hover:bg-primary/90"
+            : "bg-muted/70 text-foreground/70 group-hover:bg-muted group-hover:text-foreground",
+        )}
+      >
         {children}
         {dot && <span className="absolute top-0.5 right-0.5 size-2.5 rounded-full border-2 border-background bg-primary" aria-hidden />}
       </span>
-      <span className="text-[0.6875rem] text-muted-foreground">{label}</span>
+      <span className={cn("text-center text-[0.6875rem] leading-tight", accent ? "font-medium text-primary" : "text-muted-foreground")}>{label}</span>
     </button>
+  );
+}
+
+/* ---------------- Les commandes de l'outil ---------------- */
+
+/** « /approfondir <compte> » : la partie à compléter est mise en évidence. */
+function CommandeText({ text }: { text: string }) {
+  return text.split(/(<[^>]*>)/g).map((part, i) =>
+    /^<.*>$/.test(part) ? (
+      <span key={i} className="text-primary/80 italic">
+        {part}
+      </span>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    ),
+  );
+}
+
+function CommandeRow({ c }: { c: CommandeOutil }) {
+  const [copied, setCopied] = React.useState(false);
+  const toFill = /<[^>]*>/.test(c.commande);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(commandeACopier(c.commande));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+      toast.success(toFill ? "Commande copiée : collez-la dans Claude et complétez la partie entre < >." : "Commande copiée : collez-la dans Claude.");
+    } catch {
+      toast.error("La copie n'a pas fonctionné : sélectionnez le texte à la main.");
+    }
+  }
+  return (
+    <li className="space-y-2 rounded-2xl bg-muted/50 p-4">
+      <button
+        type="button"
+        onClick={copy}
+        className="group flex w-full items-center justify-between gap-3 rounded-xl bg-background px-3 py-2 text-left shadow-xs ring-1 ring-foreground/5 transition-colors hover:ring-primary/40"
+        aria-label={`Copier la commande ${c.commande}`}
+      >
+        <code className="min-w-0 truncate font-mono text-[0.875rem] font-semibold">
+          <CommandeText text={c.commande} />
+        </code>
+        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-primary">
+          {copied ? <CheckIcon className="size-3.5" aria-hidden /> : <CopyIcon className="size-3.5" aria-hidden />}
+          {copied ? "Copiée" : "Copier"}
+        </span>
+      </button>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm leading-relaxed">
+        <dt className="text-muted-foreground">Quand</dt>
+        <dd>{c.quand}</dd>
+        <dt className="text-muted-foreground">Rend</dt>
+        <dd>{c.rend}</dd>
+      </dl>
+    </li>
   );
 }
 
@@ -380,10 +455,23 @@ export function AtelierPlayer({
         ...(done ? { "session:fin": now } : {}),
       },
     });
-    if (done && measure) {
+    if (done && measure && !saved?.done) {
       const start = Number(inputs["session:debut"]) || 0;
       trackSession(baseKey, "completed", { duration_sec: start ? (Date.now() - start) / 1000 : undefined });
     }
+  }
+
+  /** Efface ce que l'apprenant a fait dans les étapes choisies (réponses, aides, vérifications). */
+  function withoutSteps(indexes: number[]) {
+    const prefixes = indexes.map((j) => `e${j}:`);
+    return Object.fromEntries(Object.entries(inputs).filter(([k]) => !prefixes.some((pre) => k.startsWith(pre))));
+  }
+  function redoAll() {
+    // Les dates et la fin de session sont gardées : seules les réponses des étapes repartent à zéro.
+    setDirection(-1);
+    setScreen(1);
+    saveStep(key, { screen: 1, inputs: withoutSteps(session.etapes.map((_, j) => j)) });
+    toast.success("Les étapes repartent à zéro. Votre session reste terminée.");
   }
 
   const i = screen - 1;
@@ -406,8 +494,11 @@ export function AtelierPlayer({
     : screen === n + 1
       ? "success"
       : "idle";
-  const pct = Math.round((Math.min(screen === n + 1 ? n : Math.max(screen - 1, 0), n) / n) * 100);
+  const pct = saved?.done ? 100 : Math.round((Math.min(screen === n + 1 ? n : Math.max(screen - 1, 0), n) / n) * 100);
   const relances = session.etapes.map((e, j) => (e.relance && j + 1 <= furthest ? { ...e.relance, etape: j } : null)).filter((r) => r !== null);
+  const touched = etape ? Object.entries(inputs).some(([k, v]) => k.startsWith(`e${i}:`) && k !== `e${i}:onglet` && (Array.isArray(v) ? v.length > 0 : typeof v === "object" ? Object.keys(v).length > 0 : v !== "" && v !== "0")) : false;
+  const finished = !!saved?.done;
+  const [commandesOpen, setCommandesOpen] = React.useState(false);
   const openedAides = new Set(fil.filter((e) => e.t === "aide").map((e) => e.r));
 
   // Nouvel écran : le fil repart du haut. Nouveau message : il défile jusqu'en bas.
@@ -551,19 +642,22 @@ export function AtelierPlayer({
                 </Button>
               )}
               {screen === 0 && (
-                <Button size="lg" className="rounded-full px-6" onClick={() => go(Math.max(1, Math.min(furthest, n)))}>
-                  {furthest > 0 ? "Reprendre" : "Commencer"} <ArrowRightIcon />
+                <Button size="lg" className="rounded-full px-6" onClick={() => go(finished ? 1 : Math.max(1, Math.min(furthest, n)))}>
+                  {finished ? "Revoir la session" : furthest > 0 ? "Reprendre" : "Commencer"} <ArrowRightIcon />
                 </Button>
               )}
               {screen >= 1 && screen <= n && (
                 <Button size="lg" className="rounded-full px-6" onClick={() => go(screen + 1)}>
-                  {screen === n ? "Terminer" : "Suivant"} <ArrowRightIcon />
+                  {screen === n ? (finished ? "Voir la fin" : "Terminer") : "Suivant"} <ArrowRightIcon />
                 </Button>
               )}
               {screen === n + 1 && (
                 <div className="flex gap-2">
-                  <Button variant="ghost" className="rounded-full" onClick={() => go(1)}>
+                  <Button variant="ghost" className="rounded-full" onClick={() => go(1)} title="Revoir les étapes, avec vos réponses">
                     Revoir
+                  </Button>
+                  <Button variant="ghost" className="rounded-full" onClick={redoAll} title="Refaire toutes les étapes depuis le début">
+                    <RotateCcwIcon /> Tout refaire
                   </Button>
                   <Button asChild size="lg" className="rounded-full px-6">
                     <Link href={exitHref}>Revenir au module</Link>
@@ -596,6 +690,16 @@ export function AtelierPlayer({
                     <p className="text-sm font-medium text-muted-foreground">
                       {panneauLabel[p.type]} · {etape.titre}
                     </p>
+                    <div className="flex items-center gap-4">
+                    {touched && p.type !== "fiche" && (
+                      <button
+                        type="button"
+                        onClick={() => saveStep(key, { inputs: withoutSteps([i]) })}
+                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <RotateCcwIcon className="size-3.5" aria-hidden /> Refaire l&apos;étape
+                      </button>
+                    )}
                     <p className="inline-flex items-center gap-2 text-sm text-muted-foreground" role="status" aria-live="polite">
                       <span
                         className={cn(
@@ -609,6 +713,7 @@ export function AtelierPlayer({
                       />
                       {STATE_LABEL[state]}
                     </p>
+                    </div>
                   </div>
                 )}
                 {screen === 0 && <WelcomeCard session={session} />}
@@ -632,6 +737,11 @@ export function AtelierPlayer({
           <RailButton label="Contexte" onClick={() => copyContext(session.mission.a_copier)}>
             <CopyIcon className="size-[1.125rem]" aria-hidden />
           </RailButton>
+          {session.commandes && session.commandes.length > 0 && (
+            <RailButton label="Commandes" title="Les commandes de l'outil" accent onClick={() => setCommandesOpen(true)}>
+              <TerminalIcon className="size-[1.125rem]" aria-hidden />
+            </RailButton>
+          )}
         </aside>
       </div>
 
@@ -649,6 +759,22 @@ export function AtelierPlayer({
           </div>
         </SheetContent>
       </Sheet>
+
+      {session.commandes && session.commandes.length > 0 && (
+        <Sheet open={commandesOpen} onOpenChange={setCommandesOpen}>
+          <SheetContent side="right" className="w-[28rem] sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>Les commandes de l&apos;outil</SheetTitle>
+              <SheetDescription>Ce que vous pouvez demander à l&apos;outil, et quand. Cliquez sur une commande pour la copier.</SheetDescription>
+            </SheetHeader>
+            <ul className="space-y-3 overflow-y-auto px-4 pb-6">
+              {session.commandes.map((c) => (
+                <CommandeRow key={c.commande} c={c} />
+              ))}
+            </ul>
+          </SheetContent>
+        </Sheet>
+      )}
     </>
   );
 }

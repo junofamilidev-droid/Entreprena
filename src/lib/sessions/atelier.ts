@@ -66,6 +66,22 @@ export interface FichePanneau {
   pieges: string[];
 }
 
+/** Une commande de l'outil, résumée dans la bulle « Les commandes de l'outil ». */
+export interface CommandeOutil {
+  /** Ce que l'on tape dans Claude, par exemple « /approfondir <compte> ». */
+  commande: string;
+  /** Quand s'en servir. */
+  quand: string;
+  /** Ce qu'elle rend. */
+  rend: string;
+}
+
+/** Texte copié pour une commande : les parties à compléter, écrites <ainsi>, sont retirées. */
+export function commandeACopier(commande: string) {
+  const t = commande.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  return /<[^>]*>/.test(commande) ? t + " " : t;
+}
+
 export type AtelierPanneau = QuizPanneau | OutilPanneau | TestPanneau | PersonnaliserPanneau | FichePanneau;
 export type PanneauType = AtelierPanneau["type"];
 
@@ -91,6 +107,8 @@ export interface AtelierSession {
   mission: { expediteur: string; objet: string; message: string; echeance: string; livrable: string; a_copier: string };
   tuteur: { nom: string; role: string };
   etapes: AtelierEtape[];
+  /** Facultatif : les commandes de l'outil, visibles à tout moment dans la barre de droite. */
+  commandes?: CommandeOutil[];
   fin: { recapitulatif: string[] };
 }
 

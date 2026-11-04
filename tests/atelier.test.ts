@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { parseSession, parseSessionFile } from "@/lib/sessions/validate";
-import { checkVerification, normalizeForMatch } from "@/lib/sessions/atelier";
+import { checkVerification, commandeACopier, normalizeForMatch } from "@/lib/sessions/atelier";
 import { requiredFiles } from "@/lib/sessions/files";
 import { parseFormationFile } from "@/lib/sessions/formation-format";
 
@@ -46,6 +46,27 @@ describe("format atelier : validation", () => {
     t.etapes[0].bonus = 1;
     const r = parseSessionFile(t);
     expect(r.ok ? [] : r.errors).toEqual(["Étape 1 : champ « bonus » inconnu."]);
+  });
+
+  it("les commandes de l'outil sont facultatives et contrôlées", () => {
+    const sans = exemple();
+    delete sans.commandes;
+    expect(parseSessionFile(sans).ok).toBe(true);
+    const s = exemple();
+    s.commandes[1].rend = "";
+    s.commandes[2].exemple = "x";
+    const r = parseSessionFile(s);
+    expect(r.ok ? [] : [...r.errors].sort()).toEqual(
+      ["« commandes », commande 2, « rend » : texte manquant ou vide.", "« commandes », commande 3 : champ « exemple » inconnu."].sort(),
+    );
+    const vide = exemple();
+    vide.commandes = [];
+    expect(parseSessionFile(vide)).toEqual({ ok: false, errors: ["« commandes » : liste d'au moins une commande, entre [ et ] (ou retirez le champ)."] });
+  });
+
+  it("copie une commande sans la partie à compléter", () => {
+    expect(commandeACopier("/revue")).toBe("/revue");
+    expect(commandeACopier("/approfondir <compte>")).toBe("/approfondir ");
   });
 
   it("liste les fichiers à téléverser, .zip compris", () => {

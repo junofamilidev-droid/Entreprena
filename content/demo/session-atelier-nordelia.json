@@ -178,6 +178,12 @@
       }
     }
   ],
+  "commandes": [
+    { "commande": "/revue", "quand": "Au début, avec la balance jointe et les seuils de la mission.", "rend": "Les comptes à creuser, les questions au client, les pièces à demander et le classeur Excel." },
+    { "commande": "/approfondir <compte>", "quand": "Quand une pièce arrive (par exemple la balance âgée).", "rend": "L'analyse du compte et le classeur mis à jour." },
+    { "commande": "/integrer", "quand": "Quand le client répond.", "rend": "Le statut de chaque compte, les contradictions relevées et le classeur mis à jour." },
+    { "commande": "/personnaliser", "quand": "Une fois, puis à chaque changement de cabinet.", "rend": "Une nouvelle version de l'outil, à votre format." }
+  ],
   "fin": {
     "recapitulatif": [
       "Un outil de revue analytique installé dans votre Claude",
