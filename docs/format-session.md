@@ -128,6 +128,14 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
 - `tuteur` : nom et rôle du senior fictif qui guide (par exemple « Marc », « Senior manager »).
 - `fin` : `recapitulatif` liste ce que l'apprenant a obtenu. L'écran de fin montre aussi la fiche et le téléchargement de l'outil.
 
+## L'écran
+- **À gauche**, le fil du tuteur, en grand texte :
+  - la mission au départ, puis les relances ;
+  - pour chaque étape : l'objectif, le pourquoi, les étapes à faire, les aides ouvertes et ses réactions.
+  - Dans ces textes, les passages écrits `**ainsi**` sont en gras.
+- **Au centre**, l'espace de travail : une carte posée sur un fond d'ambiance dont la teinte suit l'état (attente, en cours, réussite, à revoir). Le fond est immobile si l'appareil réduit les animations.
+- **À droite**, une barre fine : la progression, la mission (relisible à tout moment) et le bouton pour copier le contexte.
+
 ## Une étape
 - `titre`, `objectif`, `pourquoi`, `a_faire` (étapes numérotées) : ce que le tuteur affiche, à gauche.
 - `aides` : questions pré-écrites, proposées en boutons ; la réponse s'affiche comme un message du tuteur. La liste peut être vide.
@@ -137,10 +145,11 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
 ## Types de panneau
 - `quiz` : `{ "type": "quiz", "question", "choix": [textes], "bonne": index, "explication" }`.
   - `bonne` se compte à partir de 0 (le premier choix vaut 0).
-  - Le retour est immédiat, et le tuteur affiche l'explication.
+  - On répond en cliquant ou en tapant le numéro du choix (1, 2, 3…). Le retour est immédiat, et le tuteur affiche l'explication.
 - `outil` : `{ "type": "outil", "fichier", "presentation", "regles": [ { "titre", "extrait", "avec", "sans", "explication" } ], "installation": [ { "titre", "detail" } ] }`.
+  - Le panneau a trois onglets : « Les règles », « Télécharger », « Installer ».
   - Chaque règle est cliquable : un clic montre côte à côte la sortie avec (`avec`) et sans (`sans`) la règle, et le tuteur explique (`explication`).
-  - Viennent ensuite le téléchargement de `fichier` (un .zip est accepté), puis le schéma d'installation : une étape numérotée et illustrée par élément de `installation`, et la case « C'est installé ».
+  - L'onglet « Télécharger » propose `fichier` (un .zip est accepté). L'onglet « Installer » montre une étape numérotée et illustrée par élément de `installation`, et la case « C'est installé ».
   - L'icône de chaque étape d'installation est choisie d'après son titre : télécharger, réglages, importer, activer, tester.
 - `test` : `{ "type": "test", "fichier_donnees", "consigne", "verifications": [ { "libelle", "mots_cles": [textes], "regle": "tous" ou "un", "si_reussi", "si_manque" } ] }`.
   - L'apprenant télécharge les données, colle la réponse de Claude, puis clique sur « Vérifier ».

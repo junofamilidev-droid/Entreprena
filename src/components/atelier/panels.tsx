@@ -81,8 +81,8 @@ export function panelOrbState(type: string, i: number, inputs: ExerciseInputs, n
 export function DownloadCard({ name, href, label, icon = "file" }: { name: string; href: string; label: string; icon?: "zip" | "file" }) {
   const Icon = icon === "zip" ? FileArchiveIcon : FileSpreadsheetIcon;
   return (
-    <a href={href} download className="group flex items-center gap-4 rounded-xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md">
-      <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
+    <a href={href} download className="group flex items-center gap-4 rounded-2xl bg-muted/60 px-4 py-3.5 transition-colors hover:bg-muted">
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-background text-primary shadow-xs">
         <Icon className="size-5" aria-hidden />
       </span>
       <span className="min-w-0 flex-1">
@@ -99,7 +99,7 @@ export function DownloadCard({ name, href, label, icon = "file" }: { name: strin
 function Section({ title, children, className }: { title?: string; children: React.ReactNode; className?: string }) {
   return (
     <section className={cn("space-y-3", className)}>
-      {title && <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">{title}</h3>}
+      {title && <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>}
       {children}
     </section>
   );
@@ -111,6 +111,18 @@ export function QuizPanel({ p, ctx }: { p: QuizPanneau; ctx: PanelCtx }) {
   const k = `e${ctx.index}`;
   const chosen = str(ctx.inputs[`${k}:choix`]);
   const answered = chosen !== "";
+  // Raccourcis : 1, 2, 3… choisissent une réponse.
+  const choose = React.useEffectEvent((i: number) => ctx.push({ t: "quiz", r: String(i) }, { [`${k}:choix`]: String(i) }));
+  React.useEffect(() => {
+    if (answered) return;
+    function onKey(e: KeyboardEvent) {
+      if ((e.target as HTMLElement).closest("input, textarea, [contenteditable]") || e.metaKey || e.ctrlKey) return;
+      const n = Number(e.key);
+      if (n >= 1 && n <= p.choix.length) choose(n - 1);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [answered, p.choix.length]);
   return (
     <div className="space-y-5">
       <p className="text-xl leading-snug font-semibold text-balance">{p.question}</p>
@@ -127,8 +139,8 @@ export function QuizPanel({ p, ctx }: { p: QuizPanneau; ctx: PanelCtx }) {
                 animate={answered && isChosen && !isRight ? { x: [0, -6, 6, -3, 3, 0] } : { x: 0 }}
                 transition={{ duration: 0.35 }}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-xl border bg-card px-4 py-3.5 text-left text-body transition-colors",
-                  !answered && "hover:border-primary/50 hover:bg-accent/40",
+                  "flex w-full items-start gap-3 rounded-2xl border border-transparent bg-muted/60 px-4 py-3.5 text-left text-body transition-colors",
+                  !answered && "hover:bg-accent",
                   answered && isRight && "border-success/50 bg-success/10",
                   answered && isChosen && !isRight && "border-warning/60 bg-warning/10",
                   answered && !isChosen && !isRight && "opacity-60",
@@ -136,12 +148,12 @@ export function QuizPanel({ p, ctx }: { p: QuizPanneau; ctx: PanelCtx }) {
               >
                 <span
                   className={cn(
-                    "mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border text-xs font-semibold",
+                    "mt-0.5 grid size-6 shrink-0 place-items-center rounded-md bg-background text-xs font-semibold text-muted-foreground shadow-xs",
                     answered && isRight && "border-success bg-success text-white",
                     answered && isChosen && !isRight && "border-warning bg-warning text-white",
                   )}
                 >
-                  {answered && isRight ? <CheckIcon className="size-3.5" strokeWidth={3} /> : answered && isChosen ? <XIcon className="size-3.5" strokeWidth={3} /> : String.fromCharCode(65 + i)}
+                  {answered && isRight ? <CheckIcon className="size-3.5" strokeWidth={3} /> : answered && isChosen ? <XIcon className="size-3.5" strokeWidth={3} /> : i + 1}
                 </span>
                 <span className="flex-1">{c}</span>
               </motion.button>
@@ -149,10 +161,12 @@ export function QuizPanel({ p, ctx }: { p: QuizPanneau; ctx: PanelCtx }) {
           );
         })}
       </ul>
-      {answered && (
+      {answered ? (
         <p className="text-sm text-muted-foreground">
-          {chosen === String(p.bonne) ? "Bonne réponse." : "Ce n'était pas celle-ci : la bonne réponse est en vert."} {ctx.tuteur} vous explique à gauche.
+          {chosen === String(p.bonne) ? "Bonne réponse." : "La bonne réponse est en vert."} {ctx.tuteur} vous explique à gauche.
         </p>
+      ) : (
+        <p className="text-sm text-muted-foreground">Cliquez sur une réponse, ou tapez son numéro.</p>
       )}
     </div>
   );
@@ -172,91 +186,129 @@ function installIcon(title: string) {
   return MousePointerClickIcon;
 }
 
+const OUTIL_TABS = ["Les règles", "Télécharger", "Installer"] as const;
+
 export function OutilPanel({ p, ctx }: { p: OutilPanneau; ctx: PanelCtx }) {
   const k = `e${ctx.index}`;
+  const tab = Number(str(ctx.inputs[`${k}:onglet`]) || 0);
   const sel = str(ctx.inputs[`${k}:regle`]);
   const rule = sel === "" ? null : p.regles[Number(sel)];
   const installed = str(ctx.inputs[`${k}:installe`]) === "1";
   const seen = new Set(
     (Array.isArray(ctx.inputs[`${k}:fil`]) ? (ctx.inputs[`${k}:fil`] as Record<string, string>[]) : []).filter((e) => e.t === "regle").map((e) => e.r),
   );
+  const done = [seen.size === p.regles.length, false, installed];
   return (
-    <div className="space-y-8">
-      <p className="text-body">{p.presentation}</p>
+    <div className="space-y-6">
+      <p className="text-body text-muted-foreground">{p.presentation}</p>
 
-      <Section title={`Ses règles · ${seen.size} sur ${p.regles.length} vues`}>
-        <div className="flex flex-wrap gap-2">
-          {p.regles.map((r, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => (seen.has(String(i)) ? ctx.set(`${k}:regle`, String(i)) : ctx.push({ t: "regle", r: String(i) }, { [`${k}:regle`]: String(i) }))}
-              aria-pressed={sel === String(i)}
+      {/* Une partie à la fois : comprendre, télécharger, installer. */}
+      <div role="tablist" aria-label="L'outil" className="inline-flex rounded-full bg-muted/70 p-1">
+        {OUTIL_TABS.map((t, i) => (
+          <button
+            key={t}
+            role="tab"
+            type="button"
+            aria-selected={tab === i}
+            onClick={() => ctx.set(`${k}:onglet`, String(i))}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              tab === i ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {done[i] ? <CheckIcon className="size-3.5 text-success" strokeWidth={3} aria-hidden /> : <span className="tabular-nums">{i + 1}</span>}
+            {t}
+          </button>
+        ))}
+      </div>
+
+      <motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: duration.standard, ease: ease.out }}>
+        {tab === 0 && (
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {p.regles.map((r, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => (seen.has(String(i)) ? ctx.set(`${k}:regle`, String(i)) : ctx.push({ t: "regle", r: String(i) }, { [`${k}:regle`]: String(i) }))}
+                  aria-pressed={sel === String(i)}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+                    sel === String(i) ? "bg-foreground text-background" : "bg-muted/70 hover:bg-muted",
+                  )}
+                >
+                  {seen.has(String(i)) ? <CheckIcon className="size-3.5" aria-hidden /> : <CircleDotIcon className="size-3.5" aria-hidden />}
+                  {r.titre}
+                </button>
+              ))}
+            </div>
+            {rule ? (
+              <motion.div key={sel} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: duration.standard, ease: ease.out }} className="space-y-3">
+                <p className="font-mono text-[0.8125rem] text-muted-foreground">{rule.extrait}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl bg-success/10 p-4">
+                    <p className="flex items-center gap-1.5 text-sm font-semibold text-success">
+                      <CircleCheckIcon className="size-4" aria-hidden /> Avec la règle
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed">{rule.avec}</p>
+                  </div>
+                  <div className="rounded-2xl bg-warning/10 p-4">
+                    <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground/80">
+                      <AlertTriangleIcon className="size-4 text-warning" aria-hidden /> Sans la règle
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{rule.sans}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <p className="py-6 text-center text-sm text-muted-foreground">Choisissez une règle pour voir ce qu&apos;elle change dans la réponse de Claude.</p>
+            )}
+            {seen.size === p.regles.length && (
+              <Button variant="ghost" onClick={() => ctx.set(`${k}:onglet`, "1")}>
+                Télécharger l&apos;outil →
+              </Button>
+            )}
+          </div>
+        )}
+        {tab === 1 && (
+          <div className="space-y-4">
+            <DownloadCard name={p.fichier} href={ctx.fileUrl(p.fichier)} label="Skill Claude, à importer sans le décompresser" icon={/\.zip$/i.test(p.fichier) ? "zip" : "file"} />
+            <Button variant="ghost" onClick={() => ctx.set(`${k}:onglet`, "2")}>
+              L&apos;installer dans Claude →
+            </Button>
+          </div>
+        )}
+        {tab === 2 && (
+          <div className="space-y-4">
+            <ol className="relative grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(p.installation.length, 4)}, minmax(0, 1fr))` }}>
+              {p.installation.map((s, i) => {
+                const Icon = installIcon(s.titre);
+                return (
+                  <li key={i} className="rounded-2xl bg-muted/60 p-4">
+                    <span className="grid size-9 place-items-center rounded-xl bg-background text-primary shadow-xs">
+                      <Icon className="size-4" aria-hidden />
+                    </span>
+                    <p className="mt-3 text-sm font-semibold">
+                      <span className="text-muted-foreground tabular-nums">{i + 1}. </span>
+                      {s.titre}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{s.detail}</p>
+                  </li>
+                );
+              })}
+            </ol>
+            <label
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-                sel === String(i) ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:border-primary/50 hover:bg-accent/40",
+                "flex cursor-pointer items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3 transition-colors hover:bg-muted",
+                installed && "bg-success/10 hover:bg-success/15",
               )}
             >
-              {seen.has(String(i)) ? <CheckIcon className="size-3.5" aria-hidden /> : <CircleDotIcon className="size-3.5" aria-hidden />}
-              {r.titre}
-            </button>
-          ))}
-        </div>
-        {rule ? (
-          <motion.div key={sel} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: duration.standard, ease: ease.out }} className="space-y-3">
-            <p className="rounded-lg border bg-muted/40 px-4 py-2.5 font-mono text-[0.8125rem]">{rule.extrait}</p>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-success/40 bg-success/5 p-4">
-                <p className="flex items-center gap-1.5 text-sm font-semibold text-success">
-                  <CircleCheckIcon className="size-4" aria-hidden /> Avec la règle
-                </p>
-                <p className="mt-2 text-sm leading-relaxed">{rule.avec}</p>
-              </div>
-              <div className="rounded-xl border border-warning/50 bg-warning/5 p-4">
-                <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground/80">
-                  <AlertTriangleIcon className="size-4 text-warning" aria-hidden /> Sans la règle
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{rule.sans}</p>
-              </div>
-            </div>
-          </motion.div>
-        ) : (
-          <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-            Cliquez sur une règle pour comparer la sortie de Claude avec et sans elle.
-          </p>
+              <Checkbox checked={installed} onCheckedChange={(v) => ctx.set(`${k}:installe`, v === true ? "1" : "0")} />
+              <span className="font-medium">C&apos;est installé</span>
+            </label>
+          </div>
         )}
-      </Section>
-
-      <Section title="Télécharger l'outil">
-        <DownloadCard name={p.fichier} href={ctx.fileUrl(p.fichier)} label="Skill Claude, à importer sans le décompresser" icon={/\.zip$/i.test(p.fichier) ? "zip" : "file"} />
-      </Section>
-
-      <Section title="L'installer dans Claude">
-        <ol className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(p.installation.length, 4)}, minmax(0, 1fr))` }}>
-          {p.installation.map((s, i) => {
-            const Icon = installIcon(s.titre);
-            return (
-              <li key={i} className="relative rounded-xl border bg-card p-4">
-                <div className="flex items-center gap-2">
-                  <span className="grid size-6 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground tabular-nums">{i + 1}</span>
-                  <Icon className="size-4 text-primary" aria-hidden />
-                </div>
-                <p className="mt-3 font-semibold">{s.titre}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{s.detail}</p>
-              </li>
-            );
-          })}
-        </ol>
-        <label
-          className={cn(
-            "flex cursor-pointer items-center gap-3 rounded-xl border bg-card px-4 py-3 transition-colors hover:bg-muted/60",
-            installed && "border-success/50 bg-success/10",
-          )}
-        >
-          <Checkbox checked={installed} onCheckedChange={(v) => ctx.set(`${k}:installe`, v === true ? "1" : "0")} />
-          <span className="font-medium">C&apos;est installé</span>
-        </label>
-      </Section>
+      </motion.div>
     </div>
   );
 }
@@ -286,7 +338,7 @@ export function TestPanel({ p, ctx }: { p: TestPanneau; ctx: PanelCtx }) {
           rows={9}
           aria-label="Réponse de Claude"
           placeholder="Collez ici la réponse de Claude"
-          className="bg-card font-mono text-[0.8125rem]"
+          className="rounded-2xl border-transparent bg-muted/60 font-mono text-[0.8125rem] focus-visible:bg-background"
         />
         <div className="flex items-center gap-3">
           <Button onClick={verify} disabled={!text.trim() || fresh}>
@@ -296,7 +348,7 @@ export function TestPanel({ p, ctx }: { p: TestPanneau; ctx: PanelCtx }) {
         </div>
       </Section>
       <Section title="Vérifications">
-        <ul className="space-y-2">
+        <ul className="space-y-1.5">
           {p.verifications.map((v, i) => {
             const state = !fresh ? "wait" : res[i] === "1" ? "ok" : "miss";
             return (
@@ -304,9 +356,9 @@ export function TestPanel({ p, ctx }: { p: TestPanneau; ctx: PanelCtx }) {
                 key={i}
                 layout
                 className={cn(
-                  "flex items-center gap-3 rounded-xl border bg-card px-4 py-3 transition-colors",
-                  state === "ok" && "border-success/50 bg-success/10",
-                  state === "miss" && "border-warning/60 bg-warning/10",
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors",
+                  state === "ok" && "bg-success/10",
+                  state === "miss" && "bg-warning/10",
                 )}
               >
                 <span
@@ -324,7 +376,7 @@ export function TestPanel({ p, ctx }: { p: TestPanneau; ctx: PanelCtx }) {
             );
           })}
         </ul>
-        <p className="text-caption text-muted-foreground">Les voyants ne bloquent pas : vous pouvez continuer, mais lisez ce que {ctx.tuteur} en dit.</p>
+
       </Section>
     </div>
   );
@@ -339,8 +391,8 @@ export function PersonnaliserPanel({ p, ctx }: { p: PersonnaliserPanneau; ctx: P
   return (
     <div className="space-y-6">
       <Section title="La commande">
-        <figure className="overflow-hidden rounded-xl border bg-card">
-          <figcaption className="flex items-center justify-between gap-3 border-b px-4 py-2">
+        <figure className="overflow-hidden rounded-2xl bg-muted/60">
+          <figcaption className="flex items-center justify-between gap-3 px-4 pt-3">
             <span className="text-sm font-medium">À coller dans Claude</span>
             <Button
               size="sm"
@@ -376,7 +428,7 @@ export function PersonnaliserPanel({ p, ctx }: { p: PersonnaliserPanneau; ctx: P
             const on = checks[i] === "1";
             return (
               <li key={i}>
-                <label className={cn("flex cursor-pointer items-center gap-3 rounded-xl border bg-card px-4 py-3 hover:bg-muted/60", on && "border-success/50 bg-success/10")}>
+                <label className={cn("flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-muted/60", on && "bg-success/10 hover:bg-success/15")}>
                   <Checkbox checked={on} onCheckedChange={(v) => ctx.set(`${k}:coches`, { ...checks, [i]: v === true ? "1" : "0" })} />
                   <span className="text-body">{it}</span>
                 </label>
@@ -393,7 +445,7 @@ export function PersonnaliserPanel({ p, ctx }: { p: PersonnaliserPanneau; ctx: P
 
 export function FicheView({ p }: { p: FichePanneau }) {
   return (
-    <article className="rounded-xl border bg-card p-6 shadow-xs">
+    <article className="space-y-1">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-heading">{p.titre}</h3>
         <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground">Rangée dans Ma boîte à outils</span>
