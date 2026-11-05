@@ -559,3 +559,53 @@
     cursor: pointer;
   }
 }
+
+/* Curseur de prix du questionnaire : sans valeur de départ, la poignée n'apparaît pas. */
+.price-range {
+  appearance: none;
+  height: 1.5rem;
+  background: transparent;
+  cursor: pointer;
+}
+.price-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+.price-range::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+.price-range::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--primary);
+  border: 3px solid var(--background);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+}
+.price-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--primary);
+  border: 3px solid var(--background);
+}
+.price-range[data-empty]::-webkit-slider-thumb {
+  opacity: 0;
+}
+.price-range[data-empty]::-moz-range-thumb {
+  opacity: 0;
+}
+.price-range:focus-visible {
+  outline: none;
+}
+.price-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+.price-range:disabled {
+  cursor: not-allowed;
+}

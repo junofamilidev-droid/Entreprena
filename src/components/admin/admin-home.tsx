@@ -4,7 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { BarChart3Icon, DownloadIcon, FileJsonIcon, PlusIcon } from "lucide-react";
+import { BarChart3Icon,
+  MessageSquareTextIcon, DownloadIcon, FileJsonIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createFormation, importFromFiles } from "@/lib/admin/actions";
@@ -87,6 +88,11 @@ export function AdminHome({
           <Button asChild variant="outline">
             <Link href="/admin/mesure">
               <BarChart3Icon /> Mesure des sessions
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/avis">
+              <MessageSquareTextIcon /> Avis des apprenants
             </Link>
           </Button>
         </div>

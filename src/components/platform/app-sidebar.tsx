@@ -105,11 +105,12 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
       <SidebarFooter className="pb-4">
         <SidebarMenu className="gap-1">
           {admin && <NavItem href="/admin" label="Espace réservé" icon={<PencilRulerIcon />} active={false} />}
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Donner mon avis">
-              <MessageSquareTextIcon /> <span>Donner mon avis</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <NavItem
+            href={pathname === "/avis" ? "/avis" : `/avis?depuis=${encodeURIComponent(pathname)}`}
+            label="Donner mon avis"
+            icon={<MessageSquareTextIcon />}
+            active={pathname === "/avis"}
+          />
           <SidebarMenuItem>
             <ThemeToggle />
           </SidebarMenuItem>
