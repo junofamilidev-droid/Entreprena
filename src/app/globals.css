@@ -484,6 +484,22 @@
 .plateforme [data-slot="button"] {
   border-radius: 9999px;
 }
+.plateforme [data-slot="tabs-list"],
+.plateforme [data-slot="tabs-trigger"] {
+  border-radius: 9999px;
+}
+
+/* Menu de gauche : entrées arrondies, sans trait, fond fondu avec la page. */
+.sidebar-plateforme [data-slot="sidebar-menu-button"] {
+  border-radius: 0.75rem;
+}
+.sidebar-plateforme [data-slot="sidebar-inner"] {
+  background: color-mix(in oklab, var(--sidebar) 70%, var(--background));
+}
+.sidebar-plateforme[data-slot="sidebar-container"],
+.sidebar-plateforme [data-slot="sidebar-container"] {
+  border-color: color-mix(in oklab, var(--border) 55%, transparent);
+}
 .ambient span {
   position: absolute;
   width: 72%;

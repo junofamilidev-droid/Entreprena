@@ -5,7 +5,7 @@ import type { SessionItem } from "@/components/platform/session-list";
 import type { FicheBlock, OutilBlock, PromptBlock } from "@/lib/sessions/types";
 import { forLearner } from "@/lib/sessions/display";
 import { filesBase } from "@/lib/sessions/files";
-import { isAtelier } from "@/lib/sessions/atelier";
+import { isAtelier, type CommandeOutil } from "@/lib/sessions/atelier";
 import { moduleDuration } from "./durations";
 
 export interface OpenModule {
@@ -57,6 +57,8 @@ export interface ToolboxEntry<T> {
   sessionLabel: string;
   href: string;
   fileUrl?: string;
+  /** Format atelier : les commandes de l'outil, à copier. */
+  commandes?: CommandeOutil[];
 }
 
 /** Outils, fiches et prompts de toutes les sessions publiées, pour « Ma boîte à outils ». */
@@ -81,7 +83,7 @@ export async function toolbox() {
           for (const e of s.etapes) {
             const p = e.panneau;
             if (p.type === "outil")
-              tools.push({ ...base, block: { type: "outil", fichier: p.fichier, description: p.presentation, mode_emploi: "" }, fileUrl: `${filesBase(s)}/${encodeURIComponent(p.fichier)}` });
+              tools.push({ ...base, block: { type: "outil", fichier: p.fichier, description: p.presentation, mode_emploi: "" }, fileUrl: `${filesBase(s)}/${encodeURIComponent(p.fichier)}`, commandes: s.commandes });
             if (p.type === "fiche") fiches.push({ ...base, block: { type: "fiche", titre: p.titre, etapes: p.etapes, pieges: p.pieges } });
           }
           continue;

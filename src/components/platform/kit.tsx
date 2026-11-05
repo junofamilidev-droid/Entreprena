@@ -91,3 +91,31 @@ export function StatusLabel({ tone, children, className }: { tone: Tone; childre
     </span>
   );
 }
+
+/** Tête de page commune : fond d'ambiance discret, petite ligne au-dessus, grand titre, texte d'introduction. */
+export function PageIntro({
+  eyebrow,
+  title,
+  children,
+  aside,
+  className,
+}: {
+  eyebrow?: React.ReactNode;
+  title: React.ReactNode;
+  children?: React.ReactNode;
+  aside?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <AmbientHero className={cn("px-6 py-8 sm:px-10 sm:py-10", className)}>
+      <div className="flex items-center gap-8">
+        <div className="min-w-0 flex-1">
+          {eyebrow && <p className="text-sm text-foreground/65">{eyebrow}</p>}
+          <h1 className="mt-2 text-[2rem] leading-[1.1] font-bold tracking-tight text-balance sm:text-[2.5rem]">{title}</h1>
+          {children && <div className="mt-4 max-w-3xl text-[1.0625rem] leading-relaxed text-foreground/75">{children}</div>}
+        </div>
+        {aside && <div className="hidden shrink-0 sm:block">{aside}</div>}
+      </div>
+    </AmbientHero>
+  );
+}

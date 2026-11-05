@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/platform/page-header";
+import { PageIntro } from "@/components/platform/kit";
 import { CertificateShowcase, type CertificateModule } from "@/components/platform/certificate-showcase";
 import { moduleRef } from "@/lib/content/refs";
 import { getModule, listFormations, listSessions } from "@/lib/content/source";
@@ -37,18 +38,19 @@ export default async function CertificatePage() {
   return (
     <>
       <PageHeader crumbs={[{ label: "Accueil", href: "/" }, { label: "Certificat" }]} />
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-10">
-        <h1 className="text-title">Certificat</h1>
-        <p className="mt-2 max-w-3xl text-body text-muted-foreground">
-          Un seul certificat par formation, délivré quand tous les modules sont terminés et leurs livrables validés.
-          Chaque module achevé lève un peu plus le brouillard.
-        </p>
-        <div className="mt-8 space-y-14">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 md:py-8">
+        <PageIntro eyebrow="Un par formation" title="Certificat">
+          <p>
+            Un seul certificat par formation, délivré quand tous les modules sont terminés et leurs livrables validés. Chaque module achevé lève un
+            peu plus le brouillard.
+          </p>
+        </PageIntro>
+        <div className="mt-10 space-y-14">
           {items.map((f) => (
             <CertificateShowcase key={f.slug} formationSlug={f.slug} formationTitle={f.title} modules={f.modules} />
           ))}
         </div>
-        <p className="mt-10 max-w-3xl text-caption text-muted-foreground">{site.certificateNotice}</p>
+        <p className="mt-10 max-w-3xl px-1 text-caption text-muted-foreground">{site.certificateNotice}</p>
       </div>
     </>
   );

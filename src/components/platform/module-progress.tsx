@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AmbientHero, FloatCard } from "./kit";
 import { resumeIndex, stepKey, useProgress, useProgressReady, type ProgressState } from "@/lib/progress/store";
 import type { Module, StepKind } from "@/lib/content/types";
 
@@ -78,14 +79,15 @@ export function ResumePanel({ refData, headingLevel = 1 }: { refData: ModuleRef;
   const action = st.finished ? "Revoir le module" : st.started ? "Reprendre" : "Commencer";
 
   return (
-    <section aria-label="Reprendre" className="rounded-xl border bg-card p-6 sm:p-8">
+    <AmbientHero className="px-3 py-6 sm:px-10 sm:py-10">
+    <FloatCard role="region" aria-label="Reprendre" className="p-6 sm:p-9">
       <p className="text-sm text-muted-foreground">
         {refData.formationTitle}, module {refData.module.position} : {refData.module.title}
       </p>
-      <H className="mt-3 text-title text-balance">{step.title}</H>
+      <H className="mt-2 text-[1.75rem] leading-tight font-bold tracking-tight text-balance sm:text-[2rem]">{step.title}</H>
       {step.objective && <p className="mt-3 max-w-[62ch] text-lead text-muted-foreground">{step.objective}</p>}
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-        <Button asChild size="lg" className={cn(!ready && "invisible")}>
+        <Button asChild size="lg" className={cn("px-6", !ready && "invisible")}>
           <Link href={stepHref(refData, step.slug)}>{action}</Link>
         </Button>
         {step.duration && <span className="text-sm text-muted-foreground">{step.duration}</span>}
@@ -96,7 +98,8 @@ export function ResumePanel({ refData, headingLevel = 1 }: { refData: ModuleRef;
           {st.doneCount} étape{st.doneCount > 1 ? "s" : ""} faite{st.doneCount > 1 ? "s" : ""} sur {refData.steps.length}
         </p>
       </div>
-    </section>
+    </FloatCard>
+    </AmbientHero>
   );
 }
 
@@ -104,7 +107,7 @@ export function StepList({ refData }: { refData: ModuleRef }) {
   const progress = useProgress();
   const st = moduleState(progress, refData);
   return (
-    <ol className="divide-y border-y">
+    <ol className="space-y-1">
       {refData.steps.map((s, i) => {
         const state = st.states[i];
         return (
@@ -112,13 +115,13 @@ export function StepList({ refData }: { refData: ModuleRef }) {
             <Link
               href={stepHref(refData, s.slug)}
               className={cn(
-                "grid grid-cols-[1.75rem_1fr_auto] items-baseline gap-x-3 py-3.5 outline-offset-2 transition-colors hover:bg-muted/50 sm:px-2",
-                state === "current" && "bg-accent/50 hover:bg-accent/70",
+                "grid grid-cols-[1.75rem_1fr_auto] items-baseline gap-x-3 rounded-2xl px-4 py-3.5 outline-offset-2 transition-colors hover:bg-muted/60",
+                state === "current" && "bg-accent/60 hover:bg-accent",
               )}
             >
               <span className="text-sm tabular-nums text-muted-foreground">
                 {state === "done" ? (
-                  <CheckIcon className="inline size-4 text-primary" strokeWidth={2.5} aria-label="fait" />
+                  <CheckIcon className="inline size-4 text-success" strokeWidth={2.5} aria-label="fait" />
                 ) : (
                   `${i + 1}.`
                 )}

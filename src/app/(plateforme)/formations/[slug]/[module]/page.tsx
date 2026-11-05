@@ -6,7 +6,8 @@ import { PageHeader } from "@/components/platform/page-header";
 import { ResumePanel, StepList } from "@/components/platform/module-progress";
 import { getFormation, getModule, listFormations, listSessions } from "@/lib/content/source";
 import { moduleDuration } from "@/lib/content/durations";
-import { SessionList } from "@/components/platform/session-list";
+import { SessionCta, SessionList } from "@/components/platform/session-list";
+import { PageIntro, Soft } from "@/components/platform/kit";
 import { moduleRef } from "@/lib/content/refs";
 
 type Props = PageProps<"/formations/[slug]/[module]">;
@@ -48,71 +49,79 @@ export default async function ModulePage(props: Props) {
           { label: `Module ${mod.position}` },
         ]}
       />
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-12">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 md:py-8">
         {sessions.length > 0 && (
-          <div className="mb-12 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-14">
-            <section aria-labelledby="sessions" className="min-w-0 space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Module {mod.position}
+          <>
+            <PageIntro
+              eyebrow={
+                <>
+                  {formation.title} · module {mod.position}
                   {duration?.label ? ` · ${duration.label}` : ""}
+                </>
+              }
+              title={mod.title}
+            >
+              <p>{mod.summary}</p>
+              <SessionCta formation={formation.slug} module={mod.slug} sessions={sessions} className="mt-6" />
+            </PageIntro>
+            <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-12">
+              <section aria-labelledby="sessions" className="min-w-0">
+                <h2 id="sessions" className="px-1 text-heading">
+                  Les sessions
+                </h2>
+                <div className="mt-4">
+                  <SessionList formation={formation.slug} module={mod.slug} sessions={sessions} />
+                </div>
+              </section>
+              <aside className="space-y-4">
+                <Soft className="p-6">
+                  <h2 className="text-sm font-semibold">Votre livrable</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">{mod.deliverable}</p>
+                </Soft>
+                <p className="px-2 text-caption text-muted-foreground">
+                  <WhereSaved subject="Votre progression est" />
                 </p>
-                <h1 id="sessions" className="text-title text-balance">
-                  {mod.title}
-                </h1>
-              </div>
-              <SessionList formation={formation.slug} module={mod.slug} sessions={sessions} />
-            </section>
-            <aside className="space-y-6">
-              <section className="space-y-2">
-                <h2 className="text-sm font-semibold">Le cas</h2>
-                <p className="text-sm text-muted-foreground">{mod.summary}</p>
-              </section>
-              <section className="space-y-2 border-t pt-6">
-                <h2 className="text-sm font-semibold">Votre livrable</h2>
-                <p className="text-sm text-muted-foreground">{mod.deliverable}</p>
-              </section>
-            </aside>
-          </div>
+              </aside>
+            </div>
+          </>
         )}
         {sessions.length > 0 && !hasSteps ? null : !ref || !hasSteps ? (
-          <div className="max-w-2xl space-y-3">
-            <p className="text-sm text-muted-foreground">Module {mod.position}</p>
-            <h1 className="text-title">{mod.title}</h1>
-            <p className="text-lead text-muted-foreground">Ce module n&apos;est pas encore ouvert.</p>
-          </div>
+          <PageIntro eyebrow={`${formation.title} · module ${mod.position}`} title={mod.title}>
+            <p>Ce module n&apos;est pas encore ouvert.</p>
+          </PageIntro>
         ) : (
           <>
-            <ResumePanel refData={ref} headingLevel={sessions.length ? 2 : 1} />
-            <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-14">
+            <div className={sessions.length ? "mt-12" : undefined}>
+              <ResumePanel refData={ref} headingLevel={sessions.length ? 2 : 1} />
+            </div>
+            <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_17rem] lg:gap-12">
               <section aria-labelledby="etapes" className="min-w-0">
-                <div className="flex items-baseline justify-between gap-4">
-                  <h2 id="etapes" className="text-heading">Les étapes</h2>
+                <div className="flex items-baseline justify-between gap-4 px-1">
+                  <h2 id="etapes" className="text-heading">
+                    Les étapes
+                  </h2>
                   {!sessions.length && duration?.label && <span className="text-sm text-muted-foreground">{duration.label}</span>}
                 </div>
                 <div className="mt-4">
                   <StepList refData={ref} />
                 </div>
               </section>
-              <aside className="space-y-6">
+              <aside className="space-y-4">
                 {!sessions.length && (
                   <>
-                    <section className="space-y-2">
+                    <Soft className="p-6">
                       <h2 className="text-sm font-semibold">Le cas</h2>
-                      <p className="text-sm text-muted-foreground">{mod.summary}</p>
-                    </section>
-                    <section className="space-y-2 border-t pt-6">
+                      <p className="mt-2 text-sm text-muted-foreground">{mod.summary}</p>
+                    </Soft>
+                    <Soft className="p-6">
                       <h2 className="text-sm font-semibold">Votre livrable</h2>
-                      <p className="text-sm text-muted-foreground">{mod.deliverable}</p>
-                    </section>
+                      <p className="mt-2 text-sm text-muted-foreground">{mod.deliverable}</p>
+                    </Soft>
                   </>
                 )}
-                <section className={sessions.length ? "space-y-2" : "space-y-2 border-t pt-6"}>
-                  <h2 className="text-sm font-semibold">Votre progression</h2>
-                  <p className="text-sm text-muted-foreground">
-                    <WhereSaved subject="Elle est" />
-                  </p>
-                </section>
+                <p className="px-2 text-caption text-muted-foreground">
+                  <WhereSaved subject="Votre progression est" />
+                </p>
               </aside>
             </div>
           </>

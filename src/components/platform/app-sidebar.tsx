@@ -31,10 +31,10 @@ import { useIsAdmin } from "@/lib/auth/session";
 import { useProgress } from "@/lib/progress/store";
 import type { FormationWithModules } from "@/lib/content/types";
 
-// L'entrée active porte un trait de couleur à gauche, comme sur la maquette.
-// Le trait glisse d'une entrée à l'autre quand on change de page.
+// L'entrée active est posée sur une pastille claire, comme les onglets du lecteur de session.
+// La pastille glisse d'une entrée à l'autre quand on change de page.
 const ACTIVE =
-  "relative h-10 transition-colors data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground";
+  "relative isolate h-10 transition-colors hover:bg-sidebar-foreground/[0.05] data-[active=true]:bg-transparent data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground";
 
 function NavItem({ href, label, icon, active }: { href: string; label: string; icon: React.ReactNode; active: boolean }) {
   return (
@@ -45,11 +45,11 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
             <motion.span
               layoutId="nav-indicator"
               transition={{ type: "spring", stiffness: 500, damping: 38 }}
-              className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-sidebar-primary"
+              className="absolute inset-0 -z-10 rounded-xl bg-sidebar-foreground/[0.07]"
               aria-hidden
             />
           )}
-          {icon} <span>{label}</span>
+          <span className={active ? "text-primary" : "text-sidebar-foreground/70"}>{icon}</span> <span>{label}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -68,12 +68,19 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
   const mineHref = mine ? `/formations/${mine.slug}` : "/catalogue";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="sidebar-plateforme">
       <SidebarHeader className="px-4 pt-5 pb-4 group-data-[collapsible=icon]:px-2">
         <Link href="/" className="flex items-baseline gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring">
-          <span className="text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">{site.name}</span>
-          <span className="hidden w-full text-center text-xl font-bold group-data-[collapsible=icon]:block">E.</span>
-          <span className="text-[11px] text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">version de test</span>
+          <span className="text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">
+            {site.name.replace(/\.$/, "")}
+            <span className="text-primary">.</span>
+          </span>
+          <span className="hidden w-full text-center text-xl font-bold group-data-[collapsible=icon]:block">
+            E<span className="text-primary">.</span>
+          </span>
+          <span className="rounded-full bg-sidebar-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
+            test
+          </span>
         </Link>
       </SidebarHeader>
 

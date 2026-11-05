@@ -35,8 +35,8 @@ export function PromptBlock({
   }
 
   return (
-    <figure className="overflow-hidden rounded-lg border bg-muted/40">
-      <figcaption className="flex items-center justify-between gap-3 border-b bg-card px-4 py-2.5">
+    <figure className="overflow-hidden rounded-2xl bg-muted/50">
+      <figcaption className="flex items-center justify-between gap-3 px-4 pt-3 pb-1">
         <span className="text-sm font-medium">{title}</span>
         <Button variant="outline" size="sm" onClick={copy}>
           <AnimatePresence mode="wait" initial={false}>
@@ -56,7 +56,7 @@ export function PromptBlock({
       <pre className="max-h-80 overflow-auto whitespace-pre-wrap px-4 py-4 font-mono text-[0.8125rem] leading-relaxed">{text}</pre>
       {note && (
         <div
-          className="prose-lesson border-t px-4 py-3 text-sm text-muted-foreground"
+          className="prose-lesson border-t border-foreground/5 px-4 py-3 text-sm text-muted-foreground"
           dangerouslySetInnerHTML={{ __html: note }}
         />
       )}

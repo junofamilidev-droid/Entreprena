@@ -15,7 +15,7 @@ import { AccountsClosed, authMessage, MIN_PASSWORD, submitWith } from "./auth-fo
 
 function Section({ title, children, highlight }: { title: string; children: React.ReactNode; highlight?: boolean }) {
   return (
-    <section className={`space-y-4 rounded-lg border bg-card p-5 sm:p-6 ${highlight ? "border-primary ring-2 ring-primary/15" : ""}`}>
+    <section className={`space-y-4 rounded-3xl bg-muted/50 p-6 ${highlight ? "bg-accent/60 ring-2 ring-primary/25" : ""}`}>
       <h2 className="font-semibold">{title}</h2>
       {children}
     </section>
@@ -81,7 +81,7 @@ export function AccountPanel() {
         <form onSubmit={submitWith(saveName)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Prénom et nom</Label>
-            <Input id="name" name="name" defaultValue={displayName(user)} autoComplete="name" className="bg-card" required />
+            <Input id="name" name="name" defaultValue={displayName(user)} autoComplete="name" className="h-10 rounded-xl border-transparent bg-foreground/[0.05] focus-visible:bg-background" required />
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium">Adresse email</p>
@@ -144,7 +144,7 @@ function PasswordForm({
           minLength={MIN_PASSWORD}
           required
           autoFocus={autoFocus}
-          className="bg-card"
+          className="h-10 rounded-xl border-transparent bg-foreground/[0.05] focus-visible:bg-background"
         />
         <p className="text-caption text-muted-foreground">{MIN_PASSWORD} caractères au moins.</p>
       </div>

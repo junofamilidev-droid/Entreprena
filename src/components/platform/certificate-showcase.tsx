@@ -90,13 +90,13 @@ export function CertificateShowcase({
 
   return (
     <section aria-label={`Certificat : ${formationTitle}`} className={cn("space-y-6", !ready && "invisible")}>
-      <div className={cn("relative isolate overflow-hidden rounded-2xl border bg-card p-3 shadow-sm sm:p-5", !unlocked && "pb-44 sm:pb-40")}>
+      <div className={cn("relative isolate overflow-hidden rounded-[1.75rem] bg-background/90 p-3 shadow-[0_20px_60px_-20px_rgb(0_0_0/0.18)] ring-1 ring-foreground/5 sm:p-5", !unlocked && "pb-44 sm:pb-40")}>
         <article
           className={cn("relative transition-[filter] duration-1000", unlocked && "print-area")}
           style={{ filter: blur ? `blur(${blur}px)` : undefined }}
           aria-hidden={!unlocked}
         >
-          <div className="relative overflow-hidden rounded-xl border-2 border-primary/40 px-6 py-8 sm:px-12 sm:py-12">
+          <div className="relative overflow-hidden rounded-2xl border-2 border-primary/40 px-6 py-8 sm:px-12 sm:py-12">
             {/* Guillochage léger en fond, comme sur un document officiel. */}
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -105,7 +105,7 @@ export function CertificateShowcase({
                   "repeating-radial-gradient(circle at 100% 0%, var(--primary) 0 1px, transparent 1px 9px), repeating-radial-gradient(circle at 0% 100%, var(--primary) 0 1px, transparent 1px 11px)",
               }}
             />
-            <div className="absolute inset-2 rounded-lg border border-primary/20" />
+            <div className="absolute inset-2 rounded-xl border border-primary/20" />
             <div className="relative flex items-start justify-between gap-4">
               <p className="text-lg font-bold tracking-tight">{site.name}</p>
               <p className="text-caption tracking-[0.2em] text-muted-foreground uppercase">Version de test</p>
@@ -148,7 +148,7 @@ export function CertificateShowcase({
 
         {!unlocked && (
           <div className="absolute inset-x-0 bottom-0 flex justify-center p-4 text-center sm:p-6">
-            <div className="w-full max-w-sm space-y-3 rounded-xl border bg-card/90 px-5 py-4 shadow-lg backdrop-blur-sm">
+            <div className="w-full max-w-sm space-y-3 rounded-3xl bg-background/90 px-6 py-5 shadow-[0_20px_60px_-20px_rgb(0_0_0/0.25)] ring-1 ring-foreground/5 backdrop-blur-xl">
               <p className="flex items-center justify-center gap-2 font-semibold">
                 <LockIcon className="size-4 text-primary" aria-hidden /> Se dévoile à chaque module terminé
               </p>
@@ -160,7 +160,7 @@ export function CertificateShowcase({
                 aria-valuenow={pct}
                 className="h-1.5 overflow-hidden rounded-full bg-muted"
               >
-                <div className="h-full rounded-full bg-primary transition-[width] duration-700" style={{ width: `${pct}%` }} />
+                <div className="h-full rounded-full bg-success transition-[width] duration-700" style={{ width: `${pct}%` }} />
               </div>
               <p className="text-sm text-muted-foreground">
                 {validated} module{validated > 1 ? "s" : ""} validé{validated > 1 ? "s" : ""} sur {modules.length}
@@ -186,7 +186,7 @@ export function CertificateShowcase({
               value={name}
               autoComplete="name"
               onChange={(e) => saveInput(nameKey, "nom", e.target.value)}
-              className="bg-card"
+              className="rounded-full bg-muted/50 px-4"
             />
           </div>
           <Button size="lg" onClick={() => window.print()} disabled={!name.trim()}>
@@ -201,12 +201,12 @@ export function CertificateShowcase({
               <li key={m.position}>
                 <Link
                   href={m.href}
-                  className="flex h-full items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:bg-muted/60"
+                  className="flex h-full items-center gap-3 rounded-2xl bg-muted/50 px-4 py-3 transition-colors hover:bg-muted"
                 >
                   <span
                     className={cn(
                       "grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums",
-                      s.validated ? "bg-primary text-primary-foreground" : "border-2 border-border text-muted-foreground",
+                      s.validated ? "bg-success text-white" : "bg-foreground/[0.06] text-muted-foreground",
                     )}
                   >
                     {s.validated ? <CheckIcon className="size-3.5" strokeWidth={3} aria-label="validé" /> : m.position}

@@ -5,6 +5,7 @@ import { PromptBlock } from "@/components/reader/prompt-block";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { lessonContent, openModules, toolbox } from "@/lib/content/library";
 import { ToolboxView } from "@/components/platform/toolbox-view";
+import { PageIntro } from "@/components/platform/kit";
 
 export const metadata: Metadata = { title: "Ma boîte à outils" };
 
@@ -13,13 +14,14 @@ export default async function ToolboxPage() {
   return (
     <>
       <PageHeader crumbs={[{ label: "Accueil", href: "/" }, { label: "Ma boîte à outils" }]} />
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-10">
-        <h1 className="text-title">Ma boîte à outils</h1>
-        <p className="mt-2 max-w-3xl text-body text-muted-foreground">
-          Les outils et les fiches gagnés en terminant les sessions, et les prompts prêts à copier. Réutilisez-les sur vos
-          dossiers, après avoir anonymisé vos données.
-        </p>
-        <div className="mt-8">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 md:py-8">
+        <PageIntro eyebrow="Ce que vous gagnez à chaque session" title="Ma boîte à outils">
+          <p>
+            Les outils et les fiches gagnés en terminant les sessions, et les prompts prêts à copier. Réutilisez-les sur vos dossiers, après avoir
+            anonymisé vos données.
+          </p>
+        </PageIntro>
+        <div className="mt-10">
           <ToolboxView {...box} />
         </div>
         {open.map((o) => {
@@ -27,8 +29,8 @@ export default async function ToolboxPage() {
           const prompts = lessons.filter((x) => x.c!.prompt);
           const sources = lessons.filter((x) => x.c!.sourcesHtml);
           return (
-            <section key={o.module.id} className="mt-8" aria-labelledby={`m-${o.module.id}`}>
-              <h2 id={`m-${o.module.id}`} className="text-heading">
+            <section key={o.module.id} className="mt-12" aria-labelledby={`m-${o.module.id}`}>
+              <h2 id={`m-${o.module.id}`} className="px-1 text-heading">
                 Prompts des leçons · module {o.module.position} : {o.module.title}
               </h2>
               <div className="mt-4 space-y-4">
@@ -45,7 +47,7 @@ export default async function ToolboxPage() {
                 ))}
               </div>
               {sources.length > 0 && (
-                <Accordion type="multiple" className="mt-6 rounded-lg border bg-card px-4">
+                <Accordion type="multiple" className="mt-6 rounded-3xl bg-muted/50 px-6">
                   {sources.map(({ s, c }) => (
                     <AccordionItem key={s.id} value={s.id}>
                       <AccordionTrigger>Sources : {s.title}</AccordionTrigger>

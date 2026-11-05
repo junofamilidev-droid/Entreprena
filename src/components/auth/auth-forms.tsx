@@ -56,7 +56,7 @@ function Field({
         <Label htmlFor={id}>{label}</Label>
         {hint}
       </div>
-      <Input id={id} name={id} className="bg-card" {...props} />
+      <Input id={id} name={id} className="h-10 rounded-xl border-transparent bg-foreground/[0.05] focus-visible:bg-background" {...props} />
     </div>
   );
 }
