@@ -472,6 +472,18 @@
 .dark .ambient {
   --amb-opacity: 0.4;
 }
+/* Version discrète, en tête des pages de la plateforme. */
+.ambient[data-tone="soft"] {
+  --amb-opacity: 0.55;
+}
+.dark .ambient[data-tone="soft"] {
+  --amb-opacity: 0.3;
+}
+
+/* Pages apprenant : boutons en pastille, comme dans le lecteur de session. Le menu et l'espace réservé ne changent pas. */
+.plateforme [data-slot="button"] {
+  border-radius: 9999px;
+}
 .ambient span {
   position: absolute;
   width: 72%;

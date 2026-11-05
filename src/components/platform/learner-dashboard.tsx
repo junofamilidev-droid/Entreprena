@@ -6,6 +6,7 @@ import { ArrowRightIcon, CheckIcon, ChevronRightIcon, DownloadIcon, FileSpreadsh
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CountUp } from "@/components/motion/count-up";
+import { AmbientHero, FloatCard, ProgressRing, Soft, StatusLabel } from "./kit";
 import { duration, ease, stagger } from "@/lib/motion";
 import { displayName, useAuth } from "@/lib/auth/session";
 import { useProgress, useProgressReady, type ProgressState } from "@/lib/progress/store";
@@ -121,8 +122,8 @@ function StatusDot({ row }: { row: ModuleRow }) {
   return (
     <span
       className={cn(
-        "grid size-9 shrink-0 place-items-center rounded-full border-2 text-sm font-semibold tabular-nums",
-        row.status === "soon" ? "border-border text-muted-foreground" : "border-foreground/25 text-foreground",
+        "grid size-9 shrink-0 place-items-center rounded-full bg-foreground/[0.06] text-sm font-semibold tabular-nums",
+        row.status === "soon" ? "text-muted-foreground" : "text-foreground/80",
       )}
     >
       {n}
@@ -158,7 +159,7 @@ export function LearnerDashboard({
       <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-8">
         <h1 className="text-title">Choisissez une première formation</h1>
         <p className="mt-2 text-body text-muted-foreground">Le catalogue rassemble les formations ouvertes, métier par métier.</p>
-        <Link href="/catalogue" className="mt-6 inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
+        <Link href="/catalogue" className="mt-6 inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground">
           Voir le catalogue
         </Link>
       </div>
@@ -175,132 +176,126 @@ export function LearnerDashboard({
   const shown = ready ? "show" : "hidden";
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 md:py-10">
-      <p className="text-sm text-muted-foreground">{firstName ? `Bonjour ${firstName},` : "Bonjour,"}</p>
-
-      <motion.div variants={list} initial="hidden" animate={shown} className="mt-4 space-y-4">
-        {/* L'action principale : reprendre là où l'apprenant s'est arrêté. */}
-        <motion.section variants={item} aria-labelledby="reprendre" className="rounded-xl border bg-card p-6 sm:p-7">
-          {resume ? (
-            <>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-primary">{resume.started ? "Reprendre" : "Continuer"}</span> ·{" "}
-                <Link href={`/formations/${formation.slug}`} className="hover:text-foreground hover:underline">
-                  {formation.title}
-                </Link>
-              </p>
-              <h1 id="reprendre" className="mt-1 text-title text-balance">
-                {resume.title}
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">{resume.meta}</p>
-              <Button asChild size="lg" className="mt-5">
-                <Link href={resume.href}>
-                  {resume.started ? "Reprendre" : "Commencer"} <ArrowRightIcon />
-                </Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm font-medium text-primary">Tout est fait</p>
-              <h1 id="reprendre" className="mt-1 text-title">
-                Vous avez terminé ce qui est ouvert
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">Les prochains modules s&apos;ouvriront ici.</p>
-              <Button asChild size="lg" variant="outline" className="mt-5">
-                <Link href="/certificat">Voir mon certificat</Link>
-              </Button>
-            </>
-          )}
-        </motion.section>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <motion.section variants={item} aria-label="Votre progression" className="rounded-xl border bg-card p-5">
-            <h2 className="text-sm font-semibold">Votre progression</h2>
-            <div className="mt-3 flex items-end justify-between gap-4">
-              <p className="text-3xl font-semibold tracking-tight">
-                <CountUp value={pct} />
-                &nbsp;%
-              </p>
-              <p className="pb-1 text-sm text-muted-foreground tabular-nums">
+    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 md:py-8">
+      {/* Tête de page : le fond d'ambiance de la session, et l'action principale dans une carte flottante. */}
+      <AmbientHero className="px-3 py-6 sm:px-10 sm:py-10" state={resume ? "idle" : "success"}>
+        <p className="px-1 text-[1.125rem] text-foreground/75">{firstName ? `Bonjour ${firstName},` : "Bonjour,"}</p>
+        <motion.div variants={item} initial="hidden" animate={shown}>
+          <FloatCard aria-labelledby="reprendre" role="region" className="mt-4 flex items-center gap-8 p-6 sm:p-9">
+            <div className="min-w-0 flex-1">
+              {resume ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium text-primary">{resume.started ? "Reprendre" : "Continuer"}</span> ·{" "}
+                    <Link href={`/formations/${formation.slug}`} className="hover:text-foreground hover:underline">
+                      {formation.title}
+                    </Link>
+                  </p>
+                  <h1 id="reprendre" className="mt-2 text-[1.75rem] leading-tight font-bold tracking-tight text-balance sm:text-[2rem]">
+                    {resume.title}
+                  </h1>
+                  <p className="mt-2 text-sm text-muted-foreground">{resume.meta}</p>
+                  <p className="mt-1 text-sm text-muted-foreground tabular-nums sm:hidden">
+                    Votre formation : {pct} % · {done} / {total} modules
+                  </p>
+                  <Button asChild size="lg" className="mt-6 px-6">
+                    <Link href={resume.href}>
+                      {resume.started ? "Reprendre" : "Commencer"} <ArrowRightIcon />
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-success">Tout est fait</p>
+                  <h1 id="reprendre" className="mt-2 text-[1.75rem] leading-tight font-bold tracking-tight sm:text-[2rem]">
+                    Vous avez terminé ce qui est ouvert
+                  </h1>
+                  <p className="mt-2 text-sm text-muted-foreground">Les prochains modules s&apos;ouvriront ici.</p>
+                  <Button asChild size="lg" variant="outline" className="mt-6 px-6">
+                    <Link href="/certificat">Voir mon certificat</Link>
+                  </Button>
+                </>
+              )}
+            </div>
+            <div className="hidden shrink-0 flex-col items-center gap-1 sm:flex">
+              <ProgressRing pct={ready ? pct : 0} size={96} label="Votre formation" showLabel={false} />
+              <p className="text-sm font-medium">Votre formation</p>
+              <p className="text-caption text-muted-foreground tabular-nums">
                 {done} / {total} modules
               </p>
             </div>
-            <div
-              role="progressbar"
-              aria-label="Progression dans la formation"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={pct}
-              className="mt-3 h-2 overflow-hidden rounded-full bg-muted"
-            >
-              <motion.div
-                className="h-full rounded-full bg-primary"
-                initial={{ width: 0 }}
-                animate={{ width: ready ? `${pct}%` : 0 }}
-                transition={{ duration: duration.recompense, ease: ease.out, delay: 0.2 }}
-              />
-            </div>
-          </motion.section>
+          </FloatCard>
+        </motion.div>
+      </AmbientHero>
 
-          <motion.section variants={item} aria-label="Temps gagné" className="rounded-xl border bg-primary p-5 text-primary-foreground">
-            <h2 className="text-sm font-semibold opacity-90">Temps gagné</h2>
-            <p className="mt-3 text-3xl font-semibold tracking-tight">
+      <motion.div variants={list} initial="hidden" animate={shown} className="mt-4 grid gap-4 sm:grid-cols-2">
+        <motion.div variants={item}>
+          <Soft className="h-full p-6" role="region" aria-label="Temps gagné">
+            <StatusLabel tone={savedSec > 0 ? "success" : "idle"}>Temps gagné</StatusLabel>
+            <p className="mt-3 text-[2rem] leading-none font-bold tracking-tight">
               <CountUp value={savedSec} format={formatSeconds} />
             </p>
-            <p className="mt-1 text-sm opacity-80">
-              {savedSec > 0 ? "mesuré à chaque session : votre défi, puis la méthode" : "Il se mesure à chaque session : votre défi, puis la méthode."}
+            <p className="mt-2 text-sm text-muted-foreground">Il se mesure à chaque session : votre défi, puis la méthode.</p>
+            {/* Repère pour les lecteurs d'écran : la progression est aussi dans l'anneau du haut. */}
+            <p className="sr-only">
+              Progression : {pct} %, {done} modules terminés sur {total}.
             </p>
-          </motion.section>
-        </div>
-
-        {downloads.length > 0 && (
-          <motion.section variants={item} aria-labelledby="outils" className="rounded-xl border bg-card p-5">
+          </Soft>
+        </motion.div>
+        <motion.div variants={item}>
+          <Soft className="h-full p-6" role="region" aria-labelledby="outils">
             <div className="flex items-baseline justify-between gap-3">
-              <h2 id="outils" className="text-sm font-semibold">
-                Derniers outils téléchargés
+              <h2 id="outils">
+                <StatusLabel tone={downloads.length ? "active" : "idle"}>Ma boîte à outils</StatusLabel>
               </h2>
-              <Link href="/boite-a-outils" className="text-sm text-primary hover:underline">
-                Ma boîte à outils
+              <Link href="/boite-a-outils" className="text-sm font-medium text-primary hover:underline">
+                Ouvrir
               </Link>
             </div>
-            <ul className="mt-3 divide-y">
-              {downloads.slice(0, 3).map((d) => (
-                <li key={d.name}>
-                  <a
-                    href={d.href}
-                    download
-                    onClick={() => recordDownload({ name: d.name, href: d.href, source: d.source }, downloads)}
-                    className="group flex items-center gap-3 py-2.5"
-                  >
-                    <FileSpreadsheetIcon className="size-4 shrink-0 text-primary" aria-hidden />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">{d.name}</span>
-                      <span className="block truncate text-caption text-muted-foreground">{d.source}</span>
-                    </span>
-                    <DownloadIcon className="size-4 text-muted-foreground transition-transform group-hover:translate-y-0.5" aria-hidden />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </motion.section>
-        )}
+            {downloads.length > 0 ? (
+              <ul className="mt-3 space-y-1">
+                {downloads.slice(0, 3).map((d) => (
+                  <li key={d.name}>
+                    <a
+                      href={d.href}
+                      download
+                      onClick={() => recordDownload({ name: d.name, href: d.href, source: d.source }, downloads)}
+                      className="group -mx-2 flex items-center gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-background/70"
+                    >
+                      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-background text-primary shadow-xs">
+                        <FileSpreadsheetIcon className="size-4" aria-hidden />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium">{d.name}</span>
+                        <span className="block truncate text-caption text-muted-foreground">{d.source}</span>
+                      </span>
+                      <DownloadIcon className="size-4 text-muted-foreground transition-transform group-hover:translate-y-0.5" aria-hidden />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-muted-foreground">Les outils et les fiches de chaque session s&apos;y rangent, prêts à réutiliser en mission.</p>
+            )}
+          </Soft>
+        </motion.div>
       </motion.div>
 
-      <section aria-labelledby="parcours" className="mt-10">
-        <h2 id="parcours" className="text-heading">
+      <section aria-labelledby="parcours" className="mt-12">
+        <h2 id="parcours" className="px-1 text-heading">
           Votre parcours
         </h2>
-        <motion.ol variants={list} initial="hidden" animate={shown} className="mt-3 overflow-hidden rounded-lg border bg-card">
+        <motion.ol variants={list} initial="hidden" animate={shown} className="mt-4 space-y-1.5">
           {moduleRows.map((r) => {
             const current = r.status === "current";
             const soon = r.status === "soon";
             return (
-              <motion.li variants={item} key={r.module.id} className="border-b last:border-b-0">
+              <motion.li variants={item} key={r.module.id}>
                 <Link
                   href={r.href}
                   className={cn(
-                    "group flex items-center gap-4 px-4 py-3.5 transition-colors sm:px-5",
-                    current ? "bg-accent/70 hover:bg-accent" : "hover:bg-muted/60",
+                    "group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-colors sm:px-5",
+                    current ? "bg-accent/60 hover:bg-accent" : "hover:bg-muted/60",
                   )}
                 >
                   <StatusDot row={r} />
@@ -310,14 +305,15 @@ export function LearnerDashboard({
                     </span>
                     <span className="block truncate text-sm text-muted-foreground">{r.module.summary}</span>
                   </span>
-                  <span className="hidden shrink-0 text-right text-sm sm:block">
-                    {current && <span className="block font-medium text-primary">{r.started ? "En cours" : "À commencer"}</span>}
+                  <span className="hidden shrink-0 flex-col items-end gap-0.5 text-sm sm:flex">
+                    {r.status === "done" && <StatusLabel tone="success">Terminé</StatusLabel>}
+                    {current && <StatusLabel tone="active">{r.started ? "En cours" : "À commencer"}</StatusLabel>}
                     {soon ? (
-                      <span className="inline-flex items-center gap-1 text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                         <LockIcon className="size-3.5" aria-hidden /> À venir
                       </span>
                     ) : (
-                      r.duration && <span className="block text-muted-foreground">{r.duration}</span>
+                      r.duration && <span className="text-caption text-muted-foreground">{r.duration}</span>
                     )}
                   </span>
                   <ChevronRightIcon
@@ -331,7 +327,7 @@ export function LearnerDashboard({
         </motion.ol>
       </section>
 
-      <p className="mt-10 text-caption text-muted-foreground">
+      <p className="mt-12 px-1 text-caption text-muted-foreground">
         Version de test. Les contenus sont en cours de relecture par des professionnels.{" "}
         <Link href="/aide" className="underline underline-offset-4 hover:text-foreground">
           Aide, mentions et usage de vos données

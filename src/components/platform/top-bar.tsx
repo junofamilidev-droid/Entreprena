@@ -141,7 +141,7 @@ function UserMenu() {
   if (auth.status === "loading") return <span className="size-9" />;
   if (auth.status === "anon") {
     return (
-      <Link href="/connexion" className="rounded-md px-3 py-2 text-sm font-medium text-primary hover:bg-accent">
+      <Link href="/connexion" className="shrink-0 rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-primary hover:bg-accent">
         Se connecter
       </Link>
     );

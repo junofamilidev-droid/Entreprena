@@ -43,7 +43,9 @@ export default async function PlatformLayout({ children }: LayoutProps<"/">) {
       <SidebarProvider>
         <AppSidebar formations={formations} />
         <SidebarInset>
-          <ViewTransition default="page">{children}</ViewTransition>
+          <div className="plateforme flex min-h-full flex-1 flex-col">
+            <ViewTransition default="page">{children}</ViewTransition>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </SearchIndexProvider>

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { ProgressRing } from "@/components/platform/kit";
 import { duration, ease } from "@/lib/motion";
 import { saveStep, useProgress, useProgressReady } from "@/lib/progress/store";
 import { forLearner } from "@/lib/sessions/display";
@@ -224,35 +225,6 @@ function StepThread({ session, etape, index, fil }: { session: AtelierSession; e
 }
 
 /* ---------------- Barre latérale fine (droite) ---------------- */
-
-function ProgressRing({ pct }: { pct: number }) {
-  const r = 22;
-  const c = 2 * Math.PI * r;
-  return (
-    <div className="flex flex-col items-center gap-1.5" role="img" aria-label={`Progression : ${pct} %`}>
-      <span className="relative grid size-14 place-items-center">
-        <svg viewBox="0 0 52 52" className="absolute inset-0 -rotate-90" aria-hidden>
-          <circle cx="26" cy="26" r={r} fill="none" strokeWidth="4" className="stroke-foreground/[0.08]" />
-          <motion.circle
-            cx="26"
-            cy="26"
-            r={r}
-            fill="none"
-            strokeWidth="4"
-            strokeLinecap="round"
-            className="stroke-success"
-            strokeDasharray={c}
-            initial={false}
-            animate={{ strokeDashoffset: c * (1 - pct / 100) }}
-            transition={{ duration: duration.recompense, ease: ease.out }}
-          />
-        </svg>
-        <span className="text-xs font-semibold tabular-nums">{pct}%</span>
-      </span>
-      <span className="text-[0.6875rem] text-muted-foreground">Progression</span>
-    </div>
-  );
-}
 
 function RailButton({
   label,
