@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, FolderIcon, GraduationCapIcon, LaptopIcon, MailIcon, MousePointerClickIcon, RotateCcwIcon, SparklesIcon, TerminalIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, FolderIcon, GraduationCapIcon, LaptopIcon, MailIcon, RotateCcwIcon, TerminalIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -262,21 +262,7 @@ function RailButton({
 
 /* ---------------- Cartes de l'accueil et de la fin (droite) ---------------- */
 
-/** Ce que l'apprenant fait à chaque type d'étape, dit simplement. */
-const ACTION: Record<AtelierEtape["panneau"]["type"], string> = {
-  quiz: "Une question pour démarrer",
-  outil: "Comprendre et installer l'outil",
-  test: "Lancer l'outil dans Claude et vérifier",
-  personnaliser: "L'adapter à votre cabinet",
-  fiche: "Garder l'essentiel",
-};
-
 function WelcomeCard({ session }: { session: AtelierSession }) {
-  const how = [
-    { icon: GraduationCapIcon, title: `${session.tuteur.nom} vous guide`, text: "À gauche, une étape à la fois : quoi faire, et pourquoi." },
-    { icon: MousePointerClickIcon, title: "Vous agissez ici", text: "Au centre : répondre, installer l'outil, coller ce que Claude produit." },
-    { icon: SparklesIcon, title: "Claude travaille à côté", text: "Ouvert dans un autre onglet, c'est lui qui fait tourner l'outil." },
-  ];
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -286,35 +272,7 @@ function WelcomeCard({ session }: { session: AtelierSession }) {
         <h1 className="text-[2rem] leading-tight font-bold tracking-tight text-balance">{session.titre}</h1>
       </div>
       <div className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground">Comment ça se passe</h2>
-        <ul className="grid grid-cols-3 gap-3">
-          {how.map((h) => (
-            <li key={h.title} className="rounded-2xl bg-muted/60 p-4">
-              <span className="grid size-9 place-items-center rounded-xl bg-background text-primary shadow-xs">
-                <h.icon className="size-4" aria-hidden />
-              </span>
-              <p className="mt-3 text-sm font-semibold">{h.title}</p>
-              <p className="mt-1 text-sm leading-snug text-muted-foreground">{h.text}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground">Votre parcours</h2>
-        <ol className="space-y-1">
-          {session.etapes.map((e, i) => (
-            <li key={i} className="flex items-start gap-3 rounded-xl px-1 py-1.5">
-              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-foreground/[0.06] text-xs font-semibold tabular-nums">{i + 1}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-medium">{e.titre}</span>
-                <span className="block text-sm text-muted-foreground">{ACTION[e.panneau.type]}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground">Vous repartez avec</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">Ce que vous emportez</h2>
         <ul className="space-y-2">
           {session.accueil.ce_que_vous_emportez.map((t) => (
             <li key={t} className="flex gap-3 text-body">
@@ -323,6 +281,18 @@ function WelcomeCard({ session }: { session: AtelierSession }) {
             </li>
           ))}
         </ul>
+      </div>
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">Le plan</h2>
+        <ol className="space-y-1">
+          {session.etapes.map((e, i) => (
+            <li key={i} className="flex items-center gap-3 rounded-xl px-1 py-1.5">
+              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-foreground/[0.06] text-xs font-semibold tabular-nums">{i + 1}</span>
+              <span className="min-w-0 flex-1 truncate">{e.titre}</span>
+              <span className="text-caption text-muted-foreground">{panneauLabel[e.panneau.type]}</span>
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );

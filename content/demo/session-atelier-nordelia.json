@@ -26,7 +26,7 @@
   "tuteur": { "nom": "Marc", "role": "Senior manager" },
   "etapes": [
     {
-      "titre": "Le piège",
+      "titre": "Repérer le piège d'une balance",
       "objectif": "Repérer ce qui rend une variation intéressante.",
       "pourquoi": "Une grosse variation n'est pas forcément une anomalie : ce qui compte, c'est l'écart à ce qu'on attendait.",
       "a_faire": ["Lisez la question à droite.", "Choisissez la réponse qui vous semble juste."],
@@ -46,7 +46,7 @@
       }
     },
     {
-      "titre": "Votre outil",
+      "titre": "Comprendre et installer l'outil",
       "objectif": "Comprendre ce que fait l'outil, puis l'installer dans votre Claude.",
       "pourquoi": "Un outil que vous comprenez, vous savez quand vous y fier et quand le vérifier.",
       "a_faire": [
@@ -94,7 +94,7 @@
       }
     },
     {
-      "titre": "Le test sur Nordelia",
+      "titre": "Lancer la revue analytique",
       "objectif": "Lancer l'outil sur la balance et vérifier sa note.",
       "pourquoi": "C'est votre premier contrôle qualité : savoir ce que l'outil doit trouver avant de le croire.",
       "a_faire": [
@@ -119,7 +119,7 @@
       }
     },
     {
-      "titre": "La réponse du DAF",
+      "titre": "Intégrer la réponse du client",
       "objectif": "Mettre la note à jour avec une information du client.",
       "pourquoi": "En mission, la note vit : chaque réponse du client la fait évoluer.",
       "a_faire": [
@@ -142,7 +142,7 @@
       }
     },
     {
-      "titre": "À votre cabinet",
+      "titre": "Adapter l'outil à votre cabinet",
       "objectif": "Adapter l'outil à vos seuils et à votre façon de rédiger.",
       "pourquoi": "Un outil qui parle comme votre cabinet sera utilisé ; un outil générique sera oublié.",
       "a_faire": ["Copiez la commande.", "Collez-la dans Claude et répondez à ses questions.", "Cochez chaque point une fois fait."],
@@ -157,7 +157,7 @@
       }
     },
     {
-      "titre": "Votre fiche",
+      "titre": "Votre fiche pour le prochain dossier",
       "objectif": "Garder l'essentiel pour votre prochaine mission.",
       "pourquoi": "Dans trois semaines, vous ne relirez pas la session : vous ouvrirez la fiche.",
       "a_faire": ["Relisez la fiche.", "Retrouvez-la à tout moment dans Ma boîte à outils."],

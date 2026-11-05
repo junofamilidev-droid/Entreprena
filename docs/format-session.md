@@ -122,10 +122,7 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
 ## En-tête et cadre
 - `formation`, `module`, `session`, `titre`, `maj` : comme au format classique.
 - `duree_min` : 60 au maximum.
-- `accueil` : l'écran affiché avant la première étape.
-  - Au centre : la durée, « Comment ça se passe » (tuteur à gauche, travail au centre, Claude à côté), le parcours (titre de chaque étape et ce que l'on y fait, déduit du type de panneau) et « Vous repartez avec » (`ce_que_vous_emportez`).
-  - À gauche, le tuteur se présente, puis affiche `ce_que_vous_allez_faire` et `pourquoi`.
-  - Les titres d'étapes doivent donc parler d'eux-mêmes (« Le piège », « Votre outil », « Le test sur Nordelia »).
+- `accueil` : l'écran affiché avant la première étape. Il présente ce qu'on va faire, ce qu'on emporte (liste), pourquoi c'est utile, la durée et le plan des étapes (calculé : titre de chaque étape et type de panneau).
 - `mission` :
   - le message de la cheffe de mission : il ouvre le fil du tuteur et reste relisible à tout moment avec le bouton « Mission » de la barre de droite ;
   - le bouton « Copier le contexte » copie le texte de `a_copier`, à coller dans Claude.
@@ -151,6 +148,9 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
 
 ## Une étape
 - `titre`, `objectif`, `pourquoi`, `a_faire` (étapes numérotées) : ce que le tuteur affiche, à gauche.
+- **Titre d'étape** : il apparaît seul dans le plan de l'accueil, avant que l'apprenant ait lu quoi que ce soit. Il doit donc se comprendre sans contexte :
+  - dire l'action, en 2 à 6 mots : « Repérer le piège d'une balance », « Installer l'outil dans Claude », « Lancer la revue analytique » ;
+  - pas de nom propre du cas (« Nordelia »), pas de clin d'œil (« Lundi matin », « Pour vous »), pas de jargon interne (« Piloter : approfondir »).
 - `aides` : questions pré-écrites, proposées en boutons ; la réponse s'affiche comme un message du tuteur. La liste peut être vide.
 - `relance` (facultatif) : un nouveau message de la cheffe de mission, qui arrive quand l'apprenant atteint l'étape. Il s'ajoute en tête du panneau de mission.
 - `panneau` : l'espace de travail, à droite. Il doit avoir un `type` parmi ceux décrits ci-dessous.

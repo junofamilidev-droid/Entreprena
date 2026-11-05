@@ -547,3 +547,15 @@
     animation: none;
   }
 }
+
+/* La souris devient une main sur tout ce qui se clique. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  label:has(input, button[role="checkbox"]),
+  summary,
+  select {
+    cursor: pointer;
+  }
+}
