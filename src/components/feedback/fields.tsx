@@ -81,9 +81,11 @@ function ChoiceRow({ q, value, onChange, order }: { q: Question & { options: rea
           );
         })}
       </div>
-      <p className="mt-2 min-h-5 text-sm font-medium text-foreground/80" role="status" aria-live="polite">
-        {refused}
-      </p>
+      {multi && (q as MultiQ).max ? (
+        <p className="mt-2 min-h-5 text-sm font-medium text-foreground/80" role="status" aria-live="polite">
+          {refused}
+        </p>
+      ) : null}
     </fieldset>
   );
 }
