@@ -122,7 +122,10 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
 ## En-tête et cadre
 - `formation`, `module`, `session`, `titre`, `maj` : comme au format classique.
 - `duree_min` : 60 au maximum.
-- `accueil` : l'écran affiché avant la première étape. Il présente ce qu'on va faire, ce qu'on emporte (liste), pourquoi c'est utile, la durée et le plan des étapes (calculé).
+- `accueil` : l'écran affiché avant la première étape.
+  - Au centre : la durée, « Comment ça se passe » (tuteur à gauche, travail au centre, Claude à côté), le parcours (titre de chaque étape et ce que l'on y fait, déduit du type de panneau) et « Vous repartez avec » (`ce_que_vous_emportez`).
+  - À gauche, le tuteur se présente, puis affiche `ce_que_vous_allez_faire` et `pourquoi`.
+  - Les titres d'étapes doivent donc parler d'eux-mêmes (« Le piège », « Votre outil », « Le test sur Nordelia »).
 - `mission` :
   - le message de la cheffe de mission : il ouvre le fil du tuteur et reste relisible à tout moment avec le bouton « Mission » de la barre de droite ;
   - le bouton « Copier le contexte » copie le texte de `a_copier`, à coller dans Claude.
@@ -131,7 +134,7 @@ On livre à l'apprenant un outil d'expert pour Claude (un skill). La plateforme 
   - `quand` dit à quel moment s'en servir, `rend` ce qu'elle produit : une phrase courte chacun.
   - Un clic copie la commande. Les parties à compléter, écrites `<ainsi>`, ne sont pas copiées : l'apprenant les tape dans Claude.
   - Les commandes doivent être celles que le fichier de l'outil (le skill) reconnaît vraiment.
-- `fin` : `recapitulatif` liste ce que l'apprenant a obtenu. L'écran de fin montre aussi la fiche et le téléchargement de l'outil.
+- `fin` : `recapitulatif` liste ce que l'apprenant a obtenu (à gauche). Au centre, l'écran de fin fait le bilan : étapes faites, vérifications réussies, temps passé, l'outil à télécharger, les commandes et le lien vers la fiche rangée dans Ma boîte à outils. La fiche n'y est pas répétée.
 
 ## L'écran
 - **À gauche**, le fil du tuteur, en grand texte :

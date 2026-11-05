@@ -6,7 +6,6 @@ import {
   AlertTriangleIcon,
   CheckIcon,
   CircleCheckIcon,
-  CircleDotIcon,
   CopyIcon,
   DownloadIcon,
   FileArchiveIcon,
@@ -225,6 +224,13 @@ export function OutilPanel({ p, ctx }: { p: OutilPanneau; ctx: PanelCtx }) {
       <motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: duration.standard, ease: ease.out }}>
         {tab === 0 && (
           <div className="space-y-4">
+            <p className="flex items-center gap-2 text-sm font-medium">
+              <MousePointerClickIcon className="size-4 text-primary" aria-hidden />
+              {seen.size < p.regles.length ? "Cliquez sur chaque règle pour voir ce qu'elle change" : "Toutes les règles sont vues"}
+              <span className="ml-auto rounded-full bg-muted/70 px-2.5 py-0.5 text-xs text-muted-foreground tabular-nums">
+                {seen.size} / {p.regles.length} vues
+              </span>
+            </p>
             <div className="flex flex-wrap gap-2">
               {p.regles.map((r, i) => (
                 <button
@@ -234,11 +240,19 @@ export function OutilPanel({ p, ctx }: { p: OutilPanneau; ctx: PanelCtx }) {
                   aria-pressed={sel === String(i)}
                   className={cn(
                     "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-                    sel === String(i) ? "bg-foreground text-background" : "bg-muted/70 hover:bg-muted",
+                    sel === String(i) ? "bg-foreground text-background" : seen.has(String(i)) ? "bg-muted/70 hover:bg-muted" : "bg-accent text-accent-foreground ring-1 ring-primary/25 hover:bg-accent/80",
                   )}
                 >
-                  {seen.has(String(i)) ? <CheckIcon className="size-3.5" aria-hidden /> : <CircleDotIcon className="size-3.5" aria-hidden />}
+                  {seen.has(String(i)) ? (
+                    <CheckIcon className="size-3.5" aria-hidden />
+                  ) : (
+                    <span className="relative grid size-3.5 place-items-center" aria-hidden>
+                      <span className="absolute inline-flex size-full rounded-full bg-primary/40 motion-safe:animate-ping" />
+                      <span className="relative size-2 rounded-full bg-primary" />
+                    </span>
+                  )}
                   {r.titre}
+                  {!seen.has(String(i)) && <span className="sr-only">(à voir)</span>}
                 </button>
               ))}
             </div>
@@ -261,7 +275,9 @@ export function OutilPanel({ p, ctx }: { p: OutilPanneau; ctx: PanelCtx }) {
                 </div>
               </motion.div>
             ) : (
-              <p className="py-6 text-center text-sm text-muted-foreground">Choisissez une règle pour voir ce qu&apos;elle change dans la réponse de Claude.</p>
+              <p className="rounded-2xl border border-dashed border-foreground/10 py-8 text-center text-sm text-muted-foreground">
+                Chaque règle montre la réponse de Claude avec et sans elle. Commencez par « {p.regles[0]?.titre} ».
+              </p>
             )}
             {seen.size === p.regles.length && (
               <Button variant="ghost" onClick={() => ctx.set(`${k}:onglet`, "1")}>

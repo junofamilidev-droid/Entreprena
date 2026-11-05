@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, GraduationCapIcon, LaptopIcon, MailIcon, RotateCcwIcon, TerminalIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, CopyIcon, FolderIcon, GraduationCapIcon, LaptopIcon, MailIcon, MousePointerClickIcon, RotateCcwIcon, SparklesIcon, TerminalIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -262,7 +262,21 @@ function RailButton({
 
 /* ---------------- Cartes de l'accueil et de la fin (droite) ---------------- */
 
+/** Ce que l'apprenant fait à chaque type d'étape, dit simplement. */
+const ACTION: Record<AtelierEtape["panneau"]["type"], string> = {
+  quiz: "Une question pour démarrer",
+  outil: "Comprendre et installer l'outil",
+  test: "Lancer l'outil dans Claude et vérifier",
+  personnaliser: "L'adapter à votre cabinet",
+  fiche: "Garder l'essentiel",
+};
+
 function WelcomeCard({ session }: { session: AtelierSession }) {
+  const how = [
+    { icon: GraduationCapIcon, title: `${session.tuteur.nom} vous guide`, text: "À gauche, une étape à la fois : quoi faire, et pourquoi." },
+    { icon: MousePointerClickIcon, title: "Vous agissez ici", text: "Au centre : répondre, installer l'outil, coller ce que Claude produit." },
+    { icon: SparklesIcon, title: "Claude travaille à côté", text: "Ouvert dans un autre onglet, c'est lui qui fait tourner l'outil." },
+  ];
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -272,7 +286,35 @@ function WelcomeCard({ session }: { session: AtelierSession }) {
         <h1 className="text-[2rem] leading-tight font-bold tracking-tight text-balance">{session.titre}</h1>
       </div>
       <div className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground">Ce que vous emportez</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">Comment ça se passe</h2>
+        <ul className="grid grid-cols-3 gap-3">
+          {how.map((h) => (
+            <li key={h.title} className="rounded-2xl bg-muted/60 p-4">
+              <span className="grid size-9 place-items-center rounded-xl bg-background text-primary shadow-xs">
+                <h.icon className="size-4" aria-hidden />
+              </span>
+              <p className="mt-3 text-sm font-semibold">{h.title}</p>
+              <p className="mt-1 text-sm leading-snug text-muted-foreground">{h.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">Votre parcours</h2>
+        <ol className="space-y-1">
+          {session.etapes.map((e, i) => (
+            <li key={i} className="flex items-start gap-3 rounded-xl px-1 py-1.5">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-foreground/[0.06] text-xs font-semibold tabular-nums">{i + 1}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium">{e.titre}</span>
+                <span className="block text-sm text-muted-foreground">{ACTION[e.panneau.type]}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">Vous repartez avec</h2>
         <ul className="space-y-2">
           {session.accueil.ce_que_vous_emportez.map((t) => (
             <li key={t} className="flex gap-3 text-body">
@@ -282,36 +324,103 @@ function WelcomeCard({ session }: { session: AtelierSession }) {
           ))}
         </ul>
       </div>
-      <div className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground">Le plan</h2>
-        <ol className="space-y-1">
-          {session.etapes.map((e, i) => (
-            <li key={i} className="flex items-center gap-3 rounded-xl px-1 py-1.5">
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-foreground/[0.06] text-xs font-semibold tabular-nums">{i + 1}</span>
-              <span className="min-w-0 flex-1 truncate">{e.titre}</span>
-              <span className="text-caption text-muted-foreground">{panneauLabel[e.panneau.type]}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
     </div>
   );
 }
 
-function FinishCard({ session, fileUrl }: { session: AtelierSession; fileUrl: (n: string) => string }) {
-  const fiche = session.etapes.map((e) => e.panneau).find((p) => p.type === "fiche");
+function minutesText(ms: number) {
+  const m = Math.max(1, Math.round(ms / 60000));
+  return m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+}
+
+// Écran final : un bilan, pas une redite de la fiche. Ce qui a été fait, et ce que l'on emporte.
+function FinishCard({
+  session,
+  fileUrl,
+  inputs,
+  onCommandes,
+}: {
+  session: AtelierSession;
+  fileUrl: (n: string) => string;
+  inputs: ExerciseInputs;
+  onCommandes: () => void;
+}) {
   const outils = session.etapes.map((e) => e.panneau).filter((p) => p.type === "outil");
+  const hasFiche = session.etapes.some((e) => e.panneau.type === "fiche");
   const downloads = useDownloads();
+  const start = Number(inputs["session:debut"]) || 0;
+  const end = Number(inputs["session:fin"]) || 0;
+  let verifs = 0;
+  let ok = 0;
+  session.etapes.forEach((e, i) => {
+    if (e.panneau.type !== "test") return;
+    verifs += e.panneau.verifications.length;
+    const r = inputs[`e${i}:resultat`];
+    if (typeof r === "string") ok += r.split("").filter((c) => c === "1").length;
+  });
+  const boss = session.mission.expediteur.split(",")[0].split(" ")[0];
+  const stats = [
+    { label: "Étapes faites", value: `${session.etapes.length} / ${session.etapes.length}` },
+    ...(verifs ? [{ label: "Vérifications réussies", value: `${ok} / ${verifs}` }] : []),
+    ...(start && end > start ? [{ label: "Temps passé", value: minutesText(end - start) }] : []),
+  ];
   return (
     <div className="space-y-8">
-      {outils.map((o) =>
-        o.type === "outil" ? (
-          <div key={o.fichier} onClick={() => recordDownload({ name: o.fichier, href: fileUrl(o.fichier), source: session.titre }, downloads)}>
-            <DownloadCard name={o.fichier} href={fileUrl(o.fichier)} label="Votre outil, à garder" icon={/\.zip$/i.test(o.fichier) ? "zip" : "file"} />
-          </div>
-        ) : null,
-      )}
-      {fiche && fiche.type === "fiche" && <FicheView p={fiche} />}
+      <div className="flex items-center gap-4">
+        <motion.span
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+          className="grid size-14 shrink-0 place-items-center rounded-full bg-success text-white shadow-[0_10px_30px_-8px] shadow-success/50"
+        >
+          <CheckIcon className="size-7" strokeWidth={3} aria-hidden />
+        </motion.span>
+        <div>
+          <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">Mission accomplie</h1>
+          <p className="text-muted-foreground">{boss} a son livrable : {session.mission.livrable.charAt(0).toLowerCase() + session.mission.livrable.slice(1)}</p>
+        </div>
+      </div>
+
+      <ul className="grid gap-3" style={{ gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))` }}>
+        {stats.map((st) => (
+          <li key={st.label} className="rounded-2xl bg-muted/60 p-4">
+            <p className="text-[1.5rem] leading-none font-bold tracking-tight tabular-nums">{st.value}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{st.label}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">Vous repartez avec</h2>
+        {outils.map((o) =>
+          o.type === "outil" ? (
+            <div key={o.fichier} onClick={() => recordDownload({ name: o.fichier, href: fileUrl(o.fichier), source: session.titre }, downloads)}>
+              <DownloadCard name={o.fichier} href={fileUrl(o.fichier)} label="Votre outil, à garder" icon={/\.zip$/i.test(o.fichier) ? "zip" : "file"} />
+            </div>
+          ) : null,
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          {session.commandes && session.commandes.length > 0 && (
+            <button type="button" onClick={onCommandes} className="group flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3.5 text-left transition-colors hover:bg-muted">
+              <TerminalIcon className="size-5 shrink-0 text-primary" aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">Les commandes de l&apos;outil</span>
+                <span className="block text-sm text-muted-foreground">{session.commandes.length} commandes, à copier</span>
+              </span>
+            </button>
+          )}
+          {hasFiche && (
+            <Link href="/boite-a-outils" className="group flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3.5 transition-colors hover:bg-muted">
+              <FolderIcon className="size-5 shrink-0 text-primary" aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">Votre fiche</span>
+                <span className="block text-sm text-muted-foreground">Rangée dans Ma boîte à outils</span>
+              </span>
+              <ArrowRightIcon className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </Link>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -553,7 +662,7 @@ export function AtelierPlayer({
               </div>
             )}
             <div className="flex items-center justify-between gap-3">
-              {screen === 0 ? (
+              {screen === 0 || screen === n + 1 ? (
                 <span />
               ) : (
                 <Button variant="ghost" className="rounded-full" onClick={() => go(screen - 1)}>
@@ -636,7 +745,7 @@ export function AtelierPlayer({
                   </div>
                 )}
                 {screen === 0 && <WelcomeCard session={session} />}
-                {screen === n + 1 && <FinishCard session={session} fileUrl={fileUrl} />}
+                {screen === n + 1 && <FinishCard session={session} fileUrl={fileUrl} inputs={inputs} onCommandes={() => setCommandesOpen(true)} />}
                 {p?.type === "quiz" && <QuizPanel p={p} ctx={ctx} />}
                 {p?.type === "outil" && <OutilPanel p={p} ctx={ctx} />}
                 {p?.type === "test" && <TestPanel p={p} ctx={ctx} />}
