@@ -1,5 +1,6 @@
 import { ViewTransition } from "react";
 import { ProgressSync } from "@/components/auth/progress-sync";
+import { MotionPrefs } from "@/components/theme/motion-prefs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/platform/app-sidebar";
 import { SearchIndexProvider, type SearchEntry } from "@/components/platform/search-index";
@@ -40,6 +41,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
     }
   }
   return (
+    <MotionPrefs>
     <SearchIndexProvider entries={entries}>
       <SidebarProvider>
         <AppSidebar formations={formations} />
@@ -51,5 +53,6 @@ export default async function PlatformLayout({ children }: { children: React.Rea
       </SidebarProvider>
       <ProgressSync />
     </SearchIndexProvider>
+    </MotionPrefs>
   );
 }

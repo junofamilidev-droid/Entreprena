@@ -20,7 +20,7 @@ export const accueil = {
   },
 
   constat: {
-    title: "Ce qui change vraiment",
+    title: "L'IA fait déjà une partie du travail. Pas celle qui compte le plus.",
     text: [
       "L'IA produit déjà en quelques minutes une partie du travail qui prenait des heures : trier, calculer, rédiger un premier jet.",
       "Ce qu'elle ne fait pas seule : juger, vérifier, engager sa responsabilité. C'est là que votre métier se déplace, et c'est là que votre valeur se joue.",
@@ -50,6 +50,13 @@ export const accueil = {
         text: "Vous menez la mission avec l'outil, vous vérifiez ce qu'il produit, puis vous le réglez pour votre propre travail.",
       },
     ],
+  },
+
+  produit: {
+    // Section des captures flottantes.
+    word: "En mission",
+    title: "Une session, comme une vraie mission",
+    text: "Un message de votre responsable, un outil à installer, des vérifications à chaque étape, et une fiche que vous gardez.",
   },
 
   formations: {

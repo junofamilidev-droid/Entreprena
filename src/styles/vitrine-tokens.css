@@ -5,7 +5,8 @@
  * Principes
  * - Neutres chauds (papier, encre, graphite) et UNE couleur d'accent, réservée aux actions.
  *   L'accent est le pétrole de la plateforme, plus dense : l'apprenant reconnaît la même marque après l'achat.
- * - Le spectre (--spectrum-*) n'existe qu'à la sortie du prisme, en haut de l'accueil. Nulle part ailleurs.
+ * - Le haut de l'accueil est une scène sombre (--night), quel que soit le thème : l'animation s'y lit
+ *   comme de la lumière, et le titre géant y prend toute sa force.
  * - Grands titres, beaucoup d'espace, bordures fines plutôt qu'ombres.
  *
  * Polices (couples proposés, à choisir) :
@@ -20,12 +21,13 @@
 
 .site {
   /* Typographie */
-  --display-font: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --display-font: var(--font-display-loaded), "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   /* Couple B : --display-font: "Newsreader Variable", ui-serif, Georgia, serif; */
   --display-weight: 620;
   --display-tracking: -0.035em;
 
-  --step-display: clamp(2.625rem, 1.45rem + 5.2vw, 5.75rem); /* titre d'ouverture */
+  --step-hero: clamp(2.5rem, 0.8rem + 6vw, 7rem); /* titre géant du haut de l'accueil */
+  --step-display: clamp(2.625rem, 1.45rem + 5.2vw, 5.75rem); /* titre d'ouverture des autres pages */
   --step-h2: clamp(2rem, 1.35rem + 2.7vw, 3.5rem);
   --step-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
   --step-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
@@ -70,11 +72,10 @@
   --accent-foreground: oklch(0.32 0.07 212);
   --ring: oklch(0.52 0.09 212);
 
-  --spectrum-1: oklch(0.68 0.12 32);
-  --spectrum-2: oklch(0.79 0.12 78);
-  --spectrum-3: oklch(0.72 0.1 150);
-  --spectrum-4: oklch(0.64 0.085 205);
-  --spectrum-5: oklch(0.56 0.07 245);
+  /* Scène sombre (haut de l'accueil, dernier appel) : identique en clair et en sombre */
+  --night: oklch(0.165 0.007 60);
+  --night-foreground: oklch(0.965 0.006 85);
+
 
   background: var(--background);
   color: var(--foreground);
@@ -95,11 +96,16 @@
   --accent-foreground: oklch(0.9 0.04 205);
   --ring: oklch(0.7 0.09 205);
 
-  --spectrum-1: oklch(0.7 0.11 32);
-  --spectrum-2: oklch(0.8 0.11 78);
-  --spectrum-3: oklch(0.74 0.09 150);
-  --spectrum-4: oklch(0.7 0.08 205);
-  --spectrum-5: oklch(0.64 0.07 245);
+}
+
+/* Sur la scène sombre : texte clair, bouton pétrole éclairci (contraste AA). */
+.site .on-night {
+  --primary: oklch(0.8 0.085 205);
+  --primary-foreground: oklch(0.17 0.03 212);
+  --ring: oklch(0.8 0.085 205);
+  --foreground: var(--night-foreground);
+  background: var(--night);
+  color: var(--night-foreground);
 }
 
 /* ---------- Utilitaires de la vitrine ---------- */
@@ -116,6 +122,15 @@
 
 @utility site-section {
   padding-block: var(--section-space);
+}
+
+@utility type-hero {
+  font-family: var(--display-font);
+  font-weight: 560;
+  font-size: var(--step-hero);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
 }
 
 @utility type-display {
@@ -227,4 +242,9 @@
     animation: none;
     transition: none;
   }
+}
+
+/* Le point de la marque, lisible sur la scène sombre. */
+.site header[data-on-hero] .text-primary {
+  color: oklch(0.8 0.085 205);
 }

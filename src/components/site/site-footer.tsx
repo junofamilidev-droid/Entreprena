@@ -16,7 +16,7 @@ export function SiteFooter() {
           <ul className="space-y-1">
             {[...NAV, { href: "/app", label: "Espace apprenant" }, LOGIN].map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="inline-flex min-h-9 items-center text-muted-foreground hover:text-foreground">
+                <Link href={l.href} prefetch={l.href.startsWith("/app") ? false : undefined} className="inline-flex min-h-9 items-center text-muted-foreground hover:text-foreground">
                   {l.label}
                 </Link>
               </li>

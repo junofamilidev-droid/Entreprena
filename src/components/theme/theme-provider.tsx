@@ -1,13 +1,12 @@
 "use client";
 
-import { MotionConfig } from "motion/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
-// Les animations respectent le réglage « réduire les animations » de l'appareil.
+// Thème clair / sombre, réglé sur celui de l'appareil par défaut.
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+      {children}
     </NextThemesProvider>
   );
 }

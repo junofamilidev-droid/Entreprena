@@ -6,6 +6,8 @@
 | Un texte de l'accueil, la FAQ, le libellé des boutons | `src/lib/vitrine/textes.ts` |
 | Les couleurs, tailles de titres, espacements, police des titres de la vitrine | `src/styles/vitrine-tokens.css` |
 | Les liens du haut et du bas de la vitrine | `src/components/site/site-nav.ts` |
+| Les captures de la plateforme (cartes flottantes) | `public/captures/` (liste dans `A-FOURNIR.md`) |
+| L'animation du haut de page (vitesse, nombre d'éléments, teintes) | `src/components/site/hero-flow.tsx` |
 | Une formation, ses modules (titre, promesse, disponibilité) | l'espace réservé `/admin` (comme avant) |
 
 ## Les adresses
