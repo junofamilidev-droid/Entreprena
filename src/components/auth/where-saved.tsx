@@ -18,7 +18,7 @@ export function WhereSaved({ subject = "Votre progression est", invite = true }:
       {hasSupabase && invite && auth.status === "anon" && (
         <>
           {" "}
-          <Link href={`/connexion?next=${encodeURIComponent(pathname)}`} className="text-primary underline underline-offset-4">
+          <Link href={`/app/connexion?next=${encodeURIComponent(pathname)}`} className="text-primary underline underline-offset-4">
             Créez un compte
           </Link>{" "}
           pour la retrouver sur tous vos appareils.

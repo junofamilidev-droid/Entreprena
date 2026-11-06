@@ -32,7 +32,7 @@ export function AccountPanel() {
   const [passwordError, setPasswordError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (auth.status === "anon" && hasSupabase) router.replace("/connexion?next=/compte");
+    if (auth.status === "anon" && hasSupabase) router.replace("/app/connexion?next=/app/compte");
   }, [auth.status, router]);
 
   if (!hasSupabase) return <AccountsClosed />;
@@ -58,7 +58,7 @@ export function AccountPanel() {
     setBusy(null);
     if (error) return setPasswordError(authMessage(error));
     toast.success("Mot de passe modifié.");
-    if (resetting) router.replace("/compte");
+    if (resetting) router.replace("/app/compte");
   }
 
   async function signOut() {
@@ -66,7 +66,7 @@ export function AccountPanel() {
     await flushProgress();
     await supabase().auth.signOut();
     toast.success("Vous êtes déconnecté. Votre progression reste dans votre compte.");
-    router.replace("/");
+    router.replace("/app");
   }
 
   return (

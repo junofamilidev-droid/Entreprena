@@ -86,7 +86,7 @@ export function StepEditor({
       <Section title="L'étape">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField label="Titre" value={title} onChange={setTitle} />
-          <TextField label="Identifiant dans l'adresse" value={slug} onChange={setSlug} mono help={`/formations/${formation.slug}/${mod.slug}/${slug}`} />
+          <TextField label="Identifiant dans l'adresse" value={slug} onChange={setSlug} mono help={`/app/formations/${formation.slug}/${mod.slug}/${slug}`} />
         </div>
       </Section>
 

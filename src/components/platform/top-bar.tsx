@@ -141,7 +141,7 @@ function UserMenu() {
   if (auth.status === "loading") return <span className="size-9" />;
   if (auth.status === "anon") {
     return (
-      <Link href="/connexion" className="shrink-0 rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-primary hover:bg-accent">
+      <Link href="/app/connexion" className="shrink-0 rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-primary hover:bg-accent">
         Se connecter
       </Link>
     );
@@ -151,7 +151,7 @@ function UserMenu() {
     await flushProgress();
     await supabase().auth.signOut();
     toast.success("Vous êtes déconnecté. Votre progression reste dans votre compte.");
-    router.replace("/");
+    router.replace("/app");
   }
   return (
     <DropdownMenu>
@@ -166,7 +166,7 @@ function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/compte">Mon compte</Link>
+          <Link href="/app/compte">Mon compte</Link>
         </DropdownMenuItem>
         {admin && (
           <DropdownMenuItem asChild>

@@ -78,7 +78,7 @@ export function ModuleEditor({
       <Section title="Le module">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField label="Titre" value={draft.title} onChange={(v) => set("title", v)} />
-          <TextField label="Identifiant dans l'adresse" value={draft.slug} onChange={(v) => set("slug", v)} mono help={`/formations/${formation.slug}/${draft.slug}`} />
+          <TextField label="Identifiant dans l'adresse" value={draft.slug} onChange={(v) => set("slug", v)} mono help={`/app/formations/${formation.slug}/${draft.slug}`} />
           <TextField label="Durée affichée" value={draft.durationLabel ?? ""} onChange={(v) => set("durationLabel", v)} placeholder="environ 1 h 30" />
           <SelectField<ModuleAvailability>
             label="Disponibilité"

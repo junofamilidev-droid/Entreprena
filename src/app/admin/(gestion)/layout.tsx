@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin" className="font-semibold">
             Espace réservé
           </Link>
-          <Link href="/" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <Link href="/app" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeftIcon className="size-4" /> Voir le site
           </Link>
         </div>

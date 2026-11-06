@@ -211,7 +211,7 @@ function ResultView({
   result: DiagnosticResult;
   onRestart: () => void;
 }) {
-  const entryHref = `/formations/${formationSlug}/${r.entry.moduleSlug}${r.entry.stepSlug ? `?etape=${r.entry.stepSlug}` : ""}`;
+  const entryHref = `/app/formations/${formationSlug}/${r.entry.moduleSlug}${r.entry.stepSlug ? `?etape=${r.entry.stepSlug}` : ""}`;
   const parts = r.parts.filter((p) => p.share > 0);
   const gridQ = config.questions.find((q) => q.id === config.score.gridQuestion);
   const max = config.score.max;

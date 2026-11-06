@@ -76,7 +76,7 @@ export async function toolbox() {
         const base = {
           sessionKey: `${f.slug}/${m.slug}/session-${s.session}`,
           sessionLabel: `Module ${m.position} · session ${s.session} : ${s.titre}`,
-          href: `/formations/${f.slug}/${m.slug}/session/${s.session}`,
+          href: `/app/formations/${f.slug}/${m.slug}/session/${s.session}`,
         };
         if (isAtelier(s)) {
           // Format atelier : l'outil (le skill) et la fiche de la session.

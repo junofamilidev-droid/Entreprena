@@ -13,7 +13,7 @@ export async function requireAdmin() {
   await connection();
   const client = await createClient();
   const { data } = await client.auth.getUser();
-  if (!data.user) redirect("/connexion?next=/admin");
+  if (!data.user) redirect("/app/connexion?next=/admin");
   const { data: admin } = await client.rpc("is_admin");
   if (admin !== true) notFound();
   return { client, user: data.user };

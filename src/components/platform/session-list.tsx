@@ -37,7 +37,7 @@ export function SessionCta({ formation, module, sessions, className }: { formati
     );
   return (
     <Button asChild size="lg" className={cn("px-6", !ready && "invisible", className)}>
-      <Link href={`/formations/${formation}/${module}/session/${next.number}`}>
+      <Link href={`/app/formations/${formation}/${module}/session/${next.number}`}>
         {states[nextIndex] === "started" ? "Reprendre" : "Commencer"} la session {next.number} · {next.durationMin} min <ArrowRightIcon />
       </Link>
     </Button>
@@ -50,7 +50,7 @@ export function SessionList({ formation, module, sessions }: { formation: string
   const progress = useProgress();
   const states = sessions.map((s) => sessionState(progress, formation, module, s.number));
   const nextIndex = states.findIndex((s) => s !== "done");
-  const base = `/formations/${formation}/${module}/session`;
+  const base = `/app/formations/${formation}/${module}/session`;
 
   return (
     <ol className={cn("space-y-1.5", !ready && "invisible")}>

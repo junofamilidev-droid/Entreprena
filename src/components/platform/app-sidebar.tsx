@@ -65,12 +65,12 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
   const keys = Object.entries(progress).sort((a, b) => b[1].updatedAt - a[1].updatedAt);
   const recent = keys.map(([k]) => k.split("/")[0]).find((slug) => formations.some((f) => f.slug === slug));
   const mine = formations.find((f) => f.slug === recent) ?? formations[0];
-  const mineHref = mine ? `/formations/${mine.slug}` : "/catalogue";
+  const mineHref = mine ? `/app/formations/${mine.slug}` : "/app/catalogue";
 
   return (
     <Sidebar collapsible="icon" className="sidebar-plateforme">
       <SidebarHeader className="px-4 pt-5 pb-4 group-data-[collapsible=icon]:px-2">
-        <Link href="/" className="flex items-baseline gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring">
+        <Link href="/app" className="flex items-baseline gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring">
           <span className="text-xl font-bold tracking-tight group-data-[collapsible=icon]:hidden">
             {site.name.replace(/\.$/, "")}
             <span className="text-primary">.</span>
@@ -87,17 +87,17 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu className="gap-1">
-            <NavItem href="/" label="Accueil" icon={<HomeIcon />} active={pathname === "/"} />
+            <NavItem href="/app" label="Accueil" icon={<HomeIcon />} active={pathname === "/app"} />
             <NavItem
               href={mineHref}
               label="Ma formation"
               icon={<BookOpenIcon />}
-              active={pathname.startsWith("/formations/")}
+              active={pathname.startsWith("/app/formations/")}
             />
-            <NavItem href="/projets" label="Projets pratiques" icon={<SquarePenIcon />} active={pathname === "/projets"} />
-            <NavItem href="/boite-a-outils" label="Ma boîte à outils" icon={<FolderIcon />} active={pathname === "/boite-a-outils"} />
-            <NavItem href="/certificat" label="Certificat" icon={<AwardIcon />} active={pathname === "/certificat"} />
-            <NavItem href="/catalogue" label="Catalogue" icon={<LibraryIcon />} active={pathname === "/catalogue"} />
+            <NavItem href="/app/projets" label="Projets pratiques" icon={<SquarePenIcon />} active={pathname === "/app/projets"} />
+            <NavItem href="/app/boite-a-outils" label="Ma boîte à outils" icon={<FolderIcon />} active={pathname === "/app/boite-a-outils"} />
+            <NavItem href="/app/certificat" label="Certificat" icon={<AwardIcon />} active={pathname === "/app/certificat"} />
+            <NavItem href="/app/catalogue" label="Catalogue" icon={<LibraryIcon />} active={pathname === "/app/catalogue"} />
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
@@ -106,15 +106,15 @@ export function AppSidebar({ formations }: { formations: FormationWithModules[] 
         <SidebarMenu className="gap-1">
           {admin && <NavItem href="/admin" label="Espace réservé" icon={<PencilRulerIcon />} active={false} />}
           <NavItem
-            href={pathname === "/avis" ? "/avis" : `/avis?depuis=${encodeURIComponent(pathname)}`}
+            href={pathname === "/app/avis" ? "/app/avis" : `/app/avis?depuis=${encodeURIComponent(pathname)}`}
             label="Donner mon avis"
             icon={<MessageSquareTextIcon />}
-            active={pathname === "/avis"}
+            active={pathname === "/app/avis"}
           />
           <SidebarMenuItem>
             <ThemeToggle />
           </SidebarMenuItem>
-          <NavItem href="/aide" label="Aide & contact" icon={<LifeBuoyIcon />} active={pathname === "/aide"} />
+          <NavItem href="/app/aide" label="Aide & contact" icon={<LifeBuoyIcon />} active={pathname === "/app/aide"} />
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />

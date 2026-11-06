@@ -8,9 +8,9 @@ import { hasSupabase } from "@/lib/supabase/env";
 // puis on redirige vers `next` (une adresse du site uniquement).
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
-  const raw = url.searchParams.get("next") ?? "/";
-  const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
-  const fail = new URL("/connexion?erreur=lien", url.origin);
+  const raw = url.searchParams.get("next") ?? "/app";
+  const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/app";
+  const fail = new URL("/app/connexion?erreur=lien", url.origin);
   if (!hasSupabase) return NextResponse.redirect(fail);
 
   const client = await createClient();

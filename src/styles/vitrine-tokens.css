@@ -1,0 +1,230 @@
+/*
+ * Jetons de la vitrine (site public) : le seul fichier à modifier pour changer son apparence.
+ * Ils ne s'appliquent qu'à l'intérieur de `.site` : la plateforme apprenant garde sa charte.
+ *
+ * Principes
+ * - Neutres chauds (papier, encre, graphite) et UNE couleur d'accent, réservée aux actions.
+ *   L'accent est le pétrole de la plateforme, plus dense : l'apprenant reconnaît la même marque après l'achat.
+ * - Le spectre (--spectrum-*) n'existe qu'à la sortie du prisme, en haut de l'accueil. Nulle part ailleurs.
+ * - Grands titres, beaucoup d'espace, bordures fines plutôt qu'ombres.
+ *
+ * Polices (couples proposés, à choisir) :
+ * - A, retenu par défaut : Bricolage Grotesque (titres) + Plus Jakarta Sans (texte).
+ *   Une grotesque à caractère, compacte en grande taille : l'énergie d'un produit tech,
+ *   sans le côté futuriste ; le texte reste celui de la plateforme.
+ * - B : Newsreader (titres) + Plus Jakarta Sans (texte).
+ *   Un romain éditorial sobre : le sérieux d'un organisme de formation, plus posé.
+ * Pour passer au couple B, remplacer la valeur de --display-font ci-dessous (et l'import dans
+ * src/app/(site)/layout.tsx).
+ */
+
+.site {
+  /* Typographie */
+  --display-font: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Couple B : --display-font: "Newsreader Variable", ui-serif, Georgia, serif; */
+  --display-weight: 620;
+  --display-tracking: -0.035em;
+
+  --step-display: clamp(2.625rem, 1.45rem + 5.2vw, 5.75rem); /* titre d'ouverture */
+  --step-h2: clamp(2rem, 1.35rem + 2.7vw, 3.5rem);
+  --step-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --step-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
+  --step-body: 1.0625rem;
+  --step-small: 0.9375rem;
+
+  /* Espacements */
+  --gutter: 1rem; /* marge latérale à 375 px */
+  --content-max: 76rem;
+  --text-max: 40rem;
+  --section-space: clamp(4.5rem, 2.5rem + 7vw, 9.5rem);
+  --block-space: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+
+  /* Rayons : petits et différenciés selon la hiérarchie */
+  --radius-control: 0.625rem; /* boutons, champs */
+  --radius-card: 1rem; /* cartes de formation */
+  --radius-media: 1.25rem; /* captures de la plateforme */
+
+  /* Durées (alignées sur src/lib/motion.ts) */
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 400ms;
+  --dur-hero-loop: 26s; /* boucle de l'animation du haut de page */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Couleurs, thème clair : papier, encre, graphite, pétrole */
+  --background: oklch(0.984 0.004 85);
+  --foreground: oklch(0.21 0.008 65);
+  --card: oklch(0.995 0.002 85);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --muted: oklch(0.957 0.006 80);
+  --muted-foreground: oklch(0.46 0.012 70);
+  --secondary: var(--muted);
+  --secondary-foreground: var(--foreground);
+  --border: oklch(0.895 0.008 80);
+  --input: oklch(0.86 0.01 80);
+  --primary: oklch(0.44 0.085 212);
+  --primary-foreground: oklch(0.985 0.004 85);
+  --accent: oklch(0.945 0.02 212);
+  --accent-foreground: oklch(0.32 0.07 212);
+  --ring: oklch(0.52 0.09 212);
+
+  --spectrum-1: oklch(0.68 0.12 32);
+  --spectrum-2: oklch(0.79 0.12 78);
+  --spectrum-3: oklch(0.72 0.1 150);
+  --spectrum-4: oklch(0.64 0.085 205);
+  --spectrum-5: oklch(0.56 0.07 245);
+
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.dark .site {
+  /* Thème sombre : charbon chaud (pas de noir pur), pétrole éclairci */
+  --background: oklch(0.17 0.006 65);
+  --foreground: oklch(0.95 0.005 85);
+  --card: oklch(0.205 0.007 65);
+  --muted: oklch(0.225 0.007 65);
+  --muted-foreground: oklch(0.73 0.01 80);
+  --border: oklch(1 0 0 / 0.11);
+  --input: oklch(1 0 0 / 0.16);
+  --primary: oklch(0.79 0.09 205);
+  --primary-foreground: oklch(0.18 0.03 212);
+  --accent: oklch(0.27 0.03 212);
+  --accent-foreground: oklch(0.9 0.04 205);
+  --ring: oklch(0.7 0.09 205);
+
+  --spectrum-1: oklch(0.7 0.11 32);
+  --spectrum-2: oklch(0.8 0.11 78);
+  --spectrum-3: oklch(0.74 0.09 150);
+  --spectrum-4: oklch(0.7 0.08 205);
+  --spectrum-5: oklch(0.64 0.07 245);
+}
+
+/* ---------- Utilitaires de la vitrine ---------- */
+
+@utility site-container {
+  width: 100%;
+  max-width: calc(var(--content-max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  @media (width >= 40rem) {
+    --gutter: 2rem;
+  }
+}
+
+@utility site-section {
+  padding-block: var(--section-space);
+}
+
+@utility type-display {
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
+  font-size: var(--step-display);
+  line-height: 1;
+  letter-spacing: var(--display-tracking);
+  text-wrap: balance;
+}
+
+@utility type-h2 {
+  font-family: var(--display-font);
+  font-weight: var(--display-weight);
+  font-size: var(--step-h2);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+@utility type-h3 {
+  font-family: var(--display-font);
+  font-weight: 600;
+  font-size: var(--step-h3);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+@utility type-lead {
+  font-size: var(--step-lead);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+@utility type-body {
+  font-size: var(--step-body);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+@utility type-small {
+  font-size: var(--step-small);
+  line-height: 1.5;
+}
+
+/* Bouton principal : un seul par écran, même libellé partout. Rectangle aux angles doux, pas de pilule. */
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding-inline: 1.375rem;
+  border-radius: var(--radius-control);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color var(--dur-fast) ease-out;
+  &:hover {
+    background: color-mix(in oklch, var(--primary) 88%, var(--foreground));
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+}
+
+/* Action secondaire : un lien souligné, jamais un deuxième bouton plein. */
+@utility link-quiet {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+  transition: text-decoration-color var(--dur-fast) ease-out;
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* FAQ : <details> natif, contenu qui apparaît en fondu (opacité et translation seulement). */
+.site details[data-faq] > div {
+  animation: faq-open var(--dur-base) var(--ease-out);
+}
+.site details[data-faq] summary::-webkit-details-marker {
+  display: none;
+}
+.site details[data-faq] [data-faq-icon] {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.site details[data-faq][open] [data-faq-icon] {
+  transform: rotate(45deg);
+}
+@keyframes faq-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site details[data-faq] > div,
+  .site details[data-faq] [data-faq-icon] {
+    animation: none;
+    transition: none;
+  }
+}

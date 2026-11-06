@@ -97,7 +97,7 @@ export function ModuleEnd({
               </p>
             </div>
             <Link
-              href="/certificat"
+              href="/app/certificat"
               className="group flex items-center gap-4 rounded-lg border bg-card px-5 py-4 transition-colors hover:bg-muted/60"
             >
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent text-primary">

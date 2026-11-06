@@ -47,11 +47,11 @@ function rows(
   let currentFound = false;
   return formation.modules.map((m) => {
     const key = `${formation.slug}/${m.slug}`;
-    const href = `/formations/${formation.slug}/${m.slug}`;
+    const href = `/app/formations/${formation.slug}/${m.slug}`;
     const ref = refs.find((r) => r.formationSlug === formation.slug && r.module.slug === m.slug);
     const list = sessions[key] ?? [];
     if (m.availability !== "open" || (!ref && list.length === 0)) {
-      return { module: m, status: "soon", ratio: 0, started: false, href: `/formations/${formation.slug}`, duration: null, resume: null };
+      return { module: m, status: "soon", ratio: 0, started: false, href: `/app/formations/${formation.slug}`, duration: null, resume: null };
     }
     const st = ref ? moduleState(progress, ref) : null;
     const sStates = list.map((s) => sessionState(progress, formation.slug, m.slug, s.number));
@@ -159,7 +159,7 @@ export function LearnerDashboard({
       <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-8">
         <h1 className="text-title">Choisissez une première formation</h1>
         <p className="mt-2 text-body text-muted-foreground">Le catalogue rassemble les formations ouvertes, métier par métier.</p>
-        <Link href="/catalogue" className="mt-6 inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground">
+        <Link href="/app/catalogue" className="mt-6 inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground">
           Voir le catalogue
         </Link>
       </div>
@@ -187,7 +187,7 @@ export function LearnerDashboard({
                 <>
                   <p className="text-sm text-muted-foreground">
                     <span className="font-medium text-primary">{resume.started ? "Reprendre" : "Continuer"}</span> ·{" "}
-                    <Link href={`/formations/${formation.slug}`} className="hover:text-foreground hover:underline">
+                    <Link href={`/app/formations/${formation.slug}`} className="hover:text-foreground hover:underline">
                       {formation.title}
                     </Link>
                   </p>
@@ -212,7 +212,7 @@ export function LearnerDashboard({
                   </h1>
                   <p className="mt-2 text-sm text-muted-foreground">Les prochains modules s&apos;ouvriront ici.</p>
                   <Button asChild size="lg" variant="outline" className="mt-6 px-6">
-                    <Link href="/certificat">Voir mon certificat</Link>
+                    <Link href="/app/certificat">Voir mon certificat</Link>
                   </Button>
                 </>
               )}
@@ -248,7 +248,7 @@ export function LearnerDashboard({
               <h2 id="outils">
                 <StatusLabel tone={downloads.length ? "active" : "idle"}>Ma boîte à outils</StatusLabel>
               </h2>
-              <Link href="/boite-a-outils" className="text-sm font-medium text-primary hover:underline">
+              <Link href="/app/boite-a-outils" className="text-sm font-medium text-primary hover:underline">
                 Ouvrir
               </Link>
             </div>
@@ -329,7 +329,7 @@ export function LearnerDashboard({
 
       <p className="mt-12 px-1 text-caption text-muted-foreground">
         Version de test. Les contenus sont en cours de relecture par des professionnels.{" "}
-        <Link href="/aide" className="underline underline-offset-4 hover:text-foreground">
+        <Link href="/app/aide" className="underline underline-offset-4 hover:text-foreground">
           Aide, mentions et usage de vos données
         </Link>
       </p>

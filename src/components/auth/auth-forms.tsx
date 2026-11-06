@@ -41,7 +41,7 @@ export function submitWith(handler: (form: FormData) => unknown) {
 
 /** Adresse de retour : une page du site uniquement. */
 function safeNext(raw: string | null) {
-  return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+  return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/app";
 }
 
 function Field({
@@ -172,7 +172,7 @@ export function SignInPanel() {
             autoComplete="current-password"
             required
             hint={
-              <Link href="/mot-de-passe-oublie" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
+              <Link href="/app/mot-de-passe-oublie" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
                 Mot de passe oublié ?
               </Link>
             }
@@ -221,7 +221,7 @@ export function ForgotPasswordForm() {
     setError(null);
     const email = String(form.get("email")).trim();
     const { error } = await supabase().auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent("/compte?nouveau-mot-de-passe=1")}`,
+      redirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent("/app/compte?nouveau-mot-de-passe=1")}`,
     });
     setBusy(false);
     if (error) return setError(authMessage(error));

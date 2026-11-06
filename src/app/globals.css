@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../styles/vitrine-tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -106,6 +107,7 @@
 @theme inline {
   --font-sans: var(--body-font);
   --font-serif: var(--heading-font);
+  --font-display: var(--display-font, var(--heading-font));
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 
   --color-brand: var(--brand);

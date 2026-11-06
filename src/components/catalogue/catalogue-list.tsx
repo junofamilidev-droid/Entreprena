@@ -36,7 +36,7 @@ export function CatalogueList({ formations }: { formations: FormationWithModules
           return (
             <li key={f.id}>
               <Link
-                href={`/formations/${f.slug}`}
+                href={`/app/formations/${f.slug}`}
                 className="group grid gap-x-8 gap-y-2 rounded-3xl bg-muted/50 p-6 transition-colors hover:bg-muted sm:grid-cols-[1fr_13rem] sm:p-7"
               >
                 <span className="min-w-0 space-y-1">

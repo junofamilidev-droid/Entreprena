@@ -380,7 +380,7 @@ function FinishCard({
             </button>
           )}
           {hasFiche && (
-            <Link href="/boite-a-outils" className="group flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3.5 transition-colors hover:bg-muted">
+            <Link href="/app/boite-a-outils" className="group flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3.5 transition-colors hover:bg-muted">
               <FolderIcon className="size-5 shrink-0 text-primary" aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">Votre fiche</span>
@@ -518,7 +518,7 @@ export function AtelierPlayer({
         <h1 className="text-title text-balance">Cette session se fait sur ordinateur</h1>
         <p className="max-w-sm text-body text-muted-foreground">Elle se travaille sur deux zones, avec Claude ouvert à côté : un écran large est nécessaire.</p>
         <Button asChild>
-          <Link href="/">Revenir à l&apos;accueil</Link>
+          <Link href="/app">Revenir à l&apos;accueil</Link>
         </Button>
       </div>
 

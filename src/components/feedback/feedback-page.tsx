@@ -88,7 +88,7 @@ export function FeedbackPage({ formations }: { formations: FormationOption[] }) 
           <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">Votre avis nous aide à nous améliorer</h1>
           <p className="text-body text-muted-foreground">Chaque avis est rattaché à votre compte, pour que nous puissions comprendre votre parcours. Connectez-vous pour le donner.</p>
           <Button asChild size="lg" className="w-full">
-            <Link href="/connexion?next=/avis">Se connecter</Link>
+            <Link href="/app/connexion?next=/app/avis">Se connecter</Link>
           </Button>
         </FloatCard>
       </AmbientHero>
@@ -147,7 +147,7 @@ function FeedbackForm({ userId, formations, origin }: { userId: string; formatio
           <p className="text-body text-muted-foreground">Nous lisons chaque avis. Il nous aide à choisir quoi améliorer en premier.</p>
           <div className="flex flex-wrap justify-center gap-2 pt-2">
             <Button asChild>
-              <Link href="/">Revenir à l&apos;accueil</Link>
+              <Link href="/app">Revenir à l&apos;accueil</Link>
             </Button>
             <Button
               variant="ghost"

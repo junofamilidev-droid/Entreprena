@@ -1,4 +1,5 @@
 import { ViewTransition } from "react";
+import { ProgressSync } from "@/components/auth/progress-sync";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/platform/app-sidebar";
 import { SearchIndexProvider, type SearchEntry } from "@/components/platform/search-index";
@@ -6,16 +7,16 @@ import { listFormations } from "@/lib/content/source";
 import { openModuleRefs } from "@/lib/content/refs";
 import { sessionsIndex } from "@/lib/content/library";
 
-export default async function PlatformLayout({ children }: LayoutProps<"/">) {
+export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
   const formations = await listFormations();
   const [refs, index] = await Promise.all([openModuleRefs(formations), sessionsIndex(formations)]);
   // Index de la recherche du haut de page : formations, modules, et étapes des modules ouverts.
   const entries: SearchEntry[] = formations.flatMap((f) => [
-    { label: f.title, context: "Formation", href: `/formations/${f.slug}` },
+    { label: f.title, context: "Formation", href: `/app/formations/${f.slug}` },
     ...f.modules.map((m) => ({
       label: m.title,
       context: `${f.title}, module ${m.position}${m.availability === "open" ? "" : " (à venir)"}`,
-      href: m.availability === "open" ? `/formations/${f.slug}/${m.slug}` : `/formations/${f.slug}`,
+      href: m.availability === "open" ? `/app/formations/${f.slug}/${m.slug}` : `/app/formations/${f.slug}`,
     })),
   ]);
   for (const f of formations) {
@@ -24,7 +25,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/">) {
         entries.push({
           label: s.title,
           context: `Module ${m.position}, session ${s.number} · ${s.durationMin} min`,
-          href: `/formations/${f.slug}/${m.slug}/session/${s.number}`,
+          href: `/app/formations/${f.slug}/${m.slug}/session/${s.number}`,
         });
       }
     }
@@ -34,7 +35,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/">) {
       entries.push({
         label: s.title,
         context: `Module ${r.module.position} : ${r.module.title}`,
-        href: `/formations/${r.formationSlug}/${r.module.slug}/${s.slug}`,
+        href: `/app/formations/${r.formationSlug}/${r.module.slug}/${s.slug}`,
       });
     }
   }
@@ -48,6 +49,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/">) {
           </div>
         </SidebarInset>
       </SidebarProvider>
+      <ProgressSync />
     </SearchIndexProvider>
   );
 }

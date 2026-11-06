@@ -44,7 +44,7 @@ export function moduleState(state: ProgressState, ref: ModuleRef) {
 }
 
 export function stepHref(ref: ModuleRef, slug: string) {
-  return `/formations/${ref.formationSlug}/${ref.module.slug}/${slug}`;
+  return `/app/formations/${ref.formationSlug}/${ref.module.slug}/${slug}`;
 }
 
 // Ligne de pointage : une case par étape du module, cochée quand elle est faite.

@@ -4,7 +4,6 @@ import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { ProgressSync } from "@/components/auth/progress-sync";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -19,7 +18,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           {children}
           <Toaster />
-          <ProgressSync />
         </ThemeProvider>
       </body>
     </html>

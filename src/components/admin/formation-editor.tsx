@@ -68,7 +68,7 @@ export function FormationEditor({
           <div className="flex items-center gap-3">
             <StatusBadge status={formation.status} />
             {published && (
-              <Link href={`/formations/${formation.slug}`} target="_blank" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+              <Link href={`/app/formations/${formation.slug}`} target="_blank" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                 Voir sur le site <ExternalLinkIcon className="size-3.5" />
               </Link>
             )}
@@ -87,7 +87,7 @@ export function FormationEditor({
       <Section title="Présentation">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField label="Titre" value={draft.title} onChange={(v) => set("title", v)} />
-          <TextField label="Identifiant dans l'adresse" value={draft.slug} onChange={(v) => set("slug", v)} mono help={`/formations/${draft.slug}`} />
+          <TextField label="Identifiant dans l'adresse" value={draft.slug} onChange={(v) => set("slug", v)} mono help={`/app/formations/${draft.slug}`} />
           <TextField label="Métier (surtitre)" value={draft.domain} onChange={(v) => set("domain", v)} help="Par exemple : Audit, Paie, Juridique." />
           <TextField label="Public" value={draft.audience} onChange={(v) => set("audience", v)} />
         </div>
