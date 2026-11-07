@@ -15,7 +15,8 @@ export type HeroTrack = {
   tasks: { title: string; open: boolean }[];
 };
 
-export function HeroBox({ tracks, cta }: { tracks: HeroTrack[]; cta: string }) {
+export function HeroBox({ tracks, cta, tone = "dark" }: { tracks: HeroTrack[]; cta: string; tone?: "dark" | "light" }) {
+  const L = tone === "light";
   const [index, setIndex] = React.useState(0);
   const [menu, setMenu] = React.useState(false);
   const track = tracks[index];
@@ -63,9 +64,13 @@ export function HeroBox({ tracks, cta }: { tracks: HeroTrack[]; cta: string }) {
   const current = track.tasks[task];
 
   return (
-    <div className="hero-box w-full max-w-[38rem] rounded-2xl border border-white/15 bg-[rgb(8_24_26/0.55)] p-2 text-left shadow-[0_30px_80px_-30px_rgb(0_0_0/0.6)] backdrop-blur-xl">
-      <div className="rounded-xl bg-[rgb(4_14_16/0.55)] px-4 pt-3.5 pb-5 sm:px-5">
-        <div className="flex items-center justify-between gap-3 text-[0.8125rem] text-white/60">
+    <div
+      className={`w-full max-w-[38rem] rounded-2xl border p-2 text-left backdrop-blur-xl ${
+        L ? "border-white/80 bg-white/45 shadow-[0_30px_80px_-30px_rgb(40_60_60/0.35)]" : "border-white/15 bg-[rgb(8_24_26/0.55)] shadow-[0_30px_80px_-30px_rgb(0_0_0/0.6)]"
+      }`}
+    >
+      <div className={`rounded-xl px-4 pt-3.5 pb-5 sm:px-5 ${L ? "bg-white/80" : "bg-[rgb(4_14_16/0.55)]"}`}>
+        <div className={`flex items-center justify-between gap-3 text-[0.8125rem] ${L ? "text-[oklch(0.4_0.02_205)]" : "text-white/60"}`}>
           <span>Ce que vous saurez faire</span>
           <div className="relative">
             <button
@@ -73,7 +78,7 @@ export function HeroBox({ tracks, cta }: { tracks: HeroTrack[]; cta: string }) {
               onClick={() => tracks.length > 1 && setMenu((m) => !m)}
               aria-haspopup={tracks.length > 1 ? "listbox" : undefined}
               aria-expanded={tracks.length > 1 ? menu : undefined}
-              className="inline-flex min-h-8 items-center gap-1.5 rounded-md border border-white/15 px-2.5 whitespace-nowrap text-white/85 focus-visible:outline-2 focus-visible:outline-white"
+              className={`inline-flex min-h-8 items-center gap-1.5 rounded-md border px-2.5 whitespace-nowrap focus-visible:outline-2 ${L ? "border-[oklch(0.22_0.03_205)]/15 text-[oklch(0.22_0.03_205)] focus-visible:outline-[oklch(0.22_0.03_205)]" : "border-white/15 text-white/85 focus-visible:outline-white"}`}
             >
               Métier : {track.domain}
               {tracks.length > 1 && <ChevronDownIcon className="size-3.5" aria-hidden />}
@@ -102,20 +107,20 @@ export function HeroBox({ tracks, cta }: { tracks: HeroTrack[]; cta: string }) {
             )}
           </div>
         </div>
-        <p className="mt-4 min-h-[3.4em] text-[1.25rem] leading-snug font-medium text-white sm:text-[1.375rem]" aria-hidden>
+        <p className={`mt-4 min-h-[3.4em] text-[1.25rem] leading-snug font-medium sm:text-[1.375rem] ${L ? "text-[oklch(0.2_0.03_205)]" : "text-white"}`} aria-hidden>
           {typed}
-          <span className="ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[0.15em] animate-pulse bg-white/80 motion-reduce:hidden" />
+          <span className={`ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[0.15em] animate-pulse motion-reduce:hidden ${L ? "bg-[oklch(0.22_0.03_205)]" : "bg-white/80"}`} />
         </p>
         <p className="sr-only">
           {track.title} : {track.tasks.map((t) => t.title).join(", ")}.
         </p>
       </div>
       <div className="flex items-center justify-between gap-3 px-2 pt-2 pb-0.5">
-        <span className="inline-flex items-center gap-2 pl-1 text-[0.8125rem] text-white/70" aria-hidden>
-          <span className={`size-1.5 rounded-full ${current?.open ? "bg-[oklch(0.82_0.12_85)]" : "bg-white/35"}`} />
+        <span className={`inline-flex items-center gap-2 pl-1 text-[0.8125rem] ${L ? "text-[oklch(0.35_0.02_205)]" : "text-white/70"}`} aria-hidden>
+          <span className={`size-1.5 rounded-full ${current?.open ? (L ? "bg-[oklch(0.62_0.13_70)]" : "bg-[oklch(0.82_0.12_85)]") : L ? "bg-black/25" : "bg-white/35"}`} />
           {current?.open ? "Disponible" : "Prochainement"}
         </span>
-        <Link href="/formations" className="inline-flex min-h-11 items-center rounded-lg bg-white px-5 font-semibold text-[oklch(0.2_0.02_200)] transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+        <Link href="/formations" className={`inline-flex min-h-11 items-center rounded-lg px-5 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${L ? "bg-[oklch(0.25_0.04_205)] text-white hover:bg-[oklch(0.3_0.05_205)] focus-visible:outline-[oklch(0.25_0.04_205)]" : "bg-white text-[oklch(0.2_0.02_200)] hover:bg-white/90 focus-visible:outline-white"}`}>
           {cta}
         </Link>
       </div>

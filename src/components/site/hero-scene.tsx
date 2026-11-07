@@ -26,12 +26,75 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const mixRGB = (a: number[], b: number[], t: number, alpha = 1) =>
   `rgba(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))},${alpha})`;
 
-const TEAL_DEEP = [10, 33, 36];
-const TEAL = [36, 66, 66];
-const HAZE = [231, 201, 156];
+/**
+ * Deux ambiances de la même scène :
+ * - « aube » : nuit sarcelle qui s'ouvre sur un soleil doré, contrasté et cinématographique ;
+ * - « matin » : ciel clair, brume lumineuse, personnage en couleurs, plus optimiste.
+ */
+export type SceneVariant = "aube" | "matin";
+
+const PALETTES = {
+  aube: {
+    sky: ["#0a2023", "#16373a", "#4f6862", "#d8a56c", "#efcb94", "#22342f"],
+    halo: ["rgba(255,240,205,1)", "rgba(255,222,165,0.85)", "rgba(240,176,110,0.35)", "rgba(240,176,110,0)"],
+    sun: "rgba(255,246,222,0.95)",
+    veil: ["rgba(5,16,18,0.7)", "rgba(5,16,18,0.18)", "rgba(5,16,18,0)"],
+    ray: "255,226,170",
+    rayA: 0.16,
+    cloudFar: [36, 66, 66],
+    cloudNear: [236, 180, 128],
+    cloudLit: "255,215,160",
+    farA: [44, 72, 70],
+    farB: [231, 201, 156],
+    hazeRGB: "238,200,150",
+    midA: [10, 33, 36],
+    midB: [62, 70, 58],
+    rim: "255,210,150",
+    windows: 6,
+    path: ["246,206,145", "255,226,175", "250,214,155", "255,240,205"],
+    ground: "#061416",
+    edge: "255,210,150",
+    legs: "#081a1c",
+    coat: "#081a1c",
+    hair: "#081a1c",
+    bag: "#081a1c",
+    figRim: "rgba(255,214,160,0.75)",
+    pixel: [255, 238, 210],
+    pixelMix: 0.22,
+  },
+  matin: {
+    sky: ["#7fa9bd", "#a9c8d3", "#d7e3df", "#f4d9b2", "#fbe9cc", "#d6d9cc"],
+    halo: ["rgba(255,252,240,1)", "rgba(255,240,205,0.9)", "rgba(255,222,170,0.35)", "rgba(255,222,170,0)"],
+    sun: "rgba(255,253,245,1)",
+    veil: ["rgba(250,248,242,0.82)", "rgba(250,248,242,0.35)", "rgba(250,248,242,0)"],
+    ray: "255,250,235",
+    rayA: 0.28,
+    cloudFar: [236, 242, 244],
+    cloudNear: [255, 232, 200],
+    cloudLit: "255,246,225",
+    farA: [150, 174, 182],
+    farB: [246, 228, 200],
+    hazeRGB: "252,240,220",
+    midA: [104, 136, 142],
+    midB: [222, 192, 152],
+    rim: "255,248,230",
+    windows: 2,
+    path: ["255,236,200", "255,244,220", "255,240,210", "255,252,240"],
+    ground: "#5d777a",
+    edge: "255,246,225",
+    legs: "#2b3a40",
+    coat: "#1f5c60",
+    hair: "#3b2a22",
+    bag: "#b4895a",
+    figRim: "rgba(255,248,232,0.9)",
+    pixel: [214, 160, 92],
+    pixelMix: 0.45,
+  },
+};
+type Palette = (typeof PALETTES)["aube"];
 
 /** Toute la composition, en proportions de la scène (w × h), pour s'adapter à l'écran. */
-function compose(w: number, h: number, dpr: number, margin: number) {
+function compose(w: number, h: number, dpr: number, margin: number, P: Palette) {
   const portrait = h > w * 1.05;
   const sun = { x: portrait ? 0.72 : 0.77, y: portrait ? 0.36 : 0.55 };
   const hy = sun.y + 0.035; // ligne d'horizon
@@ -60,29 +123,29 @@ function compose(w: number, h: number, dpr: number, margin: number) {
   // 1. Ciel : nuit sarcelle en haut à gauche, aube dorée à l'horizon, halo du soleil.
   const sky = () => make((ctx) => {
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "#0a2023");
-    g.addColorStop(0.3, "#16373a");
-    g.addColorStop(Math.max(0.35, hy - 0.16), "#4f6862");
-    g.addColorStop(hy - 0.03, "#d8a56c");
-    g.addColorStop(hy + 0.02, "#efcb94");
-    g.addColorStop(1, "#22342f");
+    g.addColorStop(0, P.sky[0]);
+    g.addColorStop(0.3, P.sky[1]);
+    g.addColorStop(Math.max(0.35, hy - 0.16), P.sky[2]);
+    g.addColorStop(hy - 0.03, P.sky[3]);
+    g.addColorStop(hy + 0.02, P.sky[4]);
+    g.addColorStop(1, P.sky[5]);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
     const halo = ctx.createRadialGradient(X(sun.x), Y(sun.y), 0, X(sun.x), Y(sun.y), U * 0.75);
-    halo.addColorStop(0, "rgba(255,240,205,1)");
-    halo.addColorStop(0.05, "rgba(255,222,165,0.85)");
-    halo.addColorStop(0.22, "rgba(240,176,110,0.35)");
-    halo.addColorStop(1, "rgba(240,176,110,0)");
+    halo.addColorStop(0, P.halo[0]);
+    halo.addColorStop(0.05, P.halo[1]);
+    halo.addColorStop(0.22, P.halo[2]);
+    halo.addColorStop(1, P.halo[3]);
     ctx.fillStyle = halo;
     ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = "rgba(255,246,222,0.95)";
+    ctx.fillStyle = P.sun;
     ctx.beginPath();
     ctx.arc(X(sun.x), Y(sun.y), U * 0.022, 0, Math.PI * 2);
     ctx.fill();
     const side = ctx.createLinearGradient(0, 0, W, 0);
-    side.addColorStop(0, "rgba(5,16,18,0.7)");
-    side.addColorStop(0.5, "rgba(5,16,18,0.18)");
-    side.addColorStop(0.8, "rgba(5,16,18,0)");
+    side.addColorStop(0, P.veil[0]);
+    side.addColorStop(0.5, P.veil[1]);
+    side.addColorStop(0.8, P.veil[2]);
     ctx.fillStyle = side;
     ctx.fillRect(0, 0, W, H);
   }, 0.4);
@@ -95,8 +158,8 @@ function compose(w: number, h: number, dpr: number, margin: number) {
       const len = U * (0.9 + r() * 0.5);
       const spread = 0.025 + r() * 0.03;
       const g = ctx.createLinearGradient(X(sun.x), Y(sun.y), X(sun.x) + Math.cos(a) * len, Y(sun.y) + Math.sin(a) * len);
-      g.addColorStop(0, "rgba(255,226,170,0.16)");
-      g.addColorStop(1, "rgba(255,226,170,0)");
+      g.addColorStop(0, `rgba(${P.ray},${P.rayA})`);
+      g.addColorStop(1, `rgba(${P.ray},0)`);
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.moveTo(X(sun.x), Y(sun.y));
@@ -114,12 +177,12 @@ function compose(w: number, h: number, dpr: number, margin: number) {
       const cx = r() * 1.1 - 0.05;
       const cy = 0.08 + r() * (hy - 0.18);
       const near = Math.max(0, 1 - Math.hypot(cx - sun.x, (cy - sun.y) * 1.6) / 0.7);
-      ctx.fillStyle = mixRGB(TEAL, [236, 180, 128], near, 0.28 + r() * 0.3);
+      ctx.fillStyle = mixRGB(P.cloudFar, P.cloudNear, near, 0.28 + r() * 0.3);
       ctx.beginPath();
       ctx.ellipse(X(cx), Y(cy), U * (0.12 + r() * 0.22), U * (0.012 + r() * 0.03), (r() - 0.5) * 0.08, 0, Math.PI * 2);
       ctx.fill();
       if (near > 0.3) {
-        ctx.fillStyle = `rgba(255,215,160,${0.25 * near})`;
+        ctx.fillStyle = `rgba(${P.cloudLit},${0.25 * near})`;
         ctx.beginPath();
         ctx.ellipse(X(cx), Y(cy) + U * 0.012, U * (0.08 + r() * 0.1), U * 0.008, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -168,7 +231,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
       // liseré de lumière sur les toits, plus fort près du soleil
       const near = Math.max(0, 1 - Math.abs(x + bw / 2 - sun.x) / 0.45);
       if (rim > 0 && near > 0) {
-        ctx.strokeStyle = `rgba(255,210,150,${rim * near})`;
+        ctx.strokeStyle = `rgba(${P.rim},${rim * near})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(left, top);
@@ -187,17 +250,17 @@ function compose(w: number, h: number, dpr: number, margin: number) {
 
   // 4. Ville lointaine : noyée dans la brume dorée.
   const far = () => make((ctx) => {
-    skyline(ctx, hy + 0.012, 0.012, 0.05, 0.012, 0.03, (x) => mixRGB([44, 72, 70], HAZE, Math.max(0, 1 - Math.abs(x - sun.x) / 0.55) * 0.85, 0.92), 0, 0, [sun.x - 0.025, sun.x + 0.025]);
+    skyline(ctx, hy + 0.012, 0.012, 0.05, 0.012, 0.03, (x) => mixRGB(P.farA, P.farB, Math.max(0, 1 - Math.abs(x - sun.x) / 0.55) * 0.85, 0.92), 0, 0, [sun.x - 0.025, sun.x + 0.025]);
     const haze = ctx.createLinearGradient(0, Y(hy - 0.08), 0, Y(hy + 0.05));
-    haze.addColorStop(0, "rgba(238,200,150,0)");
-    haze.addColorStop(1, "rgba(238,200,150,0.35)");
+    haze.addColorStop(0, `rgba(${P.hazeRGB},0)`);
+    haze.addColorStop(1, `rgba(${P.hazeRGB},0.35)`);
     ctx.fillStyle = haze;
     ctx.fillRect(0, Y(hy - 0.08), W, Y(0.13));
   });
 
   // 5. Toits proches : plus sombres, liserés d'or, quelques fenêtres.
   const mid = () => make((ctx) => {
-    skyline(ctx, hy + 0.11, 0.035, 0.1, 0.03, 0.07, (x) => mixRGB(TEAL_DEEP, [62, 70, 58], Math.max(0, 1 - Math.abs(x - sun.x) / 0.5) * 0.7), 0.55, 6, [sun.x - 0.11, sun.x + 0.07]);
+    skyline(ctx, hy + 0.11, 0.035, 0.1, 0.03, 0.07, (x) => mixRGB(P.midA, P.midB, Math.max(0, 1 - Math.abs(x - sun.x) / 0.5) * 0.7), 0.55, P.windows, [sun.x - 0.11, sun.x + 0.07]);
   });
 
   // 6. Le chemin de lumière : une avenue en perspective, au sol, qui part des pieds de la personne
@@ -218,17 +281,17 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     };
     // Halo large et très doux, puis le reflet central, plus vif : un chemin de lumière, pas une route dessinée.
     const soft = ctx.createLinearGradient(0, by, 0, V.y);
-    soft.addColorStop(0, "rgba(246,206,145,0)");
-    soft.addColorStop(0.5, "rgba(246,206,145,0.14)");
-    soft.addColorStop(1, "rgba(255,226,175,0.5)");
+    soft.addColorStop(0, `rgba(${P.path[0]},0)`);
+    soft.addColorStop(0.5, `rgba(${P.path[0]},0.14)`);
+    soft.addColorStop(1, `rgba(${P.path[1]},0.5)`);
     ctx.filter = blur(U * 0.03);
     ctx.fillStyle = soft;
     road(U * 0.2, U * 0.01);
     ctx.fill();
     const glow = ctx.createLinearGradient(0, by, 0, V.y);
-    glow.addColorStop(0, "rgba(246,206,145,0.05)");
-    glow.addColorStop(0.55, "rgba(250,214,155,0.38)");
-    glow.addColorStop(1, "rgba(255,240,205,0.9)");
+    glow.addColorStop(0, `rgba(${P.path[0]},0.05)`);
+    glow.addColorStop(0.55, `rgba(${P.path[2]},0.38)`);
+    glow.addColorStop(1, `rgba(${P.path[3]},0.9)`);
     ctx.filter = blur(U * 0.008);
     ctx.fillStyle = glow;
     road(U * 0.06, U * 0.003);
@@ -238,7 +301,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
   // 7. Premier plan : la terrasse, les marches, et la personne vue de dos.
   const fg = () => make((ctx) => {
     const top = terrace;
-    ctx.fillStyle = "#061416";
+    ctx.fillStyle = P.ground;
     ctx.beginPath();
     ctx.moveTo(0, Y(top - 0.02));
     ctx.lineTo(X(0.5), Y(top));
@@ -249,9 +312,9 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     ctx.fill();
     // bord éclairé de la terrasse
     const edge = ctx.createLinearGradient(0, 0, W, 0);
-    edge.addColorStop(0, "rgba(255,210,150,0)");
-    edge.addColorStop(sun.x, "rgba(255,210,150,0.55)");
-    edge.addColorStop(1, "rgba(255,210,150,0.2)");
+    edge.addColorStop(0, `rgba(${P.edge},0)`);
+    edge.addColorStop(sun.x, `rgba(${P.edge},0.55)`);
+    edge.addColorStop(1, `rgba(${P.edge},0.2)`);
     ctx.strokeStyle = edge;
     ctx.lineWidth = 1.2;
     ctx.beginPath();
@@ -264,7 +327,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     for (let i = 0; i < 5; i++) {
       const y = Y(top + 0.025 + i * 0.03);
       const half = U * (0.05 + i * 0.016);
-      ctx.strokeStyle = `rgba(255,210,150,${0.35 - i * 0.05})`;
+      ctx.strokeStyle = `rgba(${P.edge},${0.35 - i * 0.05})`;
       ctx.beginPath();
       ctx.moveTo(X(sx) - half, y);
       ctx.lineTo(X(sx) + half, y);
@@ -274,7 +337,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     const px = X(sx);
     const py = Y(top);
     const s = U * (portrait ? 0.2 : 0.17); // hauteur
-    ctx.fillStyle = "#081a1c";
+    ctx.fillStyle = P.legs;
     ctx.beginPath(); // jambes
     ctx.moveTo(px - s * 0.06, py - s * 0.3);
     ctx.lineTo(px - s * 0.05, py);
@@ -285,6 +348,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     ctx.lineTo(px + s * 0.06, py - s * 0.3);
     ctx.closePath();
     ctx.fill();
+    ctx.fillStyle = P.coat;
     ctx.beginPath(); // manteau
     ctx.moveTo(px - s * 0.085, py - s * 0.74);
     ctx.quadraticCurveTo(px, py - s * 0.8, px + s * 0.085, py - s * 0.74);
@@ -292,12 +356,15 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     ctx.lineTo(px - s * 0.105, py - s * 0.28);
     ctx.closePath();
     ctx.fill();
+    ctx.fillStyle = P.hair;
     ctx.beginPath(); // tête et chignon
     ctx.arc(px + s * 0.004, py - s * 0.85, s * 0.07, 0, Math.PI * 2);
     ctx.arc(px - s * 0.01, py - s * 0.91, s * 0.035, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillRect(px - s * 0.025, py - s * 0.8, s * 0.05, s * 0.06); // cou
+    ctx.fillStyle = P.coat;
+    ctx.fillRect(px - s * 0.025, py - s * 0.8, s * 0.05, s * 0.06); // col
     // sac sur l'épaule gauche (côté sombre)
+    ctx.fillStyle = P.bag;
     ctx.beginPath();
     ctx.moveTo(px - s * 0.07, py - s * 0.74);
     ctx.lineTo(px - s * 0.13, py - s * 0.48);
@@ -306,7 +373,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
     ctx.fill();
     ctx.fillRect(px - s * 0.17, py - s * 0.5, s * 0.1, s * 0.13);
     // liseré de lumière côté soleil
-    ctx.strokeStyle = "rgba(255,214,160,0.75)";
+    ctx.strokeStyle = P.figRim;
     ctx.lineWidth = Math.max(1, U * 0.0016);
     ctx.beginPath();
     ctx.arc(px + s * 0.004, py - s * 0.85, s * 0.07, -1.3, 0.6);
@@ -344,7 +411,7 @@ function compose(w: number, h: number, dpr: number, margin: number) {
   ];
 }
 
-export function HeroScene({ className }: { className?: string }) {
+export function HeroScene({ className, variant = "aube" }: { className?: string; variant?: SceneVariant }) {
   const ref = React.useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = React.useState(false);
 
@@ -353,6 +420,7 @@ export function HeroScene({ className }: { className?: string }) {
     const ctx = canvas?.getContext("2d", { willReadFrequently: false });
     if (!canvas || !ctx) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const palette = PALETTES[variant];
     const MARGIN = 56;
     let layers: Layer[] = [];
     let w = 0;
@@ -386,7 +454,7 @@ export function HeroScene({ className }: { className?: string }) {
       if (!w || !h) return;
       dpr = Math.min(window.devicePixelRatio || 1, w < 768 ? 1.25 : 1.5);
       cell = w < 768 ? 16 : 22;
-      const plan = compose(w, h, dpr, MARGIN);
+      const plan = compose(w, h, dpr, MARGIN, palette);
       const next: Layer[] = [];
       for (const step of plan) {
         await new Promise((r) => setTimeout(r, 0));
@@ -422,9 +490,10 @@ export function HeroScene({ className }: { className?: string }) {
         const [cx, cy] = key.split(",").map(Number);
         const i = (cy * tiny.width + cx) * 4;
         // Couleur de la scène à cet endroit, éclaircie : une mosaïque lumineuse, pas une tache.
-        const cr = Math.min(255, lerp(colors[i], 255, 0.22) + 14);
-        const cg = Math.min(255, lerp(colors[i + 1], 238, 0.22) + 10);
-        const cb = Math.min(255, lerp(colors[i + 2], 210, 0.22) + 6);
+        const [pr0, pg0, pb0] = palette.pixel;
+        const cr = Math.min(255, lerp(colors[i], pr0, palette.pixelMix) + 10);
+        const cg = Math.min(255, lerp(colors[i + 1], pg0, palette.pixelMix) + 8);
+        const cb = Math.min(255, lerp(colors[i + 2], pb0, palette.pixelMix) + 4);
         ctx.fillStyle = `rgba(${cr | 0},${cg | 0},${cb | 0},${Math.min(1, life * 1.1).toFixed(3)})`;
         ctx.fillRect(cx * cell * dpr, cy * cell * dpr, Math.ceil(cell * dpr), Math.ceil(cell * dpr));
       }
@@ -527,7 +596,7 @@ export function HeroScene({ className }: { className?: string }) {
       host.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, []);
+  }, [variant]);
 
   return (
     <canvas

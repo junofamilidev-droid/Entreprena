@@ -11,9 +11,12 @@ import { LOGIN, NAV } from "./site-nav";
 // sombre du haut de page, puis devient une barre claire dès que l'on fait défiler.
 // Aucun bouton plein : le bouton principal de chaque écran est dans la page.
 export function SiteHeader() {
-  const home = usePathname() === "/";
+  const path = usePathname();
+  const home = path === "/" || path === "/apercu-matin";
   const [heroVisible, setHeroVisible] = React.useState(true);
   const onHero = home && heroVisible;
+  // Sur une scène claire (ambiance « matin »), l'en-tête garde un texte foncé.
+  const lightHero = path === "/apercu-matin";
 
   React.useEffect(() => {
     if (!home) return;
@@ -30,10 +33,10 @@ export function SiteHeader() {
 
   return (
     <header
-      data-on-hero={onHero || undefined}
+      data-on-hero={(onHero && !lightHero) || undefined}
       className={cn(
         "sticky top-0 z-40 transition-[background-color,border-color,color] duration-300",
-        onHero ? "border-b border-transparent text-[var(--night-foreground)]" : "border-b border-border bg-background/85 text-foreground backdrop-blur-md",
+        onHero ? `border-b border-transparent ${lightHero ? "text-[oklch(0.22_0.03_205)]" : "text-[var(--night-foreground)]"}` : "border-b border-border bg-background/85 text-foreground backdrop-blur-md",
       )}
     >
       <div className="site-container flex h-16 items-center justify-between gap-6">
@@ -49,7 +52,7 @@ export function SiteHeader() {
             prefetch={false}
             className={cn(
               "ml-1 inline-flex min-h-10 items-center rounded-md border px-4 font-medium focus-visible:outline-2 focus-visible:outline-ring",
-              onHero ? "border-white/25 hover:border-white/50" : "border-border hover:border-foreground/30",
+              onHero ? (lightHero ? "border-[oklch(0.22_0.03_205)]/25 hover:border-[oklch(0.22_0.03_205)]/50" : "border-white/25 hover:border-white/50") : "border-border hover:border-foreground/30",
             )}
           >
             {LOGIN.label}
