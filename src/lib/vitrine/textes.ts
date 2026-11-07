@@ -15,7 +15,7 @@ export const accueil = {
     // 3. « Gardez la main sur votre métier quand l'IA s'y installe. »
     title: "Votre métier change avec l'IA. Voici exactement quoi faire.",
     subtitle:
-      "Des formations courtes, par métier, sur des missions réalistes. Vous repartez avec des outils Claude réglés par des experts, et vous savez les appliquer à vos propres dossiers.",
+      "Des formations courtes, par métier, sur des missions réalistes, avec des outils Claude réglés par des experts.",
     secondary: "Comment ça marche",
   },
 

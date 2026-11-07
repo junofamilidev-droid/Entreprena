@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { HeroFlow } from "@/components/site/hero-flow";
+import { HeroScene } from "@/components/site/hero-scene";
+import { HeroBox, type HeroTrack } from "@/components/site/hero-box";
 import { ProductShowcase } from "@/components/site/product-showcase";
 import { FormationCard } from "@/components/site/formation-card";
 import { FormationFeature } from "@/components/site/formation-feature";
@@ -11,26 +12,36 @@ export default async function HomePage() {
   const formations = await listFormations();
   const [featured, ...others] = formations;
   const { hero, constat, etapes, produit, pourQui, faq, final } = accueil;
+  const tracks: HeroTrack[] = formations.map((f) => ({
+    slug: f.slug,
+    domain: f.domain,
+    title: f.title,
+    tasks: f.modules.map((m) => ({ title: m.title, open: m.availability === "open" })),
+  }));
 
   return (
     <>
-      {/* a. Haut de page : scène sombre plein écran, titre géant. Le texte est rendu tout de suite ;
-          l'animation se dessine ensuite, derrière. */}
-      <section id="haut-de-page" className="on-night relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden">
-        <HeroFlow className="absolute inset-0 h-full w-full" />
-        <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,var(--night)_0%,color-mix(in_oklch,var(--night)_88%,transparent)_34%,transparent_62%)]" />
-        <div className="site-container relative mt-auto pt-[16svh] pb-8 sm:pt-[28svh] sm:pb-14 lg:pb-16">
-          <h1 className="max-w-[15ch] type-hero">{hero.title}</h1>
-          <div className="mt-6 grid items-end gap-x-16 gap-y-6 sm:mt-10 lg:grid-cols-[minmax(0,34rem)_auto] lg:justify-between">
-            <p className="type-body text-[var(--night-foreground)]/75 sm:type-lead">{hero.subtitle}</p>
-            <div className="flex flex-wrap items-center gap-x-7 gap-y-4">
-              <Link href="/formations" className="btn-primary">
-                {CTA_FORMATIONS}
-              </Link>
-              <Link href="#comment-ca-marche" className="link-quiet">
-                {hero.secondary}
-              </Link>
+      {/* a. Haut de page : une scène peinte (la ville au lever du jour, un chemin de lumière),
+          en plans qui suivent la souris, avec une traînée de pixels. Le texte est rendu tout de suite. */}
+      <section
+        id="haut-de-page"
+        className="on-night relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(100deg,#0a2124_0%,#16373a_45%,#8f8463_75%,#e9c48e_100%)]"
+      >
+        <HeroScene className="absolute inset-0 h-full w-full" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgb(5_16_18/0.88)_0%,rgb(5_16_18/0.55)_50%,rgb(5_16_18/0)_78%)] md:bg-[linear-gradient(90deg,rgb(5_16_18/0.7)_0%,rgb(5_16_18/0.42)_40%,rgb(5_16_18/0)_66%)]"
+        />
+        <div className="site-container relative flex flex-1 flex-col justify-end pt-24 pb-8 md:justify-center md:pt-28 md:pb-16">
+          <div className="max-w-[40rem]">
+            <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
+            <p className="mt-5 max-w-[34rem] type-body text-white/75 sm:type-lead">{hero.subtitle}</p>
+            <div className="mt-7">
+              <HeroBox tracks={tracks} cta={CTA_FORMATIONS} />
             </div>
+            <Link href="#comment-ca-marche" className="link-quiet mt-6 inline-block text-white/90">
+              {hero.secondary}
+            </Link>
           </div>
         </div>
       </section>

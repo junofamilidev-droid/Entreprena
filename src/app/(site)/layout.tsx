@@ -2,11 +2,11 @@ import localFont from "next/font/local";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 
-// Police des titres de la vitrine (Bricolage Grotesque, licence OFL), préchargée par Next.js
+// Police des titres de la vitrine (Inter Tight, licence OFL), préchargée par Next.js
 // avec une police de secours aux mêmes proportions : le titre s'affiche vite et ne bouge pas.
 const display = localFont({
-  src: "../../fonts/bricolage-grotesque-latin-wght-normal.woff2",
-  weight: "200 800",
+  src: "../../fonts/inter-tight-latin-wght-normal.woff2",
+  weight: "100 900",
   display: "swap",
   variable: "--font-display-loaded",
   adjustFontFallback: "Arial",
