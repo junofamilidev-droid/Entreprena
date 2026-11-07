@@ -12,11 +12,11 @@ import { LOGIN, NAV } from "./site-nav";
 // Aucun bouton plein : le bouton principal de chaque écran est dans la page.
 export function SiteHeader() {
   const path = usePathname();
-  const home = path === "/" || path === "/apercu-matin";
+  const home = path === "/" || path.startsWith("/apercu-");
   const [heroVisible, setHeroVisible] = React.useState(true);
   const onHero = home && heroVisible;
   // Sur une scène claire (ambiance « matin »), l'en-tête garde un texte foncé.
-  const lightHero = path === "/apercu-matin";
+  const lightHero = ["/apercu-matin", "/apercu-abstrait", "/apercu-produit"].includes(path);
 
   React.useEffect(() => {
     if (!home) return;

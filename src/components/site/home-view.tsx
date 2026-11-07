@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { HeroScene, type SceneVariant } from "@/components/site/hero-scene";
 import { HeroBox, type HeroTrack } from "@/components/site/hero-box";
+import { HeroAbstract } from "@/components/site/hero-abstract";
+import { HeroProductCards } from "@/components/site/hero-product";
+import { HeroImage } from "@/components/site/hero-image";
+import { PixelTrail } from "@/components/site/pixel-trail";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { ProductShowcase } from "@/components/site/product-showcase";
 import { FormationCard } from "@/components/site/formation-card";
 import { FormationFeature } from "@/components/site/formation-feature";
@@ -8,11 +14,12 @@ import { Faq } from "@/components/site/faq";
 import { listFormations } from "@/lib/content/source";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
 
-export async function HomeView({ variant = "aube" }: { variant?: SceneVariant }) {
-  const light = variant === "matin";
+export type HeroVariant = SceneVariant | "abstrait" | "produit" | "illustration";
+
+export async function HomeView({ variant = "aube" }: { variant?: HeroVariant }) {
   const formations = await listFormations();
   const [featured, ...others] = formations;
-  const { hero, constat, etapes, produit, pourQui, faq, final } = accueil;
+  const { constat, etapes, produit, pourQui, faq, final } = accueil;
   const tracks: HeroTrack[] = formations.map((f) => ({
     slug: f.slug,
     domain: f.domain,
@@ -22,39 +29,8 @@ export async function HomeView({ variant = "aube" }: { variant?: SceneVariant })
 
   return (
     <>
-      {/* a. Haut de page : une scène peinte (la ville au lever du jour, un chemin de lumière),
-          en plans qui suivent la souris, avec une traînée de pixels. Le texte est rendu tout de suite. */}
-      <section
-        id="haut-de-page"
-        data-tone={light ? "light" : "dark"}
-        className={
-          light
-            ? "relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(100deg,#f6f3ec_0%,#d9e4e3_45%,#f1dcb8_80%,#fbe8c8_100%)] text-[oklch(0.22_0.03_205)]"
-            : "on-night relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(100deg,#0a2124_0%,#16373a_45%,#8f8463_75%,#e9c48e_100%)]"
-        }
-      >
-        <HeroScene className="absolute inset-0 h-full w-full" variant={variant} />
-        <div
-          aria-hidden
-          className={
-            light
-              ? "pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgb(250_248_242/0.92)_0%,rgb(250_248_242/0.6)_50%,rgb(250_248_242/0)_78%)] md:bg-[linear-gradient(90deg,rgb(250_248_242/0.85)_0%,rgb(250_248_242/0.5)_40%,rgb(250_248_242/0)_64%)]"
-              : "pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgb(5_16_18/0.88)_0%,rgb(5_16_18/0.55)_50%,rgb(5_16_18/0)_78%)] md:bg-[linear-gradient(90deg,rgb(5_16_18/0.7)_0%,rgb(5_16_18/0.42)_40%,rgb(5_16_18/0)_66%)]"
-          }
-        />
-        <div className="site-container relative flex flex-1 flex-col justify-end pt-24 pb-8 md:justify-center md:pt-28 md:pb-16">
-          <div className="max-w-[40rem]">
-            <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
-            <p className={`mt-5 max-w-[34rem] type-body sm:type-lead ${light ? "text-[oklch(0.3_0.03_205)]/85" : "text-white/75"}`}>{hero.subtitle}</p>
-            <div className="mt-7">
-              <HeroBox tracks={tracks} cta={CTA_FORMATIONS} tone={light ? "light" : "dark"} />
-            </div>
-            <Link href="#comment-ca-marche" className={`link-quiet mt-6 inline-block ${light ? "" : "text-white/90"}`}>
-              {hero.secondary}
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* a. Haut de page : plusieurs versions à comparer (voir HeroSection plus bas). */}
+      <HeroSection variant={variant} tracks={tracks} />
 
       {/* b. Constat, suivi immédiatement de la réponse */}
       <section>
@@ -163,5 +139,131 @@ export async function HomeView({ variant = "aube" }: { variant?: SceneVariant })
         </div>
       </section>
     </>
+  );
+}
+
+const ILLUSTRATION = "/hero/illustration.webp";
+
+/** Le haut de page, selon la version. Le texte est toujours rendu par le serveur, avant le décor. */
+function HeroSection({ variant, tracks }: { variant: HeroVariant; tracks: HeroTrack[] }) {
+  const { hero } = accueil;
+  const ink = "text-[oklch(0.22_0.03_205)]";
+
+  if (variant === "abstrait") {
+    return (
+      <section id="haut-de-page" data-tone="light" className={`relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(110deg,#faf6ee_0%,#f4e3c4_55%,#7fb0a9_100%)] ${ink}`}>
+        <HeroAbstract className="absolute inset-0 h-full w-full" />
+        <div className="site-container relative flex flex-1 flex-col justify-end pt-24 pb-8 md:justify-center md:pt-28 md:pb-16">
+          <div className="max-w-[40rem]">
+            <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
+            <p className="mt-5 max-w-[34rem] type-body text-[oklch(0.3_0.03_205)]/85 sm:type-lead">{hero.subtitle}</p>
+            <div className="mt-7">
+              <HeroBox tracks={tracks} cta={CTA_FORMATIONS} tone="light" />
+            </div>
+            <Link href="#comment-ca-marche" className="link-quiet mt-6 inline-block">
+              {hero.secondary}
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (variant === "produit") {
+    return (
+      <section
+        id="haut-de-page"
+        data-tone="light"
+        className={`relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[#f7f4ee] ${ink}`}
+      >
+        <div aria-hidden className="absolute inset-0">
+          <div className="absolute top-[10%] left-[18%] size-[46vw] max-w-[720px] rounded-full bg-[#f2d9ae] opacity-70 blur-[120px]" />
+          <div className="absolute right-[12%] bottom-[0%] size-[42vw] max-w-[680px] rounded-full bg-[#a9cdc6] opacity-70 blur-[120px]" />
+        </div>
+        <PixelTrail className="pointer-events-none absolute inset-0 h-full w-full" tint={[214, 168, 98]} mix={1} strength={0.35} />
+        <div className="site-container relative flex flex-1 flex-col pt-24 pb-10 md:justify-center md:pt-20 md:pb-16">
+          <div className="relative z-10 mx-auto max-w-[38rem] text-center">
+            <h1 className="type-hero mx-auto max-w-[15ch] text-[clamp(2.375rem,1.2rem+3.4vw,4.5rem)]">{hero.title}</h1>
+            <p className="mx-auto mt-5 max-w-[30rem] type-body text-[oklch(0.3_0.03_205)]/85 sm:type-lead">{hero.subtitle}</p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+              <Link href="/formations" className="btn-primary">
+                {CTA_FORMATIONS}
+              </Link>
+              <Link href="#comment-ca-marche" className="link-quiet">
+                {hero.secondary}
+              </Link>
+            </div>
+          </div>
+          <div className="mt-10 md:mt-0">
+            <HeroProductCards />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (variant === "illustration") {
+    const has = existsSync(path.join(process.cwd(), "public", ILLUSTRATION));
+    return (
+      <section id="haut-de-page" data-tone="dark" className="on-night relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(100deg,#0c2427_0%,#1f3f40_55%,#b08a5c_100%)]">
+        {has ? (
+          <HeroImage src={ILLUSTRATION} alt="" />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center">
+            <p className="mt-[40vh] max-w-sm rounded-xl border border-white/20 bg-black/30 px-5 py-4 text-center text-sm text-white/80 md:mt-0 md:ml-[45%]">
+              Emplacement de l&apos;illustration : déposer le fichier dans public/hero/illustration.webp
+            </p>
+          </div>
+        )}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgb(5_16_18/0.85)_0%,rgb(5_16_18/0.5)_50%,rgb(5_16_18/0)_78%)] md:bg-[linear-gradient(90deg,rgb(5_16_18/0.65)_0%,rgb(5_16_18/0.35)_40%,rgb(5_16_18/0)_64%)]"
+        />
+        <div className="site-container pointer-events-none relative flex flex-1 flex-col justify-end pt-24 pb-8 md:justify-center md:pt-28 md:pb-16">
+          <div className="pointer-events-auto max-w-[40rem]">
+            <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
+            <p className="mt-5 max-w-[34rem] type-body text-white/75 sm:type-lead">{hero.subtitle}</p>
+            <div className="mt-7">
+              <HeroBox tracks={tracks} cta={CTA_FORMATIONS} />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const light = variant === "matin";
+  return (
+          <section
+            id="haut-de-page"
+            data-tone={light ? "light" : "dark"}
+            className={
+              light
+                ? "relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(100deg,#f6f3ec_0%,#d9e4e3_45%,#f1dcb8_80%,#fbe8c8_100%)] text-[oklch(0.22_0.03_205)]"
+                : "on-night relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-[linear-gradient(100deg,#0a2124_0%,#16373a_45%,#8f8463_75%,#e9c48e_100%)]"
+            }
+          >
+            <HeroScene className="absolute inset-0 h-full w-full" variant={variant} />
+            <div
+              aria-hidden
+              className={
+                light
+                  ? "pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgb(250_248_242/0.92)_0%,rgb(250_248_242/0.6)_50%,rgb(250_248_242/0)_78%)] md:bg-[linear-gradient(90deg,rgb(250_248_242/0.85)_0%,rgb(250_248_242/0.5)_40%,rgb(250_248_242/0)_64%)]"
+                  : "pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgb(5_16_18/0.88)_0%,rgb(5_16_18/0.55)_50%,rgb(5_16_18/0)_78%)] md:bg-[linear-gradient(90deg,rgb(5_16_18/0.7)_0%,rgb(5_16_18/0.42)_40%,rgb(5_16_18/0)_66%)]"
+              }
+            />
+            <div className="site-container relative flex flex-1 flex-col justify-end pt-24 pb-8 md:justify-center md:pt-28 md:pb-16">
+              <div className="max-w-[40rem]">
+                <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
+                <p className={`mt-5 max-w-[34rem] type-body sm:type-lead ${light ? "text-[oklch(0.3_0.03_205)]/85" : "text-white/75"}`}>{hero.subtitle}</p>
+                <div className="mt-7">
+                  <HeroBox tracks={tracks} cta={CTA_FORMATIONS} tone={light ? "light" : "dark"} />
+                </div>
+                <Link href="#comment-ca-marche" className={`link-quiet mt-6 inline-block ${light ? "" : "text-white/90"}`}>
+                  {hero.secondary}
+                </Link>
+              </div>
+            </div>
+          </section>
   );
 }
