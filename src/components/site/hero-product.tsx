@@ -5,7 +5,8 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 // Haut de page « produit » : les vraies captures de la plateforme flottent autour du titre, en cartes
-// de verre. Elles s'inclinent et se décalent selon la souris, chacune à sa profondeur (effet 3D).
+// de verre. Elles flottent doucement, chacune à son rythme ; elles s'inclinent et se décalent selon la souris
+// et montent à des vitesses différentes au défilement (parallaxe), chacune à sa profondeur.
 
 type Card = { src: string; w: number; h: number; alt: string; label: string; pos: string; depth: number };
 
@@ -22,37 +23,62 @@ export function HeroProductCards() {
   React.useEffect(() => {
     const root = ref.current;
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const host = root.parentElement ?? root;
+    const host = root.closest("section") ?? root;
     const items = Array.from(root.querySelectorAll<HTMLElement>("[data-depth]"));
+    // Chaque carte flotte à son propre rythme (période et amplitude), pour un mouvement vivant, jamais synchrone.
+    const motion = items.map((_, i) => ({ period: 5.5 + i * 1.3, amp: 7 + (i % 2) * 4, phase: i * 1.7 }));
+    const small = window.matchMedia("(max-width: 767px)");
     let tx = 0;
     let ty = 0;
     let mx = 0;
     let my = 0;
     let raf = 0;
-    const loop = () => {
+    let visible = true;
+    const t0 = performance.now();
+    const loop = (now: number) => {
+      const t = (now - t0) / 1000;
       mx += (tx - mx) * 0.08;
       my += (ty - my) * 0.08;
-      for (const el of items) {
-        const d = Number(el.dataset.depth);
-        el.style.transform = `translate3d(${(-mx * d).toFixed(1)}px, ${(-my * d).toFixed(1)}px, 0) rotateX(${(my * 7).toFixed(2)}deg) rotateY(${(-mx * 7).toFixed(2)}deg)`;
-      }
-      raf = Math.abs(tx - mx) + Math.abs(ty - my) > 0.0005 ? requestAnimationFrame(loop) : 0;
+      // parallaxe au défilement : plus une carte est « proche », plus elle monte vite
+      const scroll = Math.min(window.scrollY, window.innerHeight * 1.2);
+      const k = small.matches ? 0.4 : 1;
+      items.forEach((el, i) => {
+        const d = Number(el.dataset.depth) * k;
+        const m = motion[i];
+        const float = Math.sin((t / m.period) * Math.PI * 2 + m.phase) * m.amp * k;
+        const drift = Math.cos((t / (m.period * 1.6)) * Math.PI * 2 + m.phase) * 3 * k;
+        const x = -mx * d + drift;
+        const y = -my * d + float - scroll * (d / 140);
+        el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotateX(${(my * 7).toFixed(2)}deg) rotateY(${(-mx * 7).toFixed(2)}deg)`;
+      });
+      raf = visible && !document.hidden ? requestAnimationFrame(loop) : 0;
+    };
+    const start = () => {
+      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(loop);
     };
     const onMove = (e: PointerEvent) => {
       const r = host.getBoundingClientRect();
       tx = (e.clientX - r.left) / r.width - 0.5;
       ty = (e.clientY - r.top) / r.height - 0.5;
-      if (!raf) raf = requestAnimationFrame(loop);
     };
     const onLeave = () => {
       tx = 0;
       ty = 0;
-      if (!raf) raf = requestAnimationFrame(loop);
     };
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      start();
+    });
+    io.observe(host);
+    const onVis = () => start();
+    document.addEventListener("visibilitychange", onVis);
     host.addEventListener("pointermove", onMove);
     host.addEventListener("pointerleave", onLeave);
+    start();
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
       host.removeEventListener("pointermove", onMove);
       host.removeEventListener("pointerleave", onLeave);
     };

@@ -15,13 +15,13 @@ export function SiteHeader() {
   const home = path === "/" || path.startsWith("/apercu-");
   const [heroVisible, setHeroVisible] = React.useState(true);
   const onHero = home && heroVisible;
-  // Sur une scène claire (ambiance « matin »), l'en-tête garde un texte foncé.
-  const lightHero = ["/apercu-matin", "/apercu-abstrait", "/apercu-produit"].includes(path);
+  // Sur un haut de page clair (accueil, aperçu abstrait), l'en-tête garde un texte foncé.
+  const lightHero = path !== "/apercu-illustration";
 
   React.useEffect(() => {
     if (!home) return;
     const hero = document.getElementById("haut-de-page");
-    const update = () => setHeroVisible(!!hero && hero.getBoundingClientRect().bottom > 72);
+    const update = () => setHeroVisible(!!hero && window.scrollY < 24);
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);

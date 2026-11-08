@@ -16,6 +16,7 @@ uniform float uTime;
 uniform vec2 uMouse;
 uniform sampler2D uTrail;
 uniform float uCell;
+uniform float uFocus; // 0 : clair à gauche (texte à gauche), 1 : clair au centre (texte centré)
 
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p){
@@ -56,7 +57,10 @@ vec3 matter(vec2 frag){
   col = mix(col, deep, smoothstep(0.62, 1.05, r.x) * 0.55);
   col = mix(col, gold, smoothstep(0.55, 0.95, r.y) * 0.6);
   // lumière : plus claire à gauche (le texte s'y pose), plus riche à droite
-  col = mix(col, cream, smoothstep(0.55, 0.0, uv.x) * 0.62);
+  float leftLight = smoothstep(0.55, 0.0, uv.x) * 0.62;
+  vec2 c = (uv - vec2(0.5, 0.48)) * vec2(1.0, 1.35);
+  float centerLight = smoothstep(0.42, 0.0, length(c)) * 0.72;
+  col = mix(col, cream, mix(leftLight, centerLight, uFocus));
   // reflet doux là où passe la souris
   col += vec3(1.0, 0.95, 0.85) * k * 0.06;
   return col;
@@ -88,7 +92,7 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return s;
 }
 
-export function HeroAbstract({ className }: { className?: string }) {
+export function HeroAbstract({ className, focus = "left" }: { className?: string; focus?: "left" | "center" }) {
   const ref = React.useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = React.useState(false);
 
@@ -97,7 +101,11 @@ export function HeroAbstract({ className }: { className?: string }) {
     if (!canvas) return;
     const gl = canvas.getContext("webgl", { antialias: false, premultipliedAlpha: false });
     if (!gl) return; // fond CSS de secours
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Sans carte graphique (rendu logiciel), animer la matière coûte cher : on affiche une image fixe.
+    const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : "";
+    const software = /swiftshader|llvmpipe|software|basic render/i.test(renderer);
+    const reduce = software || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let prog: WebGLProgram;
     try {
@@ -119,6 +127,7 @@ export function HeroAbstract({ className }: { className?: string }) {
     const uTime = gl.getUniformLocation(prog, "uTime");
     const uMouse = gl.getUniformLocation(prog, "uMouse");
     const uCell = gl.getUniformLocation(prog, "uCell");
+    const uFocus = gl.getUniformLocation(prog, "uFocus");
 
     // Traînée de pixels : une petite toile (une case = un pixel), envoyée comme texture.
     const trail = document.createElement("canvas");
@@ -139,7 +148,7 @@ export function HeroAbstract({ className }: { className?: string }) {
       const rect = canvas.getBoundingClientRect();
       w = rect.width;
       h = rect.height;
-      scale = w < 768 ? 0.5 : 0.6;
+      scale = software ? 0.25 : w < 768 ? 0.4 : 0.45;
       cell = w < 768 ? 16 : 22;
       canvas.width = Math.max(1, Math.round(w * scale));
       canvas.height = Math.max(1, Math.round(h * scale));
@@ -166,12 +175,18 @@ export function HeroAbstract({ className }: { className?: string }) {
       gl.uniform1f(uTime, t);
       gl.uniform2f(uMouse, mx, my);
       gl.uniform1f(uCell, cell * scale);
+      gl.uniform1f(uFocus, focus === "center" ? 1 : 0);
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, trail);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
     const loop = (now: number) => {
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+      // 30 images par seconde suffisent pour une matière lente
+      if (last && now - last < 32) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      const dt = last ? Math.min(0.06, (now - last) / 1000) : 0;
       last = now;
       t += dt;
       // sans souris depuis un moment, le point d'attention dérive doucement
@@ -251,7 +266,7 @@ export function HeroAbstract({ className }: { className?: string }) {
       host.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, []);
+  }, [focus]);
 
   return (
     <canvas
