@@ -10,6 +10,8 @@ import { FormationCard } from "@/components/site/formation-card";
 import { FormationFeature } from "@/components/site/formation-feature";
 import { Faq } from "@/components/site/faq";
 import { listFormations } from "@/lib/content/source";
+import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
+import { UpcomingGrid } from "@/components/site/upcoming-card";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
 
 export type HeroVariant = "abstrait" | "produit" | "illustration";
@@ -18,6 +20,9 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
   const formations = await listFormations();
   const [featured, ...others] = formations;
   const { constat, etapes, produit, pourQui, faq, final } = accueil;
+  // Un métier à venir disparaît de la liste dès qu'une formation publiée porte ce métier.
+  const published = new Set(formations.map((f) => f.domain.toLowerCase()));
+  const upcoming = METIERS_A_VENIR.filter((m) => !published.has(m.nom.toLowerCase()));
   const tracks: HeroTrack[] = formations.map((f) => ({
     slug: f.slug,
     domain: f.domain,
@@ -28,7 +33,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
   return (
     <>
       {/* a. Haut de page : plusieurs versions à comparer (voir HeroSection plus bas). */}
-      <HeroSection variant={variant} tracks={tracks} />
+      <HeroSection variant={variant} tracks={tracks} upcoming={upcoming.map((m) => m.nom)} />
 
       {/* b. Constat, suivi immédiatement de la réponse */}
       <section>
@@ -41,11 +46,11 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
               ))}
             </div>
           </div>
-          <div className="self-end">
+          <div className="self-end rounded-[1.5rem] border border-white/80 bg-white/60 p-6 shadow-[0_30px_70px_-40px_rgb(30_50_50/0.3)] backdrop-blur sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
             <h3 className="type-h3">{constat.answerTitle}</h3>
-            <ol className="mt-6 border-t border-foreground">
+            <ol className="mt-6 border-t border-foreground/80">
               {constat.answer.map((t, i) => (
-                <li key={t} className="flex gap-5 border-b border-border py-5 type-body">
+                <li key={t} className="flex gap-5 border-b border-border py-5 type-body last:border-b-0 last:pb-0">
                   <span className="font-display font-semibold text-primary tabular-nums">{i + 1}</span>
                   {t}
                 </li>
@@ -65,7 +70,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
           <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-0">
             {etapes.items.map((s, i) => (
               <li key={s.title} className="md:border-l md:border-border md:px-8 md:first:border-l-0 md:first:pl-0 md:last:pr-0">
-                <span className="block font-display text-[clamp(4rem,3rem+3vw,6.5rem)] leading-[0.8] font-medium tracking-[-0.05em] text-foreground/15 tabular-nums" aria-hidden>
+                <span className="block font-display text-[clamp(4rem,3rem+3vw,6.5rem)] leading-[0.8] font-medium tracking-[-0.05em] text-primary/25 tabular-nums" aria-hidden>
                   {i + 1}
                 </span>
                 <h3 className="mt-8 type-h3">{s.title}</h3>
@@ -96,6 +101,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
               </div>
             )}
           </div>
+          <UpcomingGrid metiers={upcoming} />
         </div>
       </section>
 
@@ -128,9 +134,15 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         </div>
       </section>
 
-      <section className="on-night">
-        <div className="site-container py-[calc(var(--section-space)*1.1)]">
-          <h2 className="max-w-[14ch] type-hero text-[clamp(2.5rem,1rem+5.5vw,6.5rem)]">{final.title}</h2>
+      {/* Dernier appel : écho de la matière fluide du haut de page (dégradés CSS, sans calcul). */}
+      <section className="relative overflow-hidden bg-[#f6efe2] text-[oklch(0.22_0.03_205)]">
+        <div aria-hidden className="absolute inset-0">
+          <div className="absolute -top-[20%] -left-[10%] size-[60vw] max-w-[900px] rounded-full bg-[#f1d4a3] opacity-70 blur-[120px]" />
+          <div className="absolute -right-[10%] -bottom-[30%] size-[55vw] max-w-[860px] rounded-full bg-[#86b5ad] opacity-70 blur-[120px]" />
+          <div className="absolute top-[30%] left-[45%] size-[30vw] max-w-[480px] rounded-full bg-[#4f8e8a] opacity-35 blur-[120px]" />
+        </div>
+        <div className="site-container relative py-[calc(var(--section-space)*1.1)] text-center">
+          <h2 className="mx-auto max-w-[16ch] type-hero text-[clamp(2.5rem,1rem+5vw,6rem)]">{final.title}</h2>
           <Link href="/formations" className="btn-primary mt-10">
             {CTA_FORMATIONS}
           </Link>
@@ -143,7 +155,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
 const ILLUSTRATION = "/hero/illustration.webp";
 
 /** Le haut de page, selon la version. Le texte est toujours rendu par le serveur, avant le décor. */
-function HeroSection({ variant, tracks }: { variant: HeroVariant; tracks: HeroTrack[] }) {
+function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; tracks: HeroTrack[]; upcoming: string[] }) {
   const { hero } = accueil;
   const ink = "text-[oklch(0.22_0.03_205)]";
 
@@ -156,7 +168,7 @@ function HeroSection({ variant, tracks }: { variant: HeroVariant; tracks: HeroTr
             <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
             <p className="mt-5 max-w-[34rem] type-body text-[oklch(0.3_0.03_205)]/85 sm:type-lead">{hero.subtitle}</p>
             <div className="mt-7">
-              <HeroBox tracks={tracks} cta={CTA_FORMATIONS} tone="light" />
+              <HeroBox tracks={tracks} upcoming={upcoming} cta={CTA_FORMATIONS} tone="light" />
             </div>
             <Link href="#comment-ca-marche" className="link-quiet mt-6 inline-block">
               {hero.secondary}
@@ -219,7 +231,7 @@ function HeroSection({ variant, tracks }: { variant: HeroVariant; tracks: HeroTr
             <h1 className="type-hero max-w-[16ch]">{hero.title}</h1>
             <p className="mt-5 max-w-[34rem] type-body text-white/75 sm:type-lead">{hero.subtitle}</p>
             <div className="mt-7">
-              <HeroBox tracks={tracks} cta={CTA_FORMATIONS} />
+              <HeroBox tracks={tracks} upcoming={upcoming} cta={CTA_FORMATIONS} />
             </div>
           </div>
         </div>

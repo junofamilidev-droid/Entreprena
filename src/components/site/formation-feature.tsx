@@ -6,7 +6,7 @@ import { plain } from "@/lib/vitrine/text";
 // Formation mise en avant sur l'accueil : sa promesse, ses modules et leur disponibilité, une capture.
 export function FormationFeature({ formation }: { formation: FormationWithModules }) {
   return (
-    <article className="grid overflow-hidden rounded-[var(--radius-card)] border border-border bg-card lg:grid-cols-[1.05fr_1fr]">
+    <article className="grid overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/65 shadow-[0_30px_70px_-40px_rgb(30_50_50/0.3)] lg:grid-cols-[1.05fr_1fr] dark:border-white/10 dark:bg-white/[0.04]">
       <div className="flex flex-col p-6 sm:p-10">
         <p className="type-small text-muted-foreground">{formation.domain}</p>
         <h3 className="mt-3 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-[1.05] font-semibold tracking-[-0.03em]">{formation.title}</h3>
@@ -26,7 +26,7 @@ export function FormationFeature({ formation }: { formation: FormationWithModule
           Découvrir la formation
         </Link>
       </div>
-      <div className="relative hidden min-h-[22rem] overflow-hidden border-l border-border bg-muted lg:block">
+      <div className="relative hidden min-h-[22rem] overflow-hidden border-l border-white/70 bg-[radial-gradient(ellipse_at_30%_20%,#f4e3c4,transparent_60%),radial-gradient(ellipse_at_90%_90%,#a9cdc6,transparent_60%)] lg:block dark:border-white/10">
         <div className="absolute top-12 left-12 w-[115%]">
           <Image src="/captures/session-clair.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="rounded-xl border border-border dark:hidden" />
           <Image src="/captures/session-sombre.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="hidden rounded-xl border border-border dark:block" />

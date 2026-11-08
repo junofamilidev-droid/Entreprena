@@ -15,8 +15,9 @@ export type HeroTrack = {
   tasks: { title: string; open: boolean }[];
 };
 
-export function HeroBox({ tracks, cta, tone = "dark" }: { tracks: HeroTrack[]; cta: string; tone?: "dark" | "light" }) {
+export function HeroBox({ tracks, upcoming = [], cta, tone = "dark" }: { tracks: HeroTrack[]; upcoming?: string[]; cta: string; tone?: "dark" | "light" }) {
   const L = tone === "light";
+  const hasMenu = tracks.length + upcoming.length > 1;
   const [index, setIndex] = React.useState(0);
   const [menu, setMenu] = React.useState(false);
   const track = tracks[index];
@@ -75,16 +76,16 @@ export function HeroBox({ tracks, cta, tone = "dark" }: { tracks: HeroTrack[]; c
           <div className="relative">
             <button
               type="button"
-              onClick={() => tracks.length > 1 && setMenu((m) => !m)}
-              aria-haspopup={tracks.length > 1 ? "listbox" : undefined}
-              aria-expanded={tracks.length > 1 ? menu : undefined}
+              onClick={() => hasMenu && setMenu((m) => !m)}
+              aria-haspopup={hasMenu ? "listbox" : undefined}
+              aria-expanded={hasMenu ? menu : undefined}
               className={`inline-flex min-h-8 items-center gap-1.5 rounded-md border px-2.5 whitespace-nowrap focus-visible:outline-2 ${L ? "border-[oklch(0.22_0.03_205)]/15 text-[oklch(0.22_0.03_205)] focus-visible:outline-[oklch(0.22_0.03_205)]" : "border-white/15 text-white/85 focus-visible:outline-white"}`}
             >
               Métier : {track.domain}
-              {tracks.length > 1 && <ChevronDownIcon className="size-3.5" aria-hidden />}
+              {hasMenu && <ChevronDownIcon className="size-3.5" aria-hidden />}
             </button>
             {menu && (
-              <ul role="listbox" className="absolute right-0 z-10 mt-1 min-w-44 rounded-lg border border-white/15 bg-[rgb(8_24_26/0.95)] p-1 backdrop-blur-xl">
+              <ul role="listbox" className={`absolute right-0 z-20 mt-1 max-h-72 min-w-64 overflow-y-auto rounded-lg border p-1 shadow-xl backdrop-blur-xl ${L ? "border-black/10 bg-white/95" : "border-white/15 bg-[rgb(8_24_26/0.95)]"}`}>
                 {tracks.map((t, i) => (
                   <li key={t.slug}>
                     <button
@@ -97,10 +98,18 @@ export function HeroBox({ tracks, cta, tone = "dark" }: { tracks: HeroTrack[]; c
                         setTyped(t.tasks[0]?.title ?? "");
                         setMenu(false);
                       }}
-                      className="w-full rounded-md px-3 py-2 text-left text-white/85 hover:bg-white/10"
+                      className={`w-full rounded-md px-3 py-2 text-left font-medium ${L ? "text-[oklch(0.22_0.03_205)] hover:bg-black/5" : "text-white/85 hover:bg-white/10"}`}
                     >
                       {t.domain}
                     </button>
+                  </li>
+                ))}
+                {upcoming.map((name) => (
+                  <li key={name}>
+                    <span role="option" aria-selected={false} aria-disabled className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 ${L ? "text-[oklch(0.45_0.02_205)]" : "text-white/45"}`}>
+                      {name}
+                      <span className="text-[0.75rem]">bientôt</span>
+                    </span>
                   </li>
                 ))}
               </ul>

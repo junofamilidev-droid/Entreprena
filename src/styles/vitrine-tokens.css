@@ -54,7 +54,7 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Couleurs, thème clair : papier, encre, graphite, pétrole */
-  --background: oklch(0.984 0.004 85);
+  --background: oklch(0.977 0.011 85);
   --foreground: oklch(0.21 0.008 65);
   --card: oklch(0.995 0.002 85);
   --card-foreground: var(--foreground);

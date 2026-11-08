@@ -8,7 +8,7 @@ export function FormationCard({ formation, available }: { formation: FormationWi
   const open = formation.modules.filter((m) => m.availability === "open").length;
   const total = formation.modules.length;
   return (
-    <article className="relative flex flex-col rounded-[var(--radius-card)] border border-border bg-card p-6 sm:p-8">
+    <article className="relative flex flex-col rounded-[1.5rem] border border-white/80 bg-white/65 p-6 shadow-[0_30px_70px_-40px_rgb(30_50_50/0.3)] sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
       <p className="type-small text-muted-foreground">{formation.domain}</p>
       <h3 className="mt-2 type-h3">
         {available ? (

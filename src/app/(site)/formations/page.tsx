@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { FormationCard } from "@/components/site/formation-card";
 import { listFormations } from "@/lib/content/source";
 import { accueil } from "@/lib/vitrine/textes";
+import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
+import { UpcomingGrid } from "@/components/site/upcoming-card";
 
 export const metadata: Metadata = {
   title: "Les formations",
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
 
 export default async function CataloguePage() {
   const formations = await listFormations();
+  const published = new Set(formations.map((f) => f.domain.toLowerCase()));
+  const upcoming = METIERS_A_VENIR.filter((m) => !published.has(m.nom.toLowerCase()));
   return (
     <div className="site-container pt-12 pb-[var(--section-space)] sm:pt-20">
       <h1 className="type-display">{accueil.formations.title}</h1>
@@ -19,6 +23,7 @@ export default async function CataloguePage() {
           <FormationCard key={f.id} formation={f} available />
         ))}
       </div>
+      <UpcomingGrid metiers={upcoming} />
     </div>
   );
 }
