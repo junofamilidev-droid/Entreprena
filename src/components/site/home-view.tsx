@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroBox, type HeroTrack } from "@/components/site/hero-box";
 import { HeroAbstract } from "@/components/site/hero-abstract";
 import { HeroImage } from "@/components/site/hero-image";
+import { HeroScrollFx, ScrollCue } from "@/components/site/hero-scroll";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { ProductShowcase } from "@/components/site/product-showcase";
@@ -39,7 +40,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
       <HeroSection variant={variant} tracks={tracks} upcoming={upcoming.map((m) => m.nom)} />
 
       {/* b. Le constat, montré dans un cadre produit « en direct ». */}
-      <section>
+      <section id="suite" className="scroll-mt-16">
         <div className="site-container site-section">
           <SectionConstat
             eyebrow={constat.eyebrow}
@@ -161,7 +162,7 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
         {/* Fond : la matière fluide (claire au centre, sous le titre), avec sa traînée de pixels. */}
         <HeroAbstract className="absolute inset-0 h-full w-full" focus="center" />
         <div className="site-container relative flex flex-1 flex-col pt-24 pb-10 md:justify-center md:pt-20 md:pb-16">
-          <div className="relative z-10 mx-auto max-w-[38rem] text-center">
+          <HeroScrollFx className="relative z-10 mx-auto max-w-[38rem] text-center will-change-transform">
             <h1 className="type-hero mx-auto max-w-[15ch] text-[clamp(2.375rem,1.2rem+3.4vw,4.5rem)]">{hero.title}</h1>
             <p className="mx-auto mt-5 max-w-[30rem] type-body text-[oklch(0.3_0.03_205)]/85 sm:type-lead">{hero.subtitle}</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
@@ -172,8 +173,9 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
                 {hero.secondary}
               </Link>
             </div>
-          </div>
+          </HeroScrollFx>
         </div>
+        <ScrollCue href="#suite" />
       </section>
     );
   }

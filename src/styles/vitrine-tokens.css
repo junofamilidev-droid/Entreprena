@@ -278,3 +278,27 @@
     animation: none;
   }
 }
+
+/* Indicateur « Découvrir » : un point de lumière descend le long d'un fil, en boucle. */
+.site .scroll-cue-dot {
+  animation: scroll-cue 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes scroll-cue {
+  from {
+    transform: translate(-50%, -8px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, 52px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site .scroll-cue-dot {
+    animation: none;
+    top: 40%;
+  }
+}

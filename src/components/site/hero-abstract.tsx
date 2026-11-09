@@ -16,6 +16,7 @@ uniform float uTime;
 uniform vec2 uMouse;
 uniform sampler2D uTrail;
 uniform float uCell;
+uniform float uScroll; // 0 : haut de page entier, 1 : haut de page sorti de l'écran
 uniform float uFocus; // 0 : clair à gauche (texte à gauche), 1 : clair au centre (texte centré)
 
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -69,7 +70,9 @@ vec3 matter(vec2 frag){
 void main(){
   vec2 frag = gl_FragCoord.xy;
   vec2 uv = frag / uRes;
-  vec3 col = matter(frag);
+  // La matière monte en s'évaporant quand on fait défiler.
+  vec2 lifted = frag - vec2(0.0, uScroll * uRes.y * 0.45);
+  vec3 col = matter(lifted);
   // seuil : la petite toile s'efface par paliers, on ignore les restes presque noirs
   float trail = (texture2D(uTrail, vec2(uv.x, 1.0 - uv.y)).r - 0.12) / 0.88;
   if (trail > 0.0) {
@@ -78,6 +81,16 @@ void main(){
     block = mix(block, vec3(1.0, 0.93, 0.8), 0.18);
     col = mix(col, block, min(1.0, trail * 1.1));
   }
+  // Évaporation : un front irrégulier monte depuis le bas ; en dessous, la matière se dissout dans le fond
+  // de la page (crème), avec une frange lumineuse le long du front. Le bas reste toujours fondu.
+  vec3 page = vec3(0.984, 0.969, 0.938);
+  float n = fbm(uv * vec2(3.2, 2.2) + vec2(0.0, -uTime * 0.06 - uScroll * 2.5));
+  float front = -0.08 + uScroll * 1.45;
+  float y = uv.y + (n - 0.5) * 0.38;
+  float keep = smoothstep(front - 0.1, front + 0.14, y);
+  float rest = smoothstep(0.0, 0.2, uv.y + (n - 0.5) * 0.12);
+  col = mix(page, col, keep * rest);
+  col += vec3(1.0, 0.94, 0.82) * (1.0 - abs(keep - 0.5) * 2.0) * 0.07 * smoothstep(0.0, 0.05, uScroll);
   // grain très léger
   col += (hash(frag + uTime) - 0.5) * 0.018;
   gl_FragColor = vec4(col, 1.0);
@@ -128,6 +141,8 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
     const uMouse = gl.getUniformLocation(prog, "uMouse");
     const uCell = gl.getUniformLocation(prog, "uCell");
     const uFocus = gl.getUniformLocation(prog, "uFocus");
+    const uScroll = gl.getUniformLocation(prog, "uScroll");
+    let scrollP = 0;
 
     // Traînée de pixels : une petite toile (une case = un pixel), envoyée comme texture.
     const trail = document.createElement("canvas");
@@ -176,6 +191,7 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
       gl.uniform2f(uMouse, mx, my);
       gl.uniform1f(uCell, cell * scale);
       gl.uniform1f(uFocus, focus === "center" ? 1 : 0);
+      gl.uniform1f(uScroll, scrollP);
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, trail);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -236,6 +252,11 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
       lastPt = { x, y };
     };
     const onLeave = () => (lastPt = null);
+    // Avancement du défilement sur le haut de page (0 → 1), lu par l'animation à chaque image.
+    const onScroll = () => {
+      const r = canvas.getBoundingClientRect();
+      scrollP = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height)));
+    };
 
     setup();
     draw();
@@ -244,6 +265,8 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
     if (!reduce) {
       host.addEventListener("pointermove", onMove);
       host.addEventListener("pointerleave", onLeave);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
     }
     const ro = new ResizeObserver(() => {
       setup();
@@ -264,6 +287,7 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
       io.disconnect();
       host.removeEventListener("pointermove", onMove);
       host.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVis);
     };
   }, [focus]);
