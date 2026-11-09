@@ -34,8 +34,9 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
         }
         if (!reduce) {
           const k = Math.min(1, Math.abs(d));
+          // Les voisines reculent (échelle) et pâlissent un peu, sans descendre sous un contraste lisible.
           it.style.transform = `scale(${(1 - k * 0.06).toFixed(3)})`;
-          it.style.opacity = (1 - k * 0.45).toFixed(3);
+          it.style.opacity = (1 - k * 0.12).toFixed(3);
         }
       });
       setActive(best);
@@ -90,7 +91,7 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
       </div>
 
       <div className="site-container mt-2 flex items-center justify-between gap-6">
-        <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Choisir un métier">
+        <div className="flex flex-wrap items-center" role="tablist" aria-label="Choisir un métier">
           {labels.map((l, i) => (
             <button
               key={l}
@@ -98,7 +99,8 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
               aria-selected={i === active}
               aria-label={l}
               onClick={() => go(i)}
-              className="group grid h-6 place-items-center px-0.5 focus-visible:outline-2 focus-visible:outline-ring"
+              className="group grid size-[26px] place-items-center focus-visible:outline-2 focus-visible:outline-ring data-[on=true]:w-[42px]"
+              data-on={i === active}
             >
               <span
                 className={cn(
