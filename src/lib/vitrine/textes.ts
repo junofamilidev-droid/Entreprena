@@ -25,6 +25,11 @@ export const accueil = {
       "L'IA produit déjà en quelques minutes une partie du travail qui prenait des heures : trier, calculer, rédiger un premier jet.",
       "Ce qu'elle ne fait pas seule : juger, vérifier, engager sa responsabilité. C'est là que votre métier se déplace, et c'est là que votre valeur se joue.",
     ],
+    // Les tâches qui se rangent d'elles-mêmes en deux colonnes (animation de la section).
+    partage: {
+      ai: { title: "L'IA s'en charge, sous votre contrôle", items: ["Trier les pièces", "Calculer les écarts", "Rapprocher les données", "Rédiger un premier jet", "Mettre en forme"] },
+      you: { title: "Vous gardez la main", items: ["Juger ce qui compte", "Vérifier les chiffres", "Expliquer au client", "Engager votre responsabilité"] },
+    },
     answerTitle: "Ce que vous pouvez faire dès maintenant",
     answer: [
       "Savoir quelles tâches confier à l'IA, et lesquelles garder.",

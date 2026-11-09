@@ -11,7 +11,10 @@ import { FormationFeature } from "@/components/site/formation-feature";
 import { Faq } from "@/components/site/faq";
 import { listFormations } from "@/lib/content/source";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
-import { UpcomingGrid } from "@/components/site/upcoming-card";
+import { UpcomingMarquee } from "@/components/site/upcoming-marquee";
+import { TaskSort } from "@/components/site/task-sort";
+import { StepsPath } from "@/components/site/steps-path";
+import { CheckIcon, XIcon } from "lucide-react";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
 
 export type HeroVariant = "abstrait" | "produit" | "illustration";
@@ -35,49 +38,51 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
       {/* a. Haut de page : plusieurs versions à comparer (voir HeroSection plus bas). */}
       <HeroSection variant={variant} tracks={tracks} upcoming={upcoming.map((m) => m.nom)} />
 
-      {/* b. Constat, suivi immédiatement de la réponse */}
+      {/* b. Constat, suivi immédiatement de la réponse : les tâches se partagent sous vos yeux. */}
       <section>
-        <div className="site-container site-section grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-20">
-          <div>
+        <div className="site-container site-section">
+          <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:gap-20">
             <h2 className="max-w-[20ch] type-h2">{constat.title}</h2>
-            <div className="mt-8 max-w-[var(--text-max)] space-y-4 type-lead text-foreground/75">
+            <div className="max-w-[var(--text-max)] space-y-3 type-lead text-foreground/75">
               {constat.text.map((t) => (
                 <p key={t}>{t}</p>
               ))}
             </div>
           </div>
-          <div className="self-end rounded-[1.5rem] border border-white/80 bg-white/60 p-6 shadow-[0_30px_70px_-40px_rgb(30_50_50/0.3)] backdrop-blur sm:p-8 dark:border-white/10 dark:bg-white/[0.04]">
-            <h3 className="type-h3">{constat.answerTitle}</h3>
-            <ol className="mt-6 border-t border-foreground/80">
-              {constat.answer.map((t, i) => (
-                <li key={t} className="flex gap-5 border-b border-border py-5 type-body last:border-b-0 last:pb-0">
-                  <span className="font-display font-semibold text-primary tabular-nums">{i + 1}</span>
-                  {t}
-                </li>
-              ))}
-            </ol>
+          <div className="mt-12">
+            <TaskSort columns={constat.partage} />
           </div>
-        </div>
-      </section>
-
-      {/* c. Comment ça marche : une vraie séquence, d'où la numérotation */}
-      <section id="comment-ca-marche" className="scroll-mt-16 border-t border-border">
-        <div className="site-container site-section">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="type-h2">{etapes.title}</h2>
-            <p className="type-lead text-muted-foreground">{etapes.intro}</p>
-          </div>
-          <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-0">
-            {etapes.items.map((s, i) => (
-              <li key={s.title} className="md:border-l md:border-border md:px-8 md:first:border-l-0 md:first:pl-0 md:last:pr-0">
-                <span className="block font-display text-[clamp(4rem,3rem+3vw,6.5rem)] leading-[0.8] font-medium tracking-[-0.05em] text-primary/25 tabular-nums" aria-hidden>
-                  {i + 1}
-                </span>
-                <h3 className="mt-8 type-h3">{s.title}</h3>
-                <p className="mt-3 type-body text-foreground/75">{s.text}</p>
+          <h3 className="mt-16 type-h3">{constat.answerTitle}</h3>
+          <ol className="mt-6 grid gap-4 md:grid-cols-3">
+            {constat.answer.map((t, i) => (
+              <li key={t} className="flex gap-4 rounded-[1.25rem] border border-white/80 bg-white/55 p-6 dark:border-white/10 dark:bg-white/[0.04]">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-semibold text-primary tabular-nums">{i + 1}</span>
+                <p className="type-body">{t}</p>
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      {/* c. Comment ça marche : trois cartes reliées par un chemin qui se trace au défilement. */}
+      <section id="comment-ca-marche" className="scroll-mt-16">
+        <div className="site-container site-section">
+          <div className="mx-auto max-w-[40rem] text-center">
+            <h2 className="type-h2">{etapes.title}</h2>
+            <p className="mt-4 type-lead text-muted-foreground">{etapes.intro}</p>
+          </div>
+          <div className="mt-14">
+            <StepsPath
+              steps={etapes.items.map((it, i) => ({
+                ...it,
+                ...[
+                  { image: "/captures/mission", w: 760, h: 1008, alt: "Le message de mission reçu dans la session." },
+                  { image: "/captures/outil", w: 900, h: 657, alt: "L'outil Claude et ses règles." },
+                  { image: "/captures/fiche", w: 860, h: 517, alt: "La fiche à réutiliser sur vos dossiers." },
+                ][i],
+              }))}
+            />
+          </div>
         </div>
       </section>
 
@@ -101,28 +106,39 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
               </div>
             )}
           </div>
-          <UpcomingGrid metiers={upcoming} />
         </div>
+        <UpcomingMarquee metiers={upcoming} title="Et bientôt, d'autres métiers" />
       </section>
 
-      {/* f. Pour qui / ce que ce n'est pas */}
-      <section className="border-t border-border">
-        <div className="site-container site-section grid gap-14 md:grid-cols-2 md:gap-20">
-          {[
-            { title: pourQui.title, items: pourQui.forWhom },
-            { title: pourQui.notThisTitle, items: pourQui.notThis },
-          ].map((col) => (
-            <div key={col.title}>
-              <h2 className="type-h2">{col.title}</h2>
-              <ul className="mt-8 border-t border-foreground">
-                {col.items.map((t) => (
-                  <li key={t} className="border-b border-border py-5 type-body">
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+      {/* f. Pour qui / ce que ce n'est pas : deux cartes, coches d'un côté, limites franches de l'autre. */}
+      <section>
+        <div className="site-container site-section grid gap-5 md:grid-cols-2">
+          <div className="rounded-[1.75rem] border border-primary/20 bg-[linear-gradient(160deg,rgb(255_255_255/0.85),rgb(214_232_228/0.6))] p-7 shadow-[0_30px_70px_-40px_rgb(20_70_70/0.4)] sm:p-10 dark:border-primary/30 dark:bg-white/[0.05]">
+            <h2 className="type-h2 text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)]">{pourQui.title}</h2>
+            <ul className="mt-8 space-y-5">
+              {pourQui.forWhom.map((t) => (
+                <li key={t} className="flex gap-4 type-body">
+                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+                    <CheckIcon className="size-4" aria-hidden />
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-[1.75rem] border border-white/80 bg-white/45 p-7 sm:p-10 dark:border-white/10 dark:bg-white/[0.03]">
+            <h2 className="type-h2 text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)]">{pourQui.notThisTitle}</h2>
+            <ul className="mt-8 space-y-5">
+              {pourQui.notThis.map((t) => (
+                <li key={t} className="flex gap-4 type-body text-foreground/80">
+                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border border-border text-muted-foreground">
+                    <XIcon className="size-3.5" aria-hidden />
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 

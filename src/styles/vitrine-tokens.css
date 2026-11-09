@@ -248,3 +248,33 @@
 .site header[data-on-hero] .text-primary {
   color: oklch(0.86 0.11 82);
 }
+
+/* Bandeaux qui défilent (métiers à venir) : deux copies du contenu, translation de -100 %. */
+.site .marquee-track {
+  animation: marquee 60s linear infinite;
+}
+.site .marquee-reverse {
+  animation-direction: reverse;
+}
+.site .marquee:hover .marquee-track,
+.site .marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site .marquee {
+    mask-image: none;
+  }
+  .site .marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    padding-inline: var(--gutter);
+  }
+  .site .marquee-track[aria-hidden] {
+    display: none;
+  }
+}

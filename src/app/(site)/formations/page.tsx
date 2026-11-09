@@ -3,7 +3,7 @@ import { FormationCard } from "@/components/site/formation-card";
 import { listFormations } from "@/lib/content/source";
 import { accueil } from "@/lib/vitrine/textes";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
-import { UpcomingGrid } from "@/components/site/upcoming-card";
+import { UpcomingMarquee } from "@/components/site/upcoming-marquee";
 
 export const metadata: Metadata = {
   title: "Les formations",
@@ -15,7 +15,8 @@ export default async function CataloguePage() {
   const published = new Set(formations.map((f) => f.domain.toLowerCase()));
   const upcoming = METIERS_A_VENIR.filter((m) => !published.has(m.nom.toLowerCase()));
   return (
-    <div className="site-container pt-12 pb-[var(--section-space)] sm:pt-20">
+    <>
+    <div className="site-container pt-12 sm:pt-20">
       <h1 className="type-display">{accueil.formations.title}</h1>
       <p className="mt-6 max-w-[var(--text-max)] type-lead text-muted-foreground">{accueil.formations.intro}</p>
       <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -23,7 +24,10 @@ export default async function CataloguePage() {
           <FormationCard key={f.id} formation={f} available />
         ))}
       </div>
-      <UpcomingGrid metiers={upcoming} />
     </div>
+    <div className="pb-[var(--section-space)]">
+      <UpcomingMarquee metiers={upcoming} title="Et bientôt, d'autres métiers" />
+    </div>
+    </>
   );
 }
