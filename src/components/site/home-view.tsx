@@ -104,7 +104,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         <div className="site-container site-section grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-20">
           <div>
             <Eyebrow>Aide</Eyebrow>
-            <h2 className="mt-5 font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{faq.title}</h2>
+            <h2 className="mt-5 font-display text-[clamp(2rem,1.2rem+2vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{faq.title}</h2>
           </div>
           <Faq items={faq.items} />
         </div>
@@ -114,7 +114,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
       <section className="site-container pb-[var(--section-space)]">
         <Frame caption="Prêt à commencer" scene="nuit-3" bodyClassName="px-6 pt-24 pb-10 sm:px-12 sm:pt-40 sm:pb-14">
           <div className="flex flex-wrap items-end justify-between gap-8">
-            <h2 className="max-w-[16ch] font-display text-[clamp(2.25rem,1.3rem+3.6vw,4.5rem)] leading-[1] font-semibold tracking-[-0.04em]">{final.title}</h2>
+            <h2 className="max-w-[16ch] font-display text-[clamp(2.25rem,1.2rem+2.6vw,3.75rem)] leading-[1] font-semibold tracking-[-0.04em]">{final.title}</h2>
             <Link href="/formations" className="btn-primary !bg-white !text-[oklch(0.2_0.02_200)]">
               {CTA_FORMATIONS}
             </Link>

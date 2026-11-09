@@ -9,7 +9,7 @@ export function SectionPourQui({ yesTitle, yes, noTitle, no }: { yesTitle: strin
       <div className="grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-20">
         <div>
           <Eyebrow>Pour qui</Eyebrow>
-          <h2 className="mt-4 max-w-[18ch] font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.04em]">
+          <h2 className="mt-4 max-w-[18ch] font-display text-[clamp(2rem,1.2rem+2vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em]">
             Conçue pour les professionnels en poste.
           </h2>
         </div>

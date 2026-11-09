@@ -119,7 +119,7 @@ export function SectionConstat({
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-end lg:gap-20">
         <div>
           <Eyebrow>{eyebrow}</Eyebrow>
-          <h2 className="mt-4 font-display text-[clamp(2.25rem,1.3rem+3.4vw,4.25rem)] leading-[1] font-semibold tracking-[-0.045em]">{title}</h2>
+          <h2 className="mt-4 font-display text-[clamp(2.25rem,1.2rem+2.4vw,3.5rem)] leading-[1] font-semibold tracking-[-0.045em]">{title}</h2>
         </div>
         <p className="max-w-[36rem] type-lead text-foreground/75 lg:justify-self-end">{commentaire}</p>
       </div>

@@ -31,14 +31,14 @@
   --step-h2: clamp(2rem, 1.35rem + 2.7vw, 3.5rem);
   --step-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
   --step-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
-  --step-body: 1.0625rem;
+  --step-body: 1.125rem;
   --step-small: 0.9375rem;
 
   /* Espacements */
   --gutter: 1rem; /* marge latérale à 375 px */
   --content-max: 76rem;
   --text-max: 40rem;
-  --section-space: clamp(4.5rem, 2.5rem + 7vw, 9.5rem);
+  --section-space: clamp(4.5rem, 3rem + 5vw, 8rem);
   --block-space: clamp(2rem, 1.5rem + 2vw, 3.5rem);
 
   /* Rayons : petits et différenciés selon la hiérarchie */
@@ -300,5 +300,21 @@
   .site .scroll-cue-dot {
     animation: none;
     top: 40%;
+  }
+}
+
+/*
+ * Échelle de la vitrine. Les tailles sont en rem : on réduit la base sur les pages de la vitrine
+ * seulement (la plateforme n'est pas touchée). En pourcentage, le réglage de taille du navigateur
+ * du visiteur reste respecté. Mobile et tablette : inchangé ; ordinateurs portables (1024–1679 px) : 87,5 % ; grands écrans : 93,75 %.
+ */
+@media (min-width: 1024px) {
+  html:has(.site) {
+    font-size: 87.5%;
+  }
+}
+@media (min-width: 1680px) {
+  html:has(.site) {
+    font-size: 93.75%;
   }
 }

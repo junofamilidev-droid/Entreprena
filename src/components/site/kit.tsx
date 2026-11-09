@@ -23,7 +23,7 @@ export function SectionHead({ eyebrow, title, children, className }: { eyebrow: 
     <div className={cn("grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-20", className)}>
       <div>
         <Eyebrow>{eyebrow}</Eyebrow>
-        <h2 className="mt-4 max-w-[18ch] font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{title}</h2>
+        <h2 className="mt-4 max-w-[18ch] font-display text-[clamp(2rem,1.2rem+2vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{title}</h2>
       </div>
       {children && <div className="max-w-[36rem] type-lead text-foreground/70 lg:justify-self-end">{children}</div>}
     </div>
