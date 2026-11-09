@@ -5,7 +5,7 @@ export function SectionPourQui({ yesTitle, yes, noTitle, no }: { yesTitle: strin
   return (
     <div>
       <Eyebrow>Pour qui</Eyebrow>
-      <h2 className="mt-5 max-w-[22ch] font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-medium tracking-[-0.035em]">
+      <h2 className="mt-5 max-w-[22ch] font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.04em]">
         Faite pour les professionnels en poste. Pas pour tout le monde.
       </h2>
       <div className="mt-12 grid border-t border-foreground/80 md:grid-cols-2">
@@ -14,9 +14,9 @@ export function SectionPourQui({ yesTitle, yes, noTitle, no }: { yesTitle: strin
           { head: noTitle, items: no, mark: "Non" },
         ].map((col, c) => (
           <div key={col.head} className={c === 1 ? "md:border-l md:border-border md:pl-10" : "md:pr-10"}>
-            <p className="flex items-center justify-between border-b border-border py-4 font-mono text-[0.75rem] tracking-[0.04em] uppercase">
+            <p className="flex items-center justify-between border-b border-border py-4 text-[0.9375rem] font-semibold">
               <span>{col.head}</span>
-              <span className={c === 0 ? "text-primary" : "text-muted-foreground"}>{col.mark}</span>
+              <span className={c === 0 ? "rounded-full bg-primary/10 px-3 py-1 text-[0.8125rem] text-primary" : "rounded-full bg-foreground/[0.05] px-3 py-1 text-[0.8125rem] text-muted-foreground"}>{col.mark}</span>
             </p>
             <ul>
               {col.items.map((t) => (

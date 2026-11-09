@@ -1,17 +1,18 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { FrameClock } from "./frame-clock";
 
-// Briques de mise en page de la vitrine, inspirées des sites produits les plus soignés (neuralk.ai) :
-// - Eyebrow : petite étiquette à carré coloré, en chasse fixe, au-dessus d'un titre ;
-// - SectionHead : titre à gauche, texte d'appui à droite ;
-// - Frame : cadre « fenêtre » sur un paysage de la matière fluide, coins marqués, barre d'état avec horloge,
-//   qui accueille un aperçu du produit.
+// Briques de mise en page de la vitrine. Signature de la marque : la lumière fluide
+// (crème, bleu-vert, or) — en fond des fenêtres, en halo autour d'elles, en dégradé sur les repères.
+
+/** Pastille de lumière : petit dégradé or → bleu-vert, la marque dans un point. */
+export function LightDot({ className }: { className?: string }) {
+  return <span aria-hidden className={cn("inline-block size-2.5 rounded-full bg-[conic-gradient(from_200deg,#e9b872,#f6e7c8,#4f9e98,#e9b872)]", className)} />;
+}
 
 export function Eyebrow({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn("inline-flex items-center gap-2 bg-foreground/[0.04] px-2 py-1 font-mono text-[0.75rem] tracking-[0.02em] text-foreground/75 uppercase", className)}>
-      <span className="size-2 bg-primary" aria-hidden />
+    <p className={cn("inline-flex items-center gap-2.5 text-[0.9375rem] font-medium text-foreground/70", className)}>
+      <LightDot />
       {children}
     </p>
   );
@@ -22,43 +23,55 @@ export function SectionHead({ eyebrow, title, children, className }: { eyebrow: 
     <div className={cn("grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-20", className)}>
       <div>
         <Eyebrow>{eyebrow}</Eyebrow>
-        <h2 className="mt-5 max-w-[18ch] font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-medium tracking-[-0.035em]">{title}</h2>
+        <h2 className="mt-4 max-w-[18ch] font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{title}</h2>
       </div>
       {children && <div className="max-w-[36rem] type-lead text-foreground/70 lg:justify-self-end">{children}</div>}
     </div>
   );
 }
 
-function Corner({ className }: { className: string }) {
-  return <span aria-hidden className={cn("absolute size-3 border-white/80", className)} />;
+/** Numéro de repère en dégradé de lumière (« 01 », « 02 »…). */
+export function LightNumber({ n, className }: { n: number; className?: string }) {
+  return (
+    <span className={cn("bg-[linear-gradient(135deg,#d9a35a,#4f9e98)] bg-clip-text font-display font-semibold text-transparent tabular-nums", className)}>
+      {String(n).padStart(2, "0")}
+    </span>
+  );
 }
 
+/**
+ * Fenêtre de lumière : un grand panneau arrondi sur un paysage de la matière fluide, avec un halo coloré
+ * autour. Elle accueille les écrans de la plateforme. `caption` : petite légende en haut à gauche.
+ */
 export function Frame({
-  label,
+  caption,
   scene = "nuit-1",
   children,
   className,
   bodyClassName,
 }: {
-  label: string;
+  caption?: React.ReactNode;
   scene?: "nuit-1" | "nuit-2" | "nuit-3" | "jour-1";
   children: React.ReactNode;
   className?: string;
   bodyClassName?: string;
 }) {
+  const light = scene === "jour-1";
   return (
-    <div className={cn("relative isolate overflow-hidden rounded-[6px] bg-[oklch(0.2_0.03_200)] text-white", className)}>
-      <Image src={`/paysages/${scene}.webp`} alt="" fill sizes="100vw" className="-z-10 object-cover" />
-      <Corner className="top-2.5 left-2.5 rounded-tl-[4px] border-t-2 border-l-2" />
-      <Corner className="top-2.5 right-2.5 rounded-tr-[4px] border-t-2 border-r-2" />
-      <Corner className="bottom-2.5 left-2.5 rounded-bl-[4px] border-b-2 border-l-2" />
-      <Corner className="right-2.5 bottom-2.5 rounded-br-[4px] border-r-2 border-b-2" />
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center px-8 pt-3 font-mono text-[0.75rem] tracking-[0.04em] text-white/85 uppercase sm:px-12">
-        <span className="truncate">{label}</span>
-        <FrameClock />
-        <span />
+    <div className={cn("relative", className)}>
+      <div aria-hidden className="absolute -inset-6 -z-10 rounded-[3rem] bg-[radial-gradient(60%_60%_at_20%_30%,rgb(233_184_114/0.35),transparent),radial-gradient(60%_60%_at_85%_80%,rgb(79_158_152/0.35),transparent)] blur-2xl" />
+      <div className={cn("relative isolate overflow-hidden rounded-[28px] ring-1 ring-black/5", light ? "text-[oklch(0.22_0.03_205)]" : "text-white")}>
+        <Image src={`/paysages/${scene}.webp`} alt="" fill sizes="100vw" className="-z-10 object-cover" />
+        {caption && (
+          <div className="px-6 pt-5 sm:px-10 sm:pt-7">
+            <span className={cn("inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.8125rem] font-medium backdrop-blur", light ? "bg-white/60" : "bg-white/12 text-white/90")}>
+              <LightDot className="size-2" />
+              {caption}
+            </span>
+          </div>
+        )}
+        <div className={cn("relative px-4 pt-6 pb-8 sm:px-10 sm:pt-8 sm:pb-12", bodyClassName)}>{children}</div>
       </div>
-      <div className={cn("relative px-4 pt-6 pb-8 sm:px-12 sm:pt-8 sm:pb-12", bodyClassName)}>{children}</div>
     </div>
   );
 }
@@ -66,14 +79,14 @@ export function Frame({
 /** Fenêtre d'application posée dans un cadre (barre à trois points, adresse). */
 export function AppWindow({ address, children, className }: { address: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("overflow-hidden rounded-[10px] border border-white/25 bg-[oklch(0.25_0.02_200)/0.6] shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)] backdrop-blur", className)}>
+    <div className={cn("overflow-hidden rounded-[18px] border border-white/30 bg-white/15 shadow-[0_40px_80px_-30px_rgb(0_0_0/0.55)] backdrop-blur-md", className)}>
       <div className="flex items-center gap-3 px-4 py-2.5">
         <span className="flex gap-1.5" aria-hidden>
-          <i className="size-2.5 rounded-full bg-[#ff5f57]" />
-          <i className="size-2.5 rounded-full bg-[#febc2e]" />
-          <i className="size-2.5 rounded-full bg-[#28c840]" />
+          <i className="size-2.5 rounded-full bg-white/50" />
+          <i className="size-2.5 rounded-full bg-white/35" />
+          <i className="size-2.5 rounded-full bg-white/25" />
         </span>
-        <span className="mx-auto truncate rounded-md bg-white/10 px-6 py-1 text-[0.6875rem] text-white/60">{address}</span>
+        <span className="mx-auto truncate rounded-full bg-white/15 px-5 py-1 text-[0.6875rem] text-white/75">{address}</span>
         <span className="w-12" aria-hidden />
       </div>
       <div className="bg-[oklch(0.985_0.004_85)] text-[oklch(0.2_0.02_200)]">{children}</div>

@@ -21,15 +21,7 @@ export const accueil = {
 
   constat: {
     eyebrow: "Le constat",
-    // Tableau de mission animé : ce que Claude prépare avec l'outil, ce que vous gardez.
-    lignes: [
-      { task: "Trier les 81 comptes de la balance", by: "claude", done: "Fait", pending: "En cours" },
-      { task: "Calculer les écarts N / N-1", by: "claude", done: "Fait", pending: "En cours" },
-      { task: "Rédiger un premier jet de la note", by: "claude", done: "Prêt à relire", pending: "En cours" },
-      { task: "Juger les écarts qui comptent vraiment", by: "vous", done: "Décidé", pending: "À faire" },
-      { task: "Recalculer un échantillon à la main", by: "vous", done: "Vérifié", pending: "À faire" },
-      { task: "Signer et envoyer au client", by: "vous", done: "Signé", pending: "À faire" },
-    ] as { task: string; by: "claude" | "vous"; done: string; pending: string }[],
+    // Le tableau « Qui fait quoi » est rempli par métier : voir src/lib/vitrine/exemples.ts.
     title: "L'IA fait déjà une partie du travail. Pas celle qui compte le plus.",
     text: [
       "L'IA produit déjà en quelques minutes une partie du travail qui prenait des heures : trier, calculer, rédiger un premier jet.",

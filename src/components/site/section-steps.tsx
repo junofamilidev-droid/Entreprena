@@ -1,19 +1,21 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
-import { AppWindow, Frame, SectionHead } from "./kit";
+import { AppWindow, Frame, LightNumber, SectionHead } from "./kit";
+import { ExempleNote, useMetier } from "./metier-context";
+import { MockFiche, MockMission, MockOutil, MockVerifs } from "./mock-screens";
 import { cn } from "@/lib/utils";
 
-// « Comment ça marche » : un cadre produit qui montre la vraie capture de l'étape active,
-// et trois cartes sous la fenêtre. La carte active est claire, les autres en verre sombre ;
-// les étapes avancent seules (barre de progression), et on peut cliquer pour choisir.
+// « Comment ça marche » : une fenêtre de lumière montre l'écran de l'étape active, rempli avec
+// l'exemple du métier choisi, et trois cartes en dessous. Les étapes avancent seules (barre dorée),
+// et on peut cliquer pour choisir. Pause hors de l'écran ; fixe si l'on demande moins d'animations.
 
-export type StepItem = { label: string; title: string; text: string; image: string; w: number; h: number; alt: string };
+export type StepItem = { label: string; title: string; text: string };
 
 const DURATION = 5200;
 
 export function SectionSteps({ eyebrow, title, intro, steps }: { eyebrow: string; title: string; intro: string; steps: StepItem[] }) {
+  const { exemple, metier } = useMetier();
   const ref = React.useRef<HTMLDivElement>(null);
   const [active, setActive] = React.useState(0);
   const [auto, setAuto] = React.useState(false);
@@ -32,6 +34,15 @@ export function SectionSteps({ eyebrow, title, intro, steps }: { eyebrow: string
     return () => clearTimeout(id);
   }, [auto, active, steps.length]);
 
+  const screens = [
+    <MockMission key="m" ex={exemple} className="w-full max-w-[30rem]" />,
+    <MockOutil key="o" ex={exemple} className="w-full max-w-[34rem]" />,
+    <div key="f" className="grid w-full max-w-[44rem] gap-3 sm:grid-cols-2">
+      <MockVerifs ex={exemple} />
+      <MockFiche ex={exemple} />
+    </div>,
+  ];
+
   return (
     <div>
       <SectionHead eyebrow={eyebrow} title={title}>
@@ -39,26 +50,15 @@ export function SectionSteps({ eyebrow, title, intro, steps }: { eyebrow: string
       </SectionHead>
 
       <div ref={ref} className="mt-14">
-        <Frame label={`Étape ${active + 1} sur ${steps.length}`} scene="nuit-2" bodyClassName="pb-6 sm:pb-8">
+        <Frame caption={<>Étape {active + 1} sur {steps.length} · exemple en {metier.toLowerCase()}</>} scene="nuit-2" bodyClassName="pb-6 sm:pb-8">
           <AppWindow address="entreprena · session" className="mx-auto max-w-[56rem]">
-            <div className="relative aspect-[16/9] overflow-hidden bg-[oklch(0.96_0.006_85)]">
-              {steps.map((s, i) => (
-                <Image
-                  key={s.image}
-                  src={`${s.image}-clair.webp`}
-                  width={s.w}
-                  height={s.h}
-                  alt={s.alt}
-                  sizes="(min-width: 1024px) 56rem, 92vw"
-                  className={cn(
-                    "absolute top-[6%] left-1/2 w-auto max-w-[86%] -translate-x-1/2 rounded-lg shadow-[0_20px_50px_-20px_rgb(0_0_0/0.35)] transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                    s.h > s.w ? "h-[120%]" : "h-[96%]",
-                    i === active ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
-                  )}
-                />
-              ))}
+            <div className="grid min-h-[22rem] place-items-center bg-[radial-gradient(70%_80%_at_20%_10%,#f6e7c8,transparent),radial-gradient(70%_80%_at_90%_90%,#cfe3df,transparent)] px-4 py-8 sm:min-h-[24rem] sm:px-10">
+              <div key={`${active}-${exemple.id}`} className="mock-in flex w-full justify-center drop-shadow-[0_20px_30px_rgb(20_50_50/0.18)]">
+                {screens[active]}
+              </div>
             </div>
           </AppWindow>
+          <ExempleNote className="mt-3 text-center !text-white/70" />
 
           <div role="tablist" aria-label="Étapes" className="mt-6 grid gap-3 md:grid-cols-3">
             {steps.map((s, i) => {
@@ -70,26 +70,21 @@ export function SectionSteps({ eyebrow, title, intro, steps }: { eyebrow: string
                   aria-selected={on}
                   onClick={() => setActive(i)}
                   className={cn(
-                    "relative overflow-hidden rounded-[8px] border p-1.5 text-left transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
-                    on ? "border-white/40" : "border-white/20 hover:border-white/35",
+                    "relative overflow-hidden rounded-[20px] p-5 text-left transition-[background-color,color,box-shadow] duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+                    on ? "bg-[oklch(0.985_0.004_85)] text-[oklch(0.2_0.02_200)] shadow-[0_20px_50px_-25px_rgb(0_0_0/0.6)]" : "bg-white/[0.08] text-white/60 backdrop-blur hover:bg-white/[0.12]",
                   )}
                 >
-                  <div className={cn("h-full rounded-[5px] p-5 transition-colors duration-300", on ? "bg-[oklch(0.985_0.004_85)] text-[oklch(0.2_0.02_200)]" : "bg-black/35 text-white/45")}>
-                    <div className={cn("flex items-center justify-between border-b pb-3 font-mono text-[0.75rem] uppercase", on ? "border-[oklch(0.2_0.02_200)]" : "border-white/15")}>
-                      <span>{s.label}</span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <span className={cn("h-2.5 w-1.5", on ? "bg-[oklch(0.2_0.02_200)]/60" : "bg-white/30")} aria-hidden />
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                    <p className="mt-5 font-display text-[1.25rem] leading-[1.15] font-medium tracking-[-0.02em]">{s.title}</p>
-                    <p className={cn("mt-2 text-[0.9375rem] leading-relaxed", on ? "text-[oklch(0.4_0.02_200)]" : "text-white/40")}>{s.text}</p>
+                  <div className="flex items-center justify-between">
+                    <span className={cn("text-[0.875rem] font-medium", on ? "text-[oklch(0.45_0.02_200)]" : "text-white/60")}>{s.label}</span>
+                    <LightNumber n={i + 1} className="text-[1.125rem]" />
                   </div>
+                  <p className="mt-4 font-display text-[1.25rem] leading-[1.15] font-semibold tracking-[-0.025em]">{s.title}</p>
+                  <p className={cn("mt-2 text-[0.9375rem] leading-relaxed", on ? "text-[oklch(0.4_0.02_200)]" : "text-white/50")}>{s.text}</p>
                   {on && auto && (
                     <span
                       key={`p-${active}`}
                       aria-hidden
-                      className="step-progress absolute bottom-0 left-0 h-[2px] w-full origin-left bg-[oklch(0.86_0.11_82)]"
+                      className="step-progress absolute bottom-0 left-0 h-[3px] w-full origin-left bg-[linear-gradient(90deg,#e9b872,#4f9e98)]"
                       style={{ animationDuration: `${DURATION}ms` }}
                     />
                   )}

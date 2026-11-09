@@ -182,21 +182,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 2.875rem;
-  padding-inline: 1.125rem;
-  border-radius: 4px;
+  min-height: 3rem;
+  padding-inline: 1.375rem;
+  border-radius: 14px;
   background: var(--primary);
   color: var(--primary-foreground);
-  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
   font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  &::after {
-    content: "›";
-    font-size: 1.1em;
-    margin-left: 0.35rem;
-  }
+  font-size: 1rem;
+  box-shadow: 0 10px 30px -12px color-mix(in oklch, var(--primary) 70%, transparent);
   transition: background-color var(--dur-fast) ease-out;
   &:hover {
     background: color-mix(in oklch, var(--primary) 88%, var(--foreground));
@@ -267,5 +260,21 @@
   }
   to {
     transform: scaleX(1);
+  }
+}
+
+/* Écrans de démonstration : fondu doux quand le métier change. */
+.site .mock-in {
+  animation: mock-in var(--dur-slow) var(--ease-out);
+}
+@keyframes mock-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site .mock-in {
+    animation: none;
   }
 }

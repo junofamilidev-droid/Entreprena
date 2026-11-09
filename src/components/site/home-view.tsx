@@ -13,6 +13,7 @@ import { SectionSteps } from "@/components/site/section-steps";
 import { SectionMetiers } from "@/components/site/section-metiers";
 import { SectionPourQui } from "@/components/site/section-pourqui";
 import { Eyebrow, Frame } from "@/components/site/kit";
+import { ExempleNote, MetierProvider, MetierSelect } from "@/components/site/metier-context";
 import { listFormations } from "@/lib/content/source";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
@@ -34,7 +35,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
   }));
 
   return (
-    <>
+    <MetierProvider disponibles={formations.map((f) => f.domain)}>
       {/* a. Haut de page : plusieurs versions à comparer (voir HeroSection plus bas). */}
       <HeroSection variant={variant} tracks={tracks} upcoming={upcoming.map((m) => m.nom)} />
 
@@ -45,7 +46,6 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
             eyebrow={constat.eyebrow}
             title={constat.title}
             text={constat.text}
-            rows={constat.lignes}
             actionsTitle={constat.answerTitle}
             actions={constat.answer}
           />
@@ -59,15 +59,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
             eyebrow={etapes.eyebrow}
             title={etapes.title}
             intro={etapes.intro}
-            steps={etapes.items.map((it, i) => ({
-              ...it,
-              label: etapes.labels[i],
-              ...[
-                { image: "/captures/mission", w: 760, h: 1008, alt: "Le message de mission reçu dans la session." },
-                { image: "/captures/outil", w: 900, h: 657, alt: "L'outil Claude et ses règles." },
-                { image: "/captures/fiche", w: 860, h: 517, alt: "La fiche à réutiliser sur vos dossiers." },
-              ][i],
-            }))}
+            steps={etapes.items.map((it, i) => ({ ...it, label: etapes.labels[i] }))}
           />
         </div>
       </section>
@@ -99,7 +91,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         <div className="site-container site-section grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-20">
           <div>
             <Eyebrow>Aide</Eyebrow>
-            <h2 className="mt-5 font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-medium tracking-[-0.035em]">{faq.title}</h2>
+            <h2 className="mt-5 font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{faq.title}</h2>
           </div>
           <Faq items={faq.items} />
         </div>
@@ -107,16 +99,16 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
 
       {/* Dernier appel : un grand cadre sur la matière fluide. */}
       <section className="site-container pb-[var(--section-space)]">
-        <Frame label="Commencer" scene="nuit-3" bodyClassName="px-6 pt-24 pb-10 sm:px-12 sm:pt-40 sm:pb-14">
+        <Frame caption="Prêt à commencer" scene="nuit-3" bodyClassName="px-6 pt-24 pb-10 sm:px-12 sm:pt-40 sm:pb-14">
           <div className="flex flex-wrap items-end justify-between gap-8">
-            <h2 className="max-w-[16ch] font-display text-[clamp(2.25rem,1.3rem+3.6vw,4.5rem)] leading-[1] font-medium tracking-[-0.035em]">{final.title}</h2>
+            <h2 className="max-w-[16ch] font-display text-[clamp(2.25rem,1.3rem+3.6vw,4.5rem)] leading-[1] font-semibold tracking-[-0.04em]">{final.title}</h2>
             <Link href="/formations" className="btn-primary !bg-white !text-[oklch(0.2_0.02_200)]">
               {CTA_FORMATIONS}
             </Link>
           </div>
         </Frame>
       </section>
-    </>
+    </MetierProvider>
   );
 }
 
@@ -168,6 +160,8 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
                 {hero.secondary}
               </Link>
             </div>
+            <MetierSelect className="mt-6 justify-center" />
+            <ExempleNote className="mt-2" />
           </div>
           <div className="mt-10 md:mt-0">
             <HeroProductCards />

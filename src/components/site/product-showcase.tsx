@@ -1,18 +1,15 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
+import { ExempleNote, useMetier } from "./metier-context";
+import { MockFiche, MockMission, MockOutil, MockVerifs } from "./mock-screens";
 import { cn } from "@/lib/utils";
 
-// Section « produit » : de vraies captures de la plateforme, en cartes de verre dépoli qui flottent
+// Section « produit » : les écrans de la plateforme (exemple du métier choisi), en cartes de verre dépoli qui flottent
 // autour du titre, avec un léger parallaxe lié au défilement (chaque carte à sa propre vitesse).
-// Le verre dépoli n'est utilisé qu'ici. Les images sont listées dans public/captures/A-FOURNIR.md.
 
 type Shot = {
-  src: string; // sans suffixe : « -clair.webp » et « -sombre.webp » sont ajoutés
-  w: number;
-  h: number;
-  alt: string;
+  kind: "mission" | "outil" | "verifs" | "fiche";
   label: string;
   /** Position sur grand écran (dans une scène de 1200 × 980). */
   pos: string;
@@ -21,45 +18,14 @@ type Shot = {
 };
 
 const SHOTS: Shot[] = [
-  {
-    src: "/captures/mission",
-    w: 760,
-    h: 1008,
-    alt: "La mission : le message de la cheffe de mission, avec le livrable attendu.",
-    label: "La mission",
-    pos: "lg:left-[0%] lg:top-[6%] lg:w-[25%]",
-    depth: -90,
-  },
-  {
-    src: "/captures/outil",
-    w: 900,
-    h: 657,
-    alt: "L'outil : les règles du skill Claude, avec et sans chaque règle.",
-    label: "L'outil",
-    pos: "lg:right-[0%] lg:top-[2%] lg:w-[33%]",
-    depth: -150,
-  },
-  {
-    src: "/captures/test",
-    w: 760,
-    h: 762,
-    alt: "Les vérifications : la réponse de Claude contrôlée point par point.",
-    label: "Les vérifications",
-    pos: "lg:right-[4%] lg:top-[50%] lg:w-[27%]",
-    depth: -40,
-  },
-  {
-    src: "/captures/fiche",
-    w: 860,
-    h: 517,
-    alt: "La fiche : la méthode à réutiliser sur un vrai dossier, avec ses pièges.",
-    label: "La fiche",
-    pos: "lg:left-[5%] lg:top-[62%] lg:w-[30%]",
-    depth: -120,
-  },
+  { kind: "mission", label: "La mission", pos: "lg:left-[0%] lg:top-[6%] lg:w-[27%]", depth: -90 },
+  { kind: "outil", label: "L'outil", pos: "lg:right-[0%] lg:top-[3%] lg:w-[31%]", depth: -150 },
+  { kind: "verifs", label: "Les vérifications", pos: "lg:right-[4%] lg:top-[55%] lg:w-[26%]", depth: -40 },
+  { kind: "fiche", label: "La fiche", pos: "lg:left-[5%] lg:top-[60%] lg:w-[29%]", depth: -120 },
 ];
 
 function Glass({ shot }: { shot: Shot }) {
+  const { exemple } = useMetier();
   return (
     <figure
       data-depth={shot.depth}
@@ -71,8 +37,10 @@ function Glass({ shot }: { shot: Shot }) {
         shot.pos,
       )}
     >
-      <Image src={`${shot.src}-clair.webp`} width={shot.w} height={shot.h} alt={shot.alt} sizes="(min-width: 1024px) 30vw, 46vw" className="w-full rounded-[1.05rem] dark:hidden" />
-      <Image src={`${shot.src}-sombre.webp`} width={shot.w} height={shot.h} alt={shot.alt} sizes="(min-width: 1024px) 30vw, 46vw" className="hidden w-full rounded-[1.05rem] dark:block" />
+      {shot.kind === "mission" && <MockMission ex={exemple} />}
+      {shot.kind === "outil" && <MockOutil ex={exemple} />}
+      {shot.kind === "verifs" && <MockVerifs ex={exemple} />}
+      {shot.kind === "fiche" && <MockFiche ex={exemple} />}
       <figcaption className="px-2.5 pt-2 pb-1 text-[0.8125rem] font-medium text-foreground/70">{shot.label}</figcaption>
     </figure>
   );
@@ -149,11 +117,12 @@ export function ProductShowcase({ title, text, word }: { title: string; text: st
           <div className="relative z-10 mx-auto max-w-[30rem] text-center lg:absolute lg:top-[34%] lg:left-1/2 lg:-translate-x-1/2">
             <h2 className="type-h2">{title}</h2>
             <p className="mx-auto mt-5 max-w-[26rem] type-lead text-foreground/75">{text}</p>
+            <ExempleNote className="mt-3" />
           </div>
 
           <div className="mt-12 grid grid-cols-2 items-start gap-3 sm:gap-5 lg:mt-0 lg:block">
             {SHOTS.map((s, i) => (
-              <div key={s.src} className={cn("lg:contents", i % 2 === 1 && "mt-10 sm:mt-16")}>
+              <div key={s.kind} className={cn("lg:contents", i % 2 === 1 && "mt-10 sm:mt-16")}>
                 <Glass shot={s} />
               </div>
             ))}

@@ -1,23 +1,25 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
+import { useMetier } from "./metier-context";
+import { MockFiche, MockMission, MockOutil, MockVerifs } from "./mock-screens";
 import { cn } from "@/lib/utils";
 
-// Haut de page « produit » : les vraies captures de la plateforme flottent autour du titre, en cartes
+// Haut de page « produit » : les écrans de la plateforme (remplis avec l'exemple du métier choisi) flottent autour du titre, en cartes
 // de verre. Elles flottent doucement, chacune à son rythme ; elles s'inclinent et se décalent selon la souris
 // et montent à des vitesses différentes au défilement (parallaxe), chacune à sa profondeur.
 
-type Card = { src: string; w: number; h: number; alt: string; label: string; pos: string; depth: number };
+type Card = { kind: "mission" | "outil" | "fiche" | "verifs"; pos: string; depth: number };
 
 const CARDS: Card[] = [
-  { src: "/captures/mission", w: 760, h: 1008, alt: "La mission : le message de la cheffe de mission.", label: "La mission", pos: "md:left-[1.5%] md:top-[15%] md:w-[19%]", depth: 26 },
-  { src: "/captures/outil", w: 900, h: 657, alt: "L'outil : les règles du skill Claude.", label: "L'outil", pos: "md:right-[1.5%] md:top-[12%] md:w-[25%]", depth: 40 },
-  { src: "/captures/fiche", w: 860, h: 517, alt: "La fiche : la méthode à réutiliser.", label: "La fiche", pos: "md:left-[4%] md:bottom-[7%] md:w-[24%]", depth: 52 },
-  { src: "/captures/test", w: 760, h: 762, alt: "Les vérifications : la réponse de Claude contrôlée.", label: "Les vérifications", pos: "md:right-[4%] md:bottom-[5%] md:w-[20%]", depth: 32 },
+  { kind: "mission", pos: "md:left-[1.5%] md:top-[14%] md:w-[22%]", depth: 26 },
+  { kind: "outil", pos: "md:right-[1.5%] md:top-[11%] md:w-[26%]", depth: 40 },
+  { kind: "fiche", pos: "md:left-[3%] md:bottom-[6%] md:w-[24%]", depth: 52 },
+  { kind: "verifs", pos: "md:right-[4%] md:bottom-[7%] md:w-[22%]", depth: 32 },
 ];
 
 export function HeroProductCards() {
+  const { exemple } = useMetier();
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -85,19 +87,22 @@ export function HeroProductCards() {
   }, []);
 
   return (
-    <div ref={ref} className="pointer-events-none grid grid-cols-2 gap-3 [perspective:1200px] md:absolute md:inset-0 md:block">
-      {CARDS.map((c) => (
-        <figure
-          key={c.src}
+    <div ref={ref} className="pointer-events-none grid grid-cols-1 gap-3 [perspective:1200px] md:absolute md:inset-0 md:block">
+      {CARDS.map((c, i) => (
+        <div
+          key={c.kind}
           data-depth={c.depth}
           className={cn(
-            "rounded-[1.25rem] border border-white/80 bg-white/45 p-1.5 shadow-[0_30px_70px_-30px_rgb(30_50_50/0.35)] backdrop-blur-xl will-change-transform md:absolute",
+            "rounded-[18px] border border-white/80 bg-white/40 p-1.5 shadow-[0_30px_70px_-30px_rgb(30_50_50/0.35)] backdrop-blur-xl will-change-transform md:absolute",
+            i > 0 && "hidden md:block",
             c.pos,
           )}
         >
-          <Image src={`${c.src}-clair.webp`} width={c.w} height={c.h} alt={c.alt} sizes="(min-width: 768px) 24vw, 45vw" className="w-full rounded-[0.95rem]" priority={false} />
-          <figcaption className="px-2 pt-1.5 pb-0.5 text-[0.75rem] font-medium text-[oklch(0.35_0.02_205)]">{c.label}</figcaption>
-        </figure>
+          {c.kind === "mission" && <MockMission ex={exemple} />}
+          {c.kind === "outil" && <MockOutil ex={exemple} />}
+          {c.kind === "fiche" && <MockFiche ex={exemple} />}
+          {c.kind === "verifs" && <MockVerifs ex={exemple} />}
+        </div>
       ))}
     </div>
   );
