@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { FormationCard } from "@/components/site/formation-card";
 import { listFormations } from "@/lib/content/source";
 import { accueil } from "@/lib/vitrine/textes";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
-import { SectionMetiers } from "@/components/site/section-metiers";
+import { FormationsCarousel } from "@/components/site/formations-carousel";
+import { FormationFeature } from "@/components/site/formation-feature";
+import { FormationUpcoming } from "@/components/site/formation-upcoming";
 
 export const metadata: Metadata = {
   title: "Les formations",
@@ -19,15 +20,16 @@ export default async function CataloguePage() {
     <div className="site-container pt-12 sm:pt-20">
       <h1 className="type-display">{accueil.formations.title}</h1>
       <p className="mt-6 max-w-[var(--text-max)] type-lead text-muted-foreground">{accueil.formations.intro}</p>
-      <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {formations.map((f) => (
-          <FormationCard key={f.id} formation={f} available />
-        ))}
-      </div>
     </div>
     <div className="pb-[var(--section-space)]">
-      <div className="site-container mt-24">
-        <SectionMetiers title="Tous les métiers" intro="Les formations disponibles, et celles en préparation." formations={formations} upcoming={upcoming} />
+      <div className="mt-6">
+        <FormationsCarousel
+          labels={[...formations.map((f) => f.domain), ...upcoming.map((m) => m.nom)]}
+          slides={[
+            ...formations.map((f) => <FormationFeature key={f.id} formation={f} />),
+            ...upcoming.map((m, i) => <FormationUpcoming key={m.nom} metier={m} index={i} />),
+          ]}
+        />
       </div>
     </div>
     </>

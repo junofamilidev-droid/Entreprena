@@ -6,7 +6,7 @@ import { plain } from "@/lib/vitrine/text";
 // Formation mise en avant sur l'accueil : sa promesse, ses modules et leur disponibilité, une capture.
 export function FormationFeature({ formation }: { formation: FormationWithModules }) {
   return (
-    <article className="grid overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_40px_80px_-50px_rgb(20_60_60/0.45)] lg:grid-cols-[1.05fr_1fr]">
+    <article className="grid h-full overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_40px_80px_-50px_rgb(20_60_60/0.45)] lg:grid-cols-[1.05fr_1fr]">
       <div className="flex flex-col p-6 sm:p-10">
         <p className="inline-flex items-center gap-2.5 self-start text-[0.9375rem] font-medium text-foreground/70"><span aria-hidden className="inline-block size-2.5 rounded-full bg-[conic-gradient(from_200deg,#e9b872,#f6e7c8,#4f9e98,#e9b872)]" />Formation disponible · {formation.domain}</p>
         <h3 className="mt-3 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-[1.05] font-semibold tracking-[-0.035em]">{formation.title}</h3>

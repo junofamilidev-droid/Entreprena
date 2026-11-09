@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { HeroBox, type HeroTrack } from "@/components/site/hero-box";
 import { HeroAbstract } from "@/components/site/hero-abstract";
-import { HeroProductCards } from "@/components/site/hero-product";
 import { HeroImage } from "@/components/site/hero-image";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -10,10 +9,11 @@ import { FormationFeature } from "@/components/site/formation-feature";
 import { Faq } from "@/components/site/faq";
 import { SectionConstat } from "@/components/site/section-constat";
 import { SectionSteps } from "@/components/site/section-steps";
-import { SectionMetiers } from "@/components/site/section-metiers";
+import { FormationsCarousel } from "@/components/site/formations-carousel";
+import { FormationUpcoming } from "@/components/site/formation-upcoming";
 import { SectionPourQui } from "@/components/site/section-pourqui";
-import { Eyebrow, Frame } from "@/components/site/kit";
-import { ExempleNote, MetierProvider, MetierSelect } from "@/components/site/metier-context";
+import { Eyebrow, Frame, SectionHead } from "@/components/site/kit";
+import { MetierProvider } from "@/components/site/metier-context";
 import { listFormations } from "@/lib/content/source";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
@@ -22,7 +22,6 @@ export type HeroVariant = "abstrait" | "produit" | "illustration";
 
 export async function HomeView({ variant = "produit" }: { variant?: HeroVariant }) {
   const formations = await listFormations();
-  const [featured] = formations;
   const { constat, etapes, produit, pourQui, faq, final } = accueil;
   // Un métier à venir disparaît de la liste dès qu'une formation publiée porte ce métier.
   const published = new Set(formations.map((f) => f.domain.toLowerCase()));
@@ -69,12 +68,22 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         <ProductShowcase title={produit.title} text={produit.text} word={produit.word} />
       </section>
 
-      {/* e. Les formations par métier : la formation disponible, puis la liste des métiers. */}
-      <section>
-        <div className="site-container site-section">
-          {featured && <FormationFeature formation={featured} />}
-          <div className="mt-24">
-            <SectionMetiers title={accueil.formations.title} intro={accueil.formations.intro} formations={formations} upcoming={upcoming} />
+      {/* e. Les formations par métier : une fiche par métier, à faire défiler. */}
+      <section id="formations">
+        <div className="site-container pt-[var(--section-space)]">
+          <SectionHead eyebrow="Les formations" title={accueil.formations.title}>
+            <p>{accueil.formations.intro}</p>
+          </SectionHead>
+        </div>
+        <div className="mt-4 pb-[var(--section-space)]">
+          <div>
+            <FormationsCarousel
+              labels={[...formations.map((f) => f.domain), ...upcoming.map((m) => m.nom)]}
+              slides={[
+                ...formations.map((f) => <FormationFeature key={f.id} formation={f} />),
+                ...upcoming.map((m, i) => <FormationUpcoming key={m.nom} metier={m} index={i} />),
+              ]}
+            />
           </div>
         </div>
       </section>
@@ -160,11 +169,6 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
                 {hero.secondary}
               </Link>
             </div>
-            <MetierSelect className="mt-6 justify-center" />
-            <ExempleNote className="mt-2" />
-          </div>
-          <div className="mt-10 md:mt-0">
-            <HeroProductCards />
           </div>
         </div>
       </section>
