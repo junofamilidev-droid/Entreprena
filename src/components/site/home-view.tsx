@@ -48,7 +48,7 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
             commentaire={constat.commentaire}
             transition={constat.transition}
             changeTitle={constat.changeTitle}
-            bascules={constat.bascules}
+            changeIntro={constat.changeIntro}
             reponse={constat.reponse}
           />
         </div>

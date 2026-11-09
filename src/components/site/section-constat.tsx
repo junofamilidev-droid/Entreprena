@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { ArrowRightIcon } from "lucide-react";
-import { Eyebrow, LightDot } from "./kit";
+import { AppWindow, Eyebrow, Frame } from "./kit";
+import { ExempleNote, useMetier } from "./metier-context";
 import { cn } from "@/lib/utils";
 
 // Le constat, en trois temps :
@@ -12,8 +12,9 @@ import { cn } from "@/lib/utils";
 // 3. « Ce qui change dans votre métier » : ce qui part vers l'outil se raye, ce qui prend de la valeur apparaît.
 // Les chiffres se comptent et les lignes basculent quand la section arrive à l'écran.
 
-type Chiffre = { valeur: number; suffixe: string; texte: string; source: string; url: string };
-type Bascule = { avant: string; apres: string };
+type Chiffre = { label: string; valeur: number; suffixe: string; texte: string; source: string; url: string };
+const DONE = { claude: "Préparé", vous: "Validé" };
+const PENDING = { claude: "En cours", vous: "À faire" };
 
 function useInView<T extends Element>(threshold = 0.35) {
   const ref = React.useRef<T>(null);
@@ -70,7 +71,7 @@ export function SectionConstat({
   commentaire,
   transition,
   changeTitle,
-  bascules,
+  changeIntro,
   reponse,
 }: {
   eyebrow: string;
@@ -79,11 +80,14 @@ export function SectionConstat({
   commentaire: string;
   transition: string;
   changeTitle: string;
-  bascules: Bascule[];
+  changeIntro: string;
   reponse: string;
 }) {
   const [statsRef, statsSeen] = useInView<HTMLDivElement>(0.4);
-  const [rowsRef, rowsInView] = useInView<HTMLOListElement>(0.3);
+  const { exemple, metier } = useMetier();
+  const rows = exemple.taches;
+  const [rowsRef, rowsInView] = useInView<HTMLDivElement>(0.4);
+  const [step, setStep] = React.useState(rows.length);
   // Avant que la section n'arrive, les chiffres partent de zéro (sans JavaScript, ils restent à leur valeur).
   const [armed, setArmed] = React.useState(false);
   React.useEffect(() => {
@@ -92,6 +96,23 @@ export function SectionConstat({
   }, []);
   // Sans JavaScript (ou avant l'hydratation), tout est visible à sa place finale.
   const rowsSeen = !armed || rowsInView;
+  // Les statuts passent un à un quand le tableau arrive à l'écran.
+  React.useEffect(() => {
+    if (!armed) return;
+    if (!rowsSeen) {
+      const t = setTimeout(() => setStep(0), 0);
+      return () => clearTimeout(t);
+    }
+    let i = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    const run = () => {
+      i += 1;
+      setStep(i);
+      if (i < rows.length) timer = setTimeout(run, 650);
+    };
+    timer = setTimeout(run, 500);
+    return () => clearTimeout(timer);
+  }, [armed, rowsSeen, rows.length, exemple.id]);
 
   return (
     <div>
@@ -116,7 +137,7 @@ export function SectionConstat({
               )}
             >
               {lit && <Image src="/paysages/nuit-2.webp" alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="-z-10 object-cover" />}
-              <p className={cn("text-[0.9375rem] font-medium", lit ? "text-white/75" : "text-muted-foreground")}>{lit ? "Ce que disent les études" : "Ce que vous ressentez"}</p>
+              <p className={cn("text-[0.9375rem] font-medium", lit ? "text-white/75" : "text-muted-foreground")}>{c.label}</p>
               <p
                 className={cn(
                   "mt-6 font-display text-[clamp(3.5rem,2.5rem+4vw,6rem)] leading-[0.9] font-semibold tracking-[-0.05em]",
@@ -144,53 +165,59 @@ export function SectionConstat({
       {/* 2. Transition */}
       <p className="mx-auto mt-16 max-w-[34ch] text-center font-display text-[clamp(1.5rem,1.1rem+1.6vw,2.25rem)] leading-[1.2] font-semibold tracking-[-0.03em]">{transition}</p>
 
-      {/* 3. Ce qui change : ce qui part vers l'outil se raye, ce qui prend de la valeur apparaît */}
+      {/* 3. Ce qui change : le tableau « Qui fait quoi » d'une mission type, dont les statuts passent en direct. */}
       <div className="mt-16">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-8 grid gap-4 lg:grid-cols-2 lg:items-end lg:gap-20">
           <h3 className="font-display text-[clamp(1.5rem,1.2rem+1.2vw,2.25rem)] font-semibold tracking-[-0.035em]">{changeTitle}</h3>
-          <div className="hidden gap-16 text-[0.875rem] text-muted-foreground md:flex">
-            <span>Ce qui part vers l&apos;outil</span>
-            <span className="inline-flex items-center gap-2 text-foreground">
-              <LightDot className="size-2" /> Ce qui prend de la valeur
-            </span>
-          </div>
+          <p className="max-w-[36rem] type-lead text-foreground/70 lg:justify-self-end">{changeIntro}</p>
         </div>
-        <ol ref={rowsRef} className="border-t border-foreground/80">
-          {bascules.map((b, i) => (
-            <li
-              key={b.avant}
-              className="grid items-center gap-3 border-b border-border py-6 md:grid-cols-[1fr_auto_1.2fr] md:gap-8"
-              style={{ ["--d" as string]: `${i * 260}ms` }}
-            >
-              <span
-                className={cn(
-                  "type-lead text-muted-foreground [background:linear-gradient(currentColor,currentColor)_no-repeat_0_55%/0%_1.5px] transition-[background-size,color] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] [transition-delay:var(--d)]",
-                  rowsSeen && "[background-size:100%_1.5px] text-muted-foreground/70",
-                )}
-              >
-                {b.avant}
-              </span>
-              <ArrowRightIcon
-                aria-hidden
-                className={cn(
-                  "hidden size-5 text-[#4f9e98] transition-[opacity,transform] duration-500 [transition-delay:calc(var(--d)+250ms)] md:block",
-                  rowsSeen ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0",
-                )}
-              />
-              <span
-                className={cn(
-                  "font-display text-[clamp(1.25rem,1.05rem+0.8vw,1.625rem)] leading-[1.2] font-semibold tracking-[-0.02em] transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] [transition-delay:calc(var(--d)+400ms)]",
-                  rowsSeen ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
-                )}
-              >
-                <span className="md:hidden" aria-hidden>
-                  →{" "}
-                </span>
-                {b.apres}
-              </span>
-            </li>
-          ))}
-        </ol>
+        <div ref={rowsRef}>
+          <Frame caption={<>Une mission en {metier.toLowerCase()} : qui fait quoi</>} scene="nuit-1">
+            <AppWindow address="entreprena · mission en cours" className="mx-auto max-w-[62rem]">
+              <div className="px-5 pt-7 pb-4 sm:px-10 sm:pt-9">
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <p className="font-display text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] font-semibold tracking-[-0.035em]">Qui fait quoi</p>
+                  <p className="text-[0.8125rem] text-[oklch(0.5_0.02_200)]">{exemple.mission.objet} · données fictives</p>
+                </div>
+                <table className="mt-6 w-full text-left text-[0.875rem]">
+                  <thead>
+                    <tr className="border-b border-[oklch(0.9_0.005_200)] text-[0.75rem] text-[oklch(0.45_0.02_200)]">
+                      <th className="py-3 pr-3 font-medium">Tâche</th>
+                      <th className="hidden py-3 pr-3 font-medium sm:table-cell">Fait par</th>
+                      <th className="py-3 font-medium">Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((r, i) => {
+                      const done = i < step;
+                      const claude = r.by === "claude";
+                      return (
+                        <tr key={exemple.id + r.task} className="border-b border-[oklch(0.93_0.004_200)] last:border-0">
+                          <td className="py-3.5 pr-3">{r.task}</td>
+                          <td className="hidden py-3.5 pr-3 text-[0.8125rem] text-[oklch(0.45_0.02_200)] sm:table-cell">{claude ? "Claude + l'outil" : "Vous"}</td>
+                          <td className="py-3.5">
+                            <span
+                              className={cn(
+                                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.8125rem] font-medium whitespace-nowrap transition-colors duration-500",
+                                !done && "bg-[oklch(0.94_0.005_200)] text-[oklch(0.45_0.02_200)]",
+                                done && claude && "bg-[oklch(0.9_0.05_190)] text-[oklch(0.3_0.06_200)]",
+                                done && !claude && "bg-[oklch(0.88_0.1_80)] text-[oklch(0.3_0.06_60)]",
+                              )}
+                            >
+                              <span className={cn("size-1.5 rounded-full", done ? "bg-current" : "animate-pulse bg-current/60")} aria-hidden />
+                              {done ? DONE[r.by] : PENDING[r.by]}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </AppWindow>
+            <ExempleNote className="mt-4 text-center !text-white/70" />
+          </Frame>
+        </div>
         <p className="mt-10 max-w-[44rem] type-lead text-foreground/80">{reponse}</p>
       </div>
     </div>
