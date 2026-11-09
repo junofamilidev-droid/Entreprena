@@ -36,7 +36,7 @@ export function HeroScrollFx({ children, className }: { children: React.ReactNod
   );
 }
 
-export function ScrollCue({ href = "#suite" }: { href?: string }) {
+export function ScrollCue({ href = "#suite", className = "" }: { href?: string; className?: string }) {
   const [hidden, setHidden] = React.useState(false);
   React.useEffect(() => {
     const onScroll = () => setHidden(window.scrollY > 40);
@@ -48,7 +48,7 @@ export function ScrollCue({ href = "#suite" }: { href?: string }) {
     <a
       href={href}
       aria-label="Découvrir la suite"
-      className={`absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3 text-[0.8125rem] font-medium text-[oklch(0.3_0.03_205)]/75 transition-opacity duration-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring ${hidden ? "pointer-events-none opacity-0" : "opacity-100"}`}
+      className={`${className} z-10 flex w-fit flex-col items-center gap-3 text-[0.8125rem] font-medium text-[oklch(0.3_0.03_205)]/75 transition-opacity duration-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring ${hidden ? "pointer-events-none opacity-0" : "opacity-100"}`}
     >
       Découvrir
       <span aria-hidden className="relative block h-12 w-px overflow-hidden bg-[oklch(0.3_0.03_205)]/20">

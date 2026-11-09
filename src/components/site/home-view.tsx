@@ -161,7 +161,7 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
       >
         {/* Fond : la matière fluide (claire au centre, sous le titre), avec sa traînée de pixels. */}
         <HeroAbstract className="absolute inset-0 h-full w-full" focus="center" />
-        <div className="site-container relative flex flex-1 flex-col pt-24 pb-10 md:justify-center md:pt-20 md:pb-16">
+        <div className="site-container relative flex flex-1 flex-col pt-24 pb-8 md:justify-center md:pt-20 md:pb-8">
           <HeroScrollFx className="relative z-10 mx-auto max-w-[38rem] text-center will-change-transform">
             <h1 className="type-hero mx-auto max-w-[15ch] text-[clamp(2.375rem,1.2rem+3.4vw,4.5rem)]">{hero.title}</h1>
             <p className="mx-auto mt-5 max-w-[30rem] type-body text-[oklch(0.3_0.03_205)]/85 sm:type-lead">{hero.subtitle}</p>
@@ -175,7 +175,7 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
             </div>
           </HeroScrollFx>
         </div>
-        <ScrollCue href="#suite" />
+        <ScrollCue href="#suite" className="relative mx-auto mb-6 shrink-0" />
       </section>
     );
   }

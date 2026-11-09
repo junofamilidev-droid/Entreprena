@@ -306,15 +306,15 @@
 /*
  * Échelle de la vitrine. Les tailles sont en rem : on réduit la base sur les pages de la vitrine
  * seulement (la plateforme n'est pas touchée). En pourcentage, le réglage de taille du navigateur
- * du visiteur reste respecté. Mobile et tablette : inchangé ; ordinateurs portables (1024–1679 px) : 87,5 % ; grands écrans : 93,75 %.
+ * du visiteur reste respecté. Mobile et tablette : inchangé ; ordinateurs (1024–1919 px) : 81,25 % ; très grands écrans : 87,5 %.
  */
 @media (min-width: 1024px) {
   html:has(.site) {
-    font-size: 87.5%;
+    font-size: 81.25%;
   }
 }
-@media (min-width: 1680px) {
+@media (min-width: 1920px) {
   html:has(.site) {
-    font-size: 93.75%;
+    font-size: 87.5%;
   }
 }
