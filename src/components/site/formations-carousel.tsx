@@ -10,6 +10,10 @@ import { cn } from "@/lib/utils";
 export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode[]; labels: string[] }) {
   const track = React.useRef<HTMLDivElement>(null);
   const [active, setActive] = React.useState(0);
+  // L'aimantation (scroll-snap) n'est activée qu'au premier geste sur le carrousel : au chargement,
+  // elle recalerait la position, ce que le navigateur compte comme un défilement (et fausse la mesure de vitesse).
+  const [snap, setSnap] = React.useState(false);
+  const arm = () => setSnap(true);
 
   React.useEffect(() => {
     const el = track.current;
@@ -75,7 +79,11 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
       <div
         ref={track}
         tabIndex={0}
-        className="relative flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[calc((100vw-min(92vw,var(--content-max)))/2)] py-10 [scrollbar-width:none] focus-visible:outline-none [&::-webkit-scrollbar]:hidden"
+        onPointerDown={arm}
+        onWheel={arm}
+        onTouchStart={arm}
+        onFocus={arm}
+        className={`relative flex ${snap ? "snap-x snap-mandatory" : ""} gap-5 overflow-x-auto scroll-smooth px-[calc((100vw-min(92vw,var(--content-max)))/2)] py-10 [scrollbar-width:none] focus-visible:outline-none [&::-webkit-scrollbar]:hidden`}
       >
         {slides.map((s, i) => (
           <div
