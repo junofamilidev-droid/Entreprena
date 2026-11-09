@@ -2,13 +2,13 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { AppWindow, Eyebrow, Frame } from "./kit";
+import { AppWindow, Eyebrow, Frame, LightDot } from "./kit";
 import { ExempleNote, useMetier } from "./metier-context";
 import { cn } from "@/lib/utils";
 
 // Le constat, en trois temps :
 // 1. deux chiffres sourcés, sans dramatiser (la peur, puis ce que disent vraiment les études) ;
-// 2. une phrase de transition, dans le ton d'un senior de terrain ;
+// 2. « Ce qui change dans votre métier » : la phrase clé en titre, puis le tableau « Qui fait quoi » ;
 // 3. « Ce qui change dans votre métier » : ce qui part vers l'outil se raye, ce qui prend de la valeur apparaît.
 // Les chiffres se comptent et les lignes basculent quand la section arrive à l'écran.
 
@@ -162,14 +162,16 @@ export function SectionConstat({
         })}
       </div>
 
-      {/* 2. Transition */}
-      <p className="mx-auto mt-16 max-w-[34ch] text-center font-display text-[clamp(1.5rem,1.1rem+1.6vw,2.25rem)] leading-[1.2] font-semibold tracking-[-0.03em]">{transition}</p>
 
       {/* 3. Ce qui change : le tableau « Qui fait quoi » d'une mission type, dont les statuts passent en direct. */}
-      <div className="mt-16">
-        <div className="mb-8 grid gap-4 lg:grid-cols-2 lg:items-end lg:gap-20">
-          <h3 className="font-display text-[clamp(1.5rem,1.2rem+1.2vw,2.25rem)] font-semibold tracking-[-0.035em]">{changeTitle}</h3>
-          <p className="max-w-[36rem] type-lead text-foreground/70 lg:justify-self-end">{changeIntro}</p>
+      {/* Un seul bloc lisible : petit intitulé, la phrase clé en titre, une ligne d'explication, puis le tableau. */}
+      <div className="mt-24 border-t border-border pt-16">
+        <div className="mb-10 grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:items-end lg:gap-20">
+          <div>
+            <Eyebrow>{changeTitle}</Eyebrow>
+            <h3 className="mt-4 max-w-[22ch] font-display text-[clamp(1.75rem,1.2rem+2vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.04em]">{transition}</h3>
+          </div>
+          <p className="max-w-[30rem] type-lead text-foreground/70 lg:justify-self-end">{changeIntro}</p>
         </div>
         <div ref={rowsRef}>
           <Frame caption={<>Une mission en {metier.toLowerCase()} : qui fait quoi</>} scene="nuit-1">
@@ -218,7 +220,11 @@ export function SectionConstat({
             <ExempleNote className="mt-4 text-center !text-white/70" />
           </Frame>
         </div>
-        <p className="mt-10 max-w-[44rem] type-lead text-foreground/80">{reponse}</p>
+        {/* Conclusion du constat : mise en avant, alignée sur le tableau, avec la pastille de lumière. */}
+        <div className="mx-auto mt-8 flex max-w-[62rem] gap-4 rounded-[22px] border border-border bg-card p-6 sm:p-8">
+          <LightDot className="mt-2 size-3 shrink-0" />
+          <p className="type-lead text-foreground/85">{reponse}</p>
+        </div>
       </div>
     </div>
   );

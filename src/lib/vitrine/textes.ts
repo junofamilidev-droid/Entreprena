@@ -45,11 +45,11 @@ export const accueil = {
     ],
     commentaire:
       "L'inquiétude est légitime, et largement partagée. Ce qui manque surtout, c'est une formation sérieuse : savoir quoi confier à l'IA, comment la vérifier, et ce qui reste votre valeur ajoutée.",
-    transition: "Concrètement, une partie du travail part vers l'outil. Le reste devient plus important.",
+    transition: "Une partie du travail part vers l'outil. Le reste devient plus important.",
     changeTitle: "Ce qui change dans votre métier",
-    changeIntro: "Sur une mission type, voici qui fait quoi : l'outil prépare, vous gardez la main sur ce qui engage.",
+    changeIntro: "Sur une mission type, l'outil prépare et vous gardez la main sur tout ce qui engage votre responsabilité.",
     reponse:
-      "Ceux qui maîtrisent cette bascule ne deviennent pas moins utiles : ils deviennent ceux à qui on confie les dossiers sensibles. C'est exactement ce que nos formations vous font pratiquer, mission après mission.",
+      "Ceux qui maîtrisent ce partage ne deviennent pas moins utiles : ce sont eux à qui l'on confie les dossiers sensibles. C'est ce que nos formations font pratiquer, mission après mission.",
   },
 
   etapes: {
