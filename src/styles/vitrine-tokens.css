@@ -31,8 +31,8 @@
   --step-h2: clamp(2rem, 1.35rem + 2.7vw, 3.5rem);
   --step-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
   --step-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
-  --step-body: 1.125rem;
-  --step-small: 0.9375rem;
+  --step-body: 1.1875rem;
+  --step-small: 1rem;
 
   /* Espacements */
   --gutter: 1rem; /* marge latérale à 375 px */
@@ -306,15 +306,16 @@
 /*
  * Échelle de la vitrine. Les tailles sont en rem : on réduit la base sur les pages de la vitrine
  * seulement (la plateforme n'est pas touchée). En pourcentage, le réglage de taille du navigateur
- * du visiteur reste respecté. Mobile et tablette : inchangé ; ordinateurs (1024–1919 px) : 81,25 % ; très grands écrans : 87,5 %.
+ * du visiteur reste respecté. Mobile et tablette : inchangé ; ordinateurs (1024–1919 px) : 75 % ; très grands écrans : 81,25 %.
+ * Le texte courant est compensé (--step-body) pour rester autour de 14–15 px.
  */
 @media (min-width: 1024px) {
   html:has(.site) {
-    font-size: 81.25%;
+    font-size: 75%;
   }
 }
 @media (min-width: 1920px) {
   html:has(.site) {
-    font-size: 87.5%;
+    font-size: 81.25%;
   }
 }
