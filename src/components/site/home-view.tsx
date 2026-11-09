@@ -44,9 +44,12 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
           <SectionConstat
             eyebrow={constat.eyebrow}
             title={constat.title}
-            text={constat.text}
-            actionsTitle={constat.answerTitle}
-            actions={constat.answer}
+            chiffres={constat.chiffres}
+            commentaire={constat.commentaire}
+            transition={constat.transition}
+            changeTitle={constat.changeTitle}
+            bascules={constat.bascules}
+            reponse={constat.reponse}
           />
         </div>
       </section>

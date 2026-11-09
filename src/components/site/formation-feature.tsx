@@ -6,14 +6,14 @@ import { plain } from "@/lib/vitrine/text";
 // Formation mise en avant sur l'accueil : sa promesse, ses modules et leur disponibilité, une capture.
 export function FormationFeature({ formation }: { formation: FormationWithModules }) {
   return (
-    <article className="grid h-full overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_40px_80px_-50px_rgb(20_60_60/0.45)] lg:grid-cols-[1.05fr_1fr]">
-      <div className="flex flex-col p-6 sm:p-10">
+    <article className="grid h-full overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_40px_80px_-50px_rgb(20_60_60/0.45)] lg:grid-cols-[1.15fr_1fr]">
+      <div className="flex flex-col p-6 sm:px-10 sm:py-8">
         <p className="inline-flex items-center gap-2.5 self-start text-[0.9375rem] font-medium text-foreground/70"><span aria-hidden className="inline-block size-2.5 rounded-full bg-[conic-gradient(from_200deg,#e9b872,#f6e7c8,#4f9e98,#e9b872)]" />Formation disponible · {formation.domain}</p>
         <h3 className="mt-3 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-[1.05] font-semibold tracking-[-0.035em]">{formation.title}</h3>
         <p className="mt-4 max-w-[34rem] type-lead text-foreground/80">{plain(formation.promise)}</p>
-        <ol className="mt-8 divide-y divide-border border-y border-border">
+        <ol className="mt-6 divide-y divide-border border-y border-border">
           {formation.modules.map((m) => (
-            <li key={m.id} className="flex items-baseline gap-4 py-3 type-small">
+            <li key={m.id} className="flex items-baseline gap-4 py-2.5 type-small">
               <span className="w-5 shrink-0 text-muted-foreground tabular-nums">{m.position}</span>
               <span className="min-w-0 flex-1">{m.title}</span>
               <span className={m.availability === "open" ? "text-[0.8125rem] font-semibold text-primary" : "text-[0.8125rem] text-muted-foreground"}>

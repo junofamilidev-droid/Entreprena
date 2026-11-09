@@ -20,24 +20,39 @@ export const accueil = {
   },
 
   constat: {
+    // Ton : un senior de terrain qui briefe un collègue à 18 h 30 devant un dossier. Direct, complice, zéro blabla.
     eyebrow: "Le constat",
-    // Le tableau « Qui fait quoi » est rempli par métier : voir src/lib/vitrine/exemples.ts.
-    title: "L'IA fait déjà une partie du travail. Pas celle qui compte le plus.",
-    text: [
-      "L'IA produit déjà en quelques minutes une partie du travail qui prenait des heures : trier, calculer, rédiger un premier jet.",
-      "Ce qu'elle ne fait pas seule : juger, vérifier, engager sa responsabilité. C'est là que votre métier se déplace, et c'est là que votre valeur se joue.",
+    title: "On va se dire les choses.",
+    // Chaque chiffre a sa source vérifiable (lien). Ne jamais ajouter de chiffre sans source primaire.
+    chiffres: [
+      {
+        valeur: 61,
+        suffixe: " %",
+        texte: "des cadres craignent d'être remplacés, au moins en partie, par l'IA.",
+        source: "Odoxa pour Saegus, avril 2026",
+        url: "https://www.odoxa.fr/sondage/61-des-cadres-craignent-detre-remplaces-par-lia/",
+      },
+      {
+        valeur: 13.4,
+        suffixe: " %",
+        texte: "des emplois des pays à revenu élevé verront leurs tâches transformées par l'IA générative. Seuls 5,5 % sont exposés à une automatisation.",
+        source: "Organisation internationale du travail, 2023 (estimation haute)",
+        url: "https://www.ilo.org/resource/news/generative-ai-likely-augment-rather-destroy-jobs",
+      },
     ],
-    // Les tâches qui se rangent d'elles-mêmes en deux colonnes (animation de la section).
-    partage: {
-      ai: { title: "L'IA s'en charge, sous votre contrôle", items: ["Trier les pièces", "Calculer les écarts", "Rapprocher les données", "Rédiger un premier jet", "Mettre en forme"] },
-      you: { title: "Vous gardez la main", items: ["Juger ce qui compte", "Vérifier les chiffres", "Expliquer au client", "Engager votre responsabilité"] },
-    },
-    answerTitle: "Ce que vous pouvez faire dès maintenant",
-    answer: [
-      "Savoir quelles tâches confier à l'IA, et lesquelles garder.",
-      "Travailler avec des outils réglés pour votre métier, plutôt qu'avec un assistant généraliste.",
-      "Vérifier ce que l'IA produit, avec une méthode que vous pouvez défendre devant un relecteur.",
+    commentaire:
+      "La peur est normale, et elle est partagée. Mais regardez le deuxième chiffre : l'IA va d'abord changer votre façon de travailler, bien avant de vous remplacer. La vraie question, c'est qui saura s'en servir correctement.",
+    transition: "Concrètement, une partie du travail part vers l'outil. Le reste devient plus important.",
+    changeTitle: "Ce qui change dans votre métier",
+    // Ce qui part vers l'outil → ce qui prend de la valeur (exemples valables pour la plupart des métiers).
+    bascules: [
+      { avant: "Faire le premier jet de la note", apres: "Relire, corriger et assumer ce qui est écrit" },
+      { avant: "Recopier et recalculer les chiffres", apres: "Repérer le chiffre qui cloche" },
+      { avant: "Chercher l'info dans quarante documents", apres: "Poser la bonne question au client" },
+      { avant: "Mettre en forme le livrable", apres: "Expliquer ce qu'il veut dire, et défendre vos choix" },
     ],
+    reponse:
+      "Ceux qui maîtrisent cette bascule ne deviennent pas moins utiles : ils deviennent ceux à qui on confie les dossiers sensibles. C'est exactement ce que nos formations vous font pratiquer, mission après mission.",
   },
 
   etapes: {

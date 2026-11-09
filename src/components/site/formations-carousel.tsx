@@ -19,11 +19,14 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
     let raf = 0;
     const update = () => {
       raf = 0;
-      const center = el.scrollLeft + el.clientWidth / 2;
+      const box = el.getBoundingClientRect();
+      const center = box.left + box.width / 2;
       let best = 0;
       let bestD = Infinity;
       items.forEach((it, i) => {
-        const c = it.offsetLeft + it.offsetWidth / 2;
+        // Mesure sans l'échelle appliquée : on part de la position de la fiche dans la piste.
+        const left = box.left - el.scrollLeft + it.offsetLeft;
+        const c = left + it.offsetWidth / 2;
         const d = (c - center) / it.offsetWidth; // -1 … 1 autour de la fiche centrale
         if (Math.abs(d) < bestD) {
           bestD = Math.abs(d);
@@ -71,7 +74,7 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
       <div
         ref={track}
         tabIndex={0}
-        className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[calc((100%-min(88%,68rem))/2)] py-10 [scrollbar-width:none] focus-visible:outline-none [&::-webkit-scrollbar]:hidden"
+        className="relative flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[calc((100vw-min(92vw,var(--content-max)))/2)] py-10 [scrollbar-width:none] focus-visible:outline-none [&::-webkit-scrollbar]:hidden"
       >
         {slides.map((s, i) => (
           <div
@@ -79,7 +82,7 @@ export function FormationsCarousel({ slides, labels }: { slides: React.ReactNode
             role="group"
             aria-roledescription="fiche"
             aria-label={`${i + 1} sur ${slides.length} : ${labels[i]}`}
-            className="w-[min(88%,68rem)] shrink-0 snap-center transition-[transform,opacity] duration-200 ease-out will-change-transform"
+            className="w-[min(92vw,var(--content-max))] shrink-0 snap-center transition-[transform,opacity] duration-200 ease-out will-change-transform"
           >
             {s}
           </div>
