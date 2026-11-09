@@ -6,22 +6,22 @@ import { HeroImage } from "@/components/site/hero-image";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { ProductShowcase } from "@/components/site/product-showcase";
-import { FormationCard } from "@/components/site/formation-card";
 import { FormationFeature } from "@/components/site/formation-feature";
 import { Faq } from "@/components/site/faq";
+import { SectionConstat } from "@/components/site/section-constat";
+import { SectionSteps } from "@/components/site/section-steps";
+import { SectionMetiers } from "@/components/site/section-metiers";
+import { SectionPourQui } from "@/components/site/section-pourqui";
+import { Eyebrow, Frame } from "@/components/site/kit";
 import { listFormations } from "@/lib/content/source";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
-import { UpcomingMarquee } from "@/components/site/upcoming-marquee";
-import { TaskSort } from "@/components/site/task-sort";
-import { StepsPath } from "@/components/site/steps-path";
-import { CheckIcon, XIcon } from "lucide-react";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
 
 export type HeroVariant = "abstrait" | "produit" | "illustration";
 
 export async function HomeView({ variant = "produit" }: { variant?: HeroVariant }) {
   const formations = await listFormations();
-  const [featured, ...others] = formations;
+  const [featured] = formations;
   const { constat, etapes, produit, pourQui, faq, final } = accueil;
   // Un métier à venir disparaît de la liste dès qu'une formation publiée porte ce métier.
   const published = new Set(formations.map((f) => f.domain.toLowerCase()));
@@ -38,51 +38,37 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
       {/* a. Haut de page : plusieurs versions à comparer (voir HeroSection plus bas). */}
       <HeroSection variant={variant} tracks={tracks} upcoming={upcoming.map((m) => m.nom)} />
 
-      {/* b. Constat, suivi immédiatement de la réponse : les tâches se partagent sous vos yeux. */}
+      {/* b. Le constat, montré dans un cadre produit « en direct ». */}
       <section>
         <div className="site-container site-section">
-          <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-end lg:gap-20">
-            <h2 className="max-w-[20ch] type-h2">{constat.title}</h2>
-            <div className="max-w-[var(--text-max)] space-y-3 type-lead text-foreground/75">
-              {constat.text.map((t) => (
-                <p key={t}>{t}</p>
-              ))}
-            </div>
-          </div>
-          <div className="mt-12">
-            <TaskSort columns={constat.partage} />
-          </div>
-          <h3 className="mt-16 type-h3">{constat.answerTitle}</h3>
-          <ol className="mt-6 grid gap-4 md:grid-cols-3">
-            {constat.answer.map((t, i) => (
-              <li key={t} className="flex gap-4 rounded-[1.25rem] border border-white/80 bg-white/55 p-6 dark:border-white/10 dark:bg-white/[0.04]">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-semibold text-primary tabular-nums">{i + 1}</span>
-                <p className="type-body">{t}</p>
-              </li>
-            ))}
-          </ol>
+          <SectionConstat
+            eyebrow={constat.eyebrow}
+            title={constat.title}
+            text={constat.text}
+            rows={constat.lignes}
+            actionsTitle={constat.answerTitle}
+            actions={constat.answer}
+          />
         </div>
       </section>
 
-      {/* c. Comment ça marche : trois cartes reliées par un chemin qui se trace au défilement. */}
+      {/* c. Comment ça marche : la capture de l'étape active, et trois cartes qui avancent seules. */}
       <section id="comment-ca-marche" className="scroll-mt-16">
-        <div className="site-container site-section">
-          <div className="mx-auto max-w-[40rem] text-center">
-            <h2 className="type-h2">{etapes.title}</h2>
-            <p className="mt-4 type-lead text-muted-foreground">{etapes.intro}</p>
-          </div>
-          <div className="mt-14">
-            <StepsPath
-              steps={etapes.items.map((it, i) => ({
-                ...it,
-                ...[
-                  { image: "/captures/mission", w: 760, h: 1008, alt: "Le message de mission reçu dans la session." },
-                  { image: "/captures/outil", w: 900, h: 657, alt: "L'outil Claude et ses règles." },
-                  { image: "/captures/fiche", w: 860, h: 517, alt: "La fiche à réutiliser sur vos dossiers." },
-                ][i],
-              }))}
-            />
-          </div>
+        <div className="site-container site-section pt-0">
+          <SectionSteps
+            eyebrow={etapes.eyebrow}
+            title={etapes.title}
+            intro={etapes.intro}
+            steps={etapes.items.map((it, i) => ({
+              ...it,
+              label: etapes.labels[i],
+              ...[
+                { image: "/captures/mission", w: 760, h: 1008, alt: "Le message de mission reçu dans la session." },
+                { image: "/captures/outil", w: 900, h: 657, alt: "L'outil Claude et ses règles." },
+                { image: "/captures/fiche", w: 860, h: 517, alt: "La fiche à réutiliser sur vos dossiers." },
+              ][i],
+            }))}
+          />
         </div>
       </section>
 
@@ -91,78 +77,44 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         <ProductShowcase title={produit.title} text={produit.text} word={produit.word} />
       </section>
 
-      {/* e. Les formations par métier, générées depuis les données */}
+      {/* e. Les formations par métier : la formation disponible, puis la liste des métiers. */}
       <section>
         <div className="site-container site-section">
-          <h2 className="type-h2">{accueil.formations.title}</h2>
-          <p className="mt-4 max-w-[var(--text-max)] type-lead text-muted-foreground">{accueil.formations.intro}</p>
-          <div className="mt-12 space-y-6">
-            {featured && <FormationFeature formation={featured} />}
-            {others.length > 0 && (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {others.map((f) => (
-                  <FormationCard key={f.id} formation={f} available />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-        <UpcomingMarquee metiers={upcoming} title="Et bientôt, d'autres métiers" />
-      </section>
-
-      {/* f. Pour qui / ce que ce n'est pas : deux cartes, coches d'un côté, limites franches de l'autre. */}
-      <section>
-        <div className="site-container site-section grid gap-5 md:grid-cols-2">
-          <div className="rounded-[1.75rem] border border-primary/20 bg-[linear-gradient(160deg,rgb(255_255_255/0.85),rgb(214_232_228/0.6))] p-7 shadow-[0_30px_70px_-40px_rgb(20_70_70/0.4)] sm:p-10 dark:border-primary/30 dark:bg-white/[0.05]">
-            <h2 className="type-h2 text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)]">{pourQui.title}</h2>
-            <ul className="mt-8 space-y-5">
-              {pourQui.forWhom.map((t) => (
-                <li key={t} className="flex gap-4 type-body">
-                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
-                    <CheckIcon className="size-4" aria-hidden />
-                  </span>
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-[1.75rem] border border-white/80 bg-white/45 p-7 sm:p-10 dark:border-white/10 dark:bg-white/[0.03]">
-            <h2 className="type-h2 text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)]">{pourQui.notThisTitle}</h2>
-            <ul className="mt-8 space-y-5">
-              {pourQui.notThis.map((t) => (
-                <li key={t} className="flex gap-4 type-body text-foreground/80">
-                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border border-border text-muted-foreground">
-                    <XIcon className="size-3.5" aria-hidden />
-                  </span>
-                  {t}
-                </li>
-              ))}
-            </ul>
+          {featured && <FormationFeature formation={featured} />}
+          <div className="mt-24">
+            <SectionMetiers title={accueil.formations.title} intro={accueil.formations.intro} formations={formations} upcoming={upcoming} />
           </div>
         </div>
       </section>
 
-      {/* g. FAQ courte, puis bouton final */}
+      {/* f. Pour qui / ce que ce n'est pas */}
       <section className="border-t border-border">
-        <div className="site-container site-section grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
-          <h2 className="type-h2">{faq.title}</h2>
+        <div className="site-container site-section">
+          <SectionPourQui yesTitle={pourQui.title} yes={pourQui.forWhom} noTitle={pourQui.notThisTitle} no={pourQui.notThis} />
+        </div>
+      </section>
+
+      {/* g. FAQ courte */}
+      <section className="border-t border-border">
+        <div className="site-container site-section grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-20">
+          <div>
+            <Eyebrow>Aide</Eyebrow>
+            <h2 className="mt-5 font-display text-[clamp(2rem,1.3rem+2.6vw,3.5rem)] leading-[1.02] font-medium tracking-[-0.035em]">{faq.title}</h2>
+          </div>
           <Faq items={faq.items} />
         </div>
       </section>
 
-      {/* Dernier appel : écho de la matière fluide du haut de page (dégradés CSS, sans calcul). */}
-      <section className="relative overflow-hidden bg-[#f6efe2] text-[oklch(0.22_0.03_205)]">
-        <div aria-hidden className="absolute inset-0">
-          <div className="absolute -top-[20%] -left-[10%] size-[60vw] max-w-[900px] rounded-full bg-[#f1d4a3] opacity-70 blur-[120px]" />
-          <div className="absolute -right-[10%] -bottom-[30%] size-[55vw] max-w-[860px] rounded-full bg-[#86b5ad] opacity-70 blur-[120px]" />
-          <div className="absolute top-[30%] left-[45%] size-[30vw] max-w-[480px] rounded-full bg-[#4f8e8a] opacity-35 blur-[120px]" />
-        </div>
-        <div className="site-container relative py-[calc(var(--section-space)*1.1)] text-center">
-          <h2 className="mx-auto max-w-[16ch] type-hero text-[clamp(2.5rem,1rem+5vw,6rem)]">{final.title}</h2>
-          <Link href="/formations" className="btn-primary mt-10">
-            {CTA_FORMATIONS}
-          </Link>
-        </div>
+      {/* Dernier appel : un grand cadre sur la matière fluide. */}
+      <section className="site-container pb-[var(--section-space)]">
+        <Frame label="Commencer" scene="nuit-3" bodyClassName="px-6 pt-24 pb-10 sm:px-12 sm:pt-40 sm:pb-14">
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <h2 className="max-w-[16ch] font-display text-[clamp(2.25rem,1.3rem+3.6vw,4.5rem)] leading-[1] font-medium tracking-[-0.035em]">{final.title}</h2>
+            <Link href="/formations" className="btn-primary !bg-white !text-[oklch(0.2_0.02_200)]">
+              {CTA_FORMATIONS}
+            </Link>
+          </div>
+        </Frame>
       </section>
     </>
   );

@@ -3,7 +3,7 @@ import { FormationCard } from "@/components/site/formation-card";
 import { listFormations } from "@/lib/content/source";
 import { accueil } from "@/lib/vitrine/textes";
 import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
-import { UpcomingMarquee } from "@/components/site/upcoming-marquee";
+import { SectionMetiers } from "@/components/site/section-metiers";
 
 export const metadata: Metadata = {
   title: "Les formations",
@@ -26,7 +26,9 @@ export default async function CataloguePage() {
       </div>
     </div>
     <div className="pb-[var(--section-space)]">
-      <UpcomingMarquee metiers={upcoming} title="Et bientôt, d'autres métiers" />
+      <div className="site-container mt-24">
+        <SectionMetiers title="Tous les métiers" intro="Les formations disponibles, et celles en préparation." formations={formations} upcoming={upcoming} />
+      </div>
     </div>
     </>
   );

@@ -6,17 +6,17 @@ import { plain } from "@/lib/vitrine/text";
 // Formation mise en avant sur l'accueil : sa promesse, ses modules et leur disponibilité, une capture.
 export function FormationFeature({ formation }: { formation: FormationWithModules }) {
   return (
-    <article className="grid overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/65 shadow-[0_30px_70px_-40px_rgb(30_50_50/0.3)] lg:grid-cols-[1.05fr_1fr] dark:border-white/10 dark:bg-white/[0.04]">
+    <article className="grid overflow-hidden rounded-[6px] border border-border bg-card lg:grid-cols-[1.05fr_1fr]">
       <div className="flex flex-col p-6 sm:p-10">
-        <p className="type-small text-muted-foreground">{formation.domain}</p>
-        <h3 className="mt-3 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-[1.05] font-semibold tracking-[-0.03em]">{formation.title}</h3>
+        <p className="inline-flex items-center gap-2 self-start bg-foreground/[0.04] px-2 py-1 font-mono text-[0.75rem] text-foreground/75 uppercase"><span className="size-2 bg-primary" aria-hidden />Formation disponible · {formation.domain}</p>
+        <h3 className="mt-3 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-[1.05] font-medium tracking-[-0.03em]">{formation.title}</h3>
         <p className="mt-4 max-w-[34rem] type-lead text-foreground/80">{plain(formation.promise)}</p>
         <ol className="mt-8 divide-y divide-border border-y border-border">
           {formation.modules.map((m) => (
             <li key={m.id} className="flex items-baseline gap-4 py-3 type-small">
               <span className="w-5 shrink-0 text-muted-foreground tabular-nums">{m.position}</span>
               <span className="min-w-0 flex-1">{m.title}</span>
-              <span className={m.availability === "open" ? "font-medium text-primary" : "text-muted-foreground"}>
+              <span className={m.availability === "open" ? "font-mono text-[0.75rem] uppercase text-primary" : "font-mono text-[0.75rem] uppercase text-muted-foreground"}>
                 {m.availability === "open" ? "Disponible" : "Prochainement"}
               </span>
             </li>
@@ -26,10 +26,10 @@ export function FormationFeature({ formation }: { formation: FormationWithModule
           Découvrir la formation
         </Link>
       </div>
-      <div className="relative hidden min-h-[22rem] overflow-hidden border-l border-white/70 bg-[radial-gradient(ellipse_at_30%_20%,#f4e3c4,transparent_60%),radial-gradient(ellipse_at_90%_90%,#a9cdc6,transparent_60%)] lg:block dark:border-white/10">
+      <div className="relative hidden min-h-[22rem] overflow-hidden bg-[url(/paysages/nuit-2.webp)] bg-cover lg:block">
         <div className="absolute top-12 left-12 w-[115%]">
-          <Image src="/captures/session-clair.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="rounded-xl border border-border dark:hidden" />
-          <Image src="/captures/session-sombre.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="hidden rounded-xl border border-border dark:block" />
+          <Image src="/captures/session-clair.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="rounded-lg shadow-[0_30px_60px_-20px_rgb(0_0_0/0.5)] dark:hidden" />
+          <Image src="/captures/session-sombre.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="hidden rounded-lg dark:block" />
         </div>
       </div>
     </article>
