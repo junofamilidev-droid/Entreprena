@@ -319,3 +319,19 @@
     font-size: 81.25%;
   }
 }
+
+/* Statut qui passe à « Préparé » / « Validé » : petit rebond pour attirer l'œil. */
+.site .status-pop {
+  animation: status-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes status-pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site .status-pop {
+    animation: none;
+  }
+}

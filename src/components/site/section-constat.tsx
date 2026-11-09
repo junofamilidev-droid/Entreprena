@@ -86,7 +86,7 @@ export function SectionConstat({
   const [statsRef, statsSeen] = useInView<HTMLDivElement>(0.4);
   const { exemple, metier } = useMetier();
   const rows = exemple.taches;
-  const [rowsRef, rowsInView] = useInView<HTMLDivElement>(0.4);
+  const rowsRef = React.useRef<HTMLDivElement>(null);
   const [step, setStep] = React.useState(rows.length);
   // Avant que la section n'arrive, les chiffres partent de zéro (sans JavaScript, ils restent à leur valeur).
   const [armed, setArmed] = React.useState(false);
@@ -94,25 +94,45 @@ export function SectionConstat({
     const t = setTimeout(() => setArmed(!window.matchMedia("(prefers-reduced-motion: reduce)").matches), 0);
     return () => clearTimeout(t);
   }, []);
-  // Sans JavaScript (ou avant l'hydratation), tout est visible à sa place finale.
-  const rowsSeen = !armed || rowsInView;
-  // Les statuts passent un à un quand le tableau arrive à l'écran.
+  // Les statuts passent un à un, en boucle, tant que le tableau est à l'écran :
+  // une ligne toutes les 1,1 s, une pause de 3,5 s sur le tableau complet, puis on recommence.
+  // Hors de l'écran, tout s'arrête ; si l'on demande moins d'animations, le tableau reste complet.
   React.useEffect(() => {
-    if (!armed) return;
-    if (!rowsSeen) {
-      const t = setTimeout(() => setStep(0), 0);
-      return () => clearTimeout(t);
-    }
+    const el = rowsRef.current;
+    if (!armed || !el) return;
+    const STEP = 1100;
+    const HOLD = 3500;
+    const RESET = 900;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     let i = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    const run = () => {
+    const tick = () => {
       i += 1;
       setStep(i);
-      if (i < rows.length) timer = setTimeout(run, 650);
+      if (i < rows.length) timer = setTimeout(tick, STEP);
+      else
+        timer = setTimeout(() => {
+          i = 0;
+          setStep(0);
+          timer = setTimeout(tick, RESET);
+        }, HOLD);
     };
-    timer = setTimeout(run, 500);
-    return () => clearTimeout(timer);
-  }, [armed, rowsSeen, rows.length, exemple.id]);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        clearTimeout(timer);
+        if (e.isIntersecting) {
+          i = 0;
+          setStep(0);
+          timer = setTimeout(tick, 600);
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => {
+      clearTimeout(timer);
+      io.disconnect();
+    };
+  }, [armed, rows.length, exemple.id, rowsRef]);
 
   return (
     <div>
@@ -199,8 +219,10 @@ export function SectionConstat({
                           <td className="hidden py-3.5 pr-3 text-[0.8125rem] text-[oklch(0.45_0.02_200)] sm:table-cell">{claude ? "Claude + l'outil" : "Vous"}</td>
                           <td className="py-3.5">
                             <span
+                              key={done ? "fait" : "attente"}
                               className={cn(
                                 "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.8125rem] font-medium whitespace-nowrap transition-colors duration-500",
+                                done && "status-pop",
                                 !done && "bg-[oklch(0.94_0.005_200)] text-[oklch(0.45_0.02_200)]",
                                 done && claude && "bg-[oklch(0.9_0.05_190)] text-[oklch(0.3_0.06_200)]",
                                 done && !claude && "bg-[oklch(0.88_0.1_80)] text-[oklch(0.3_0.06_60)]",
