@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { AppWindow, Eyebrow, Frame, LightDot } from "./kit";
+import { AppWindow, Eyebrow, Frame } from "./kit";
 import { ExempleNote, useMetier } from "./metier-context";
 import { cn } from "@/lib/utils";
 
@@ -218,13 +218,14 @@ export function SectionConstat({
               </div>
             </AppWindow>
             <ExempleNote className="mt-4 text-center !text-white/70" />
+            {/* Conclusion : posée dans la fenêtre de lumière, sous le tableau, comme une légende. */}
+            <div className="mx-auto mt-8 grid max-w-[62rem] gap-5 border-t border-white/15 pt-8 sm:grid-cols-[auto_1fr] sm:gap-7">
+              <span aria-hidden className="h-1 w-14 rounded-full bg-[linear-gradient(90deg,#e9b872,#9fd1c9)] sm:mt-4 sm:h-auto sm:w-1" />
+              <p className="font-display text-[clamp(1.25rem,1rem+1vw,1.75rem)] leading-[1.3] font-medium tracking-[-0.02em] text-white">{reponse}</p>
+            </div>
           </Frame>
         </div>
-        {/* Conclusion du constat : mise en avant, alignée sur le tableau, avec la pastille de lumière. */}
-        <div className="mx-auto mt-8 flex max-w-[62rem] gap-4 rounded-[22px] border border-border bg-card p-6 sm:p-8">
-          <LightDot className="mt-2 size-3 shrink-0" />
-          <p className="type-lead text-foreground/85">{reponse}</p>
-        </div>
+
       </div>
     </div>
   );

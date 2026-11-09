@@ -49,7 +49,7 @@ export const accueil = {
     changeTitle: "Ce qui change dans votre métier",
     changeIntro: "Sur une mission type, l'outil prépare et vous gardez la main sur tout ce qui engage votre responsabilité.",
     reponse:
-      "Ceux qui maîtrisent ce partage ne deviennent pas moins utiles : ce sont eux à qui l'on confie les dossiers sensibles. C'est ce que nos formations font pratiquer, mission après mission.",
+      "Ceux qui maîtrisent cette bascule ne deviennent pas moins utiles : ils deviennent ceux à qui on confie les dossiers sensibles. C'est exactement ce que nos formations vous font pratiquer, mission après mission.",
   },
 
   etapes: {
