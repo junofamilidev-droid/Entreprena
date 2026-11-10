@@ -6,7 +6,9 @@ import { ArrowLeftIcon, CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 import { AUTRE, type MetierPublic } from "@/lib/diagnostic-metier/public";
-import { calculer, LIBELLE_EXPOSITION, LIBELLE_PREPARATION, type Cadre, type Frequence, type Objectif } from "@/lib/diagnostic-metier/calcul";
+import { calculer, type Cadre, type Frequence, type Objectif } from "@/lib/diagnostic-metier/calcul";
+import { enregistrerDiagnostic } from "@/app/(diagnostic)/diagnostic/actions";
+import { ResultatDiagnostic } from "./resultat";
 
 // Parcours du diagnostic : intro, 5 questions (une par écran), puis le résultat.
 // - Choix unique : la carte se sélectionne, puis passage automatique après 250 ms.
@@ -23,6 +25,8 @@ type Etat = {
   cadre?: Cadre;
   objectif?: Objectif;
   utm?: { source?: string; medium?: string; campaign?: string };
+  /** Identifiant renvoyé par le serveur après l'enregistrement du résultat. */
+  diagnosticId?: string | null;
 };
 
 const CLE = "diagnostic-metier-v1";
@@ -92,7 +96,7 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
     });
   }, []);
   const choisirPuisAvancer = (patch: Partial<Etat>, suivante: number) => {
-    setEtat((e) => ({ ...e, ...patch }));
+    setEtat((e) => ({ ...e, ...patch, diagnosticId: undefined }));
     clearTimeout(avance.current);
     avance.current = setTimeout(() => aller(suivante), 250);
   };
@@ -130,7 +134,7 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
                 autre={etat.metierAutre ?? ""}
                 onChoisir={(id) => choisirPuisAvancer({ metier: id, taches: id === etat.metier ? etat.taches : [] }, 2)}
                 onAutre={() => setEtat((e) => ({ ...e, metier: AUTRE, taches: e.metier === AUTRE ? e.taches : [] }))}
-                onAutreTexte={(v) => setEtat((e) => ({ ...e, metierAutre: v }))}
+                onAutreTexte={(v) => setEtat((e) => ({ ...e, metierAutre: v, diagnosticId: undefined }))}
                 onContinuer={() => aller(2)}
               />
             </Question>
@@ -138,7 +142,7 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
 
           {etat.etape === 2 && metier && (
             <Question numero={2} titre="Quelles tâches occupent le plus votre semaine ?" aide="3 au maximum, au moins 1." onRetour={() => aller(1)}>
-              <ChoixTaches metier={metier} valeur={etat.taches} onChange={(taches) => setEtat((e) => ({ ...e, taches }))} onContinuer={() => aller(3)} />
+              <ChoixTaches metier={metier} valeur={etat.taches} onChange={(taches) => setEtat((e) => ({ ...e, taches, diagnosticId: undefined }))} onContinuer={() => aller(3)} />
             </Question>
           )}
 
@@ -161,9 +165,10 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
           )}
 
           {etat.etape === 6 && metier && etat.frequence && etat.cadre && etat.objectif && (
-            <ResultatProvisoire
+            <EcranResultat
               metier={metier}
-              etat={etat as Required<Pick<Etat, "frequence" | "cadre" | "objectif">> & Etat}
+              etat={etat as Etat & { frequence: Frequence; cadre: Cadre; objectif: Objectif }}
+              onId={(id) => setEtat((e) => ({ ...e, diagnosticId: id }))}
               onRefaire={() => {
                 setEtat({ ...VIDE, utm: etat.utm });
                 setSens(-1);
@@ -407,26 +412,32 @@ function ChoixTaches({ metier, valeur, onChange, onContinuer }: { metier: Metier
   );
 }
 
-/** Étape 1 du chantier : résultat brut, pour vérifier le calcul. La vraie page de résultat arrive à l'étape 2. */
-function ResultatProvisoire({ metier, etat, onRefaire }: { metier: MetierPublic; etat: Etat & { frequence: Frequence; cadre: Cadre; objectif: Objectif }; onRefaire: () => void }) {
-  const r = calculer(
-    { metier: metier.id, metierAutre: etat.metierAutre, taches: etat.taches, frequence: etat.frequence, cadre: etat.cadre, objectif: etat.objectif },
-    metier.taches,
-  );
-  const tache = metier.taches.find((t) => t.id === r.tachePlusExposee)!;
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center pb-16 text-center">
-      <p className="text-[0.9375rem] font-medium text-muted-foreground">Votre résultat</p>
-      <h1 className="mt-3 font-display text-[clamp(2.25rem,1.5rem+3vw,3.75rem)] leading-[1] font-semibold tracking-[-0.04em]">{LIBELLE_EXPOSITION[r.niveau]}</h1>
-      <p className="mt-3 type-lead text-foreground/75">Score indicatif : {r.score}/100</p>
-      <p className="mt-6 type-body">
-        Tâche la plus exposée : <strong>{tache.libelle}</strong> (exposition {tache.exposition}/5)
-      </p>
-      <p className="mt-2 type-body">Préparation : {LIBELLE_PREPARATION[r.preparation]}</p>
-      <p className="mt-8 max-w-[30rem] type-small text-muted-foreground">Page de résultat complète (jauge, plan d&apos;action) : prochaine étape du chantier.</p>
-      <button type="button" onClick={onRefaire} className="link-quiet mt-6">
-        Refaire le diagnostic
-      </button>
-    </div>
-  );
+/**
+ * Écran de résultat : affiché tout de suite (calcul local), et enregistré une seule fois côté serveur,
+ * qui recalcule le score et renvoie l'identifiant du diagnostic (gardé pour les étapes suivantes).
+ */
+function EcranResultat({
+  metier,
+  etat,
+  onId,
+  onRefaire,
+}: {
+  metier: MetierPublic;
+  etat: Etat & { frequence: Frequence; cadre: Cadre; objectif: Objectif };
+  onId: (id: string | null) => void;
+  onRefaire: () => void;
+}) {
+  const reponses = { metier: metier.id, metierAutre: etat.metierAutre, taches: etat.taches, frequence: etat.frequence, cadre: etat.cadre, objectif: etat.objectif };
+  const resultat = calculer(reponses, metier.taches);
+  const dejaEnregistre = etat.diagnosticId !== undefined;
+  const envoye = React.useRef(false);
+  React.useEffect(() => {
+    if (dejaEnregistre || envoye.current) return;
+    envoye.current = true;
+    enregistrerDiagnostic({ ...reponses, utm: etat.utm })
+      .then((r) => onId(r.ok ? r.id : null))
+      .catch(() => onId(null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return <ResultatDiagnostic metier={metier} resultat={resultat} metierAutre={etat.metierAutre} onRefaire={onRefaire} />;
 }

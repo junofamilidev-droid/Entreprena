@@ -17,7 +17,7 @@ export const accueil = {
     subtitle:
       "Des formations courtes, par métier, sur des missions réalistes, avec des outils Claude réglés par des experts.",
     // Lien secondaire du haut de page : le diagnostic (« Comment ça marche » reste dans le menu).
-    secondary: "Faire le diagnostic (2 min)",
+    secondary: "Faire le diagnostic",
     secondaryHref: "/diagnostic",
   },
 
