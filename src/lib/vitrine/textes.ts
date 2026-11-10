@@ -16,7 +16,9 @@ export const accueil = {
     title: "Votre métier change avec l'IA. Voici exactement quoi faire.",
     subtitle:
       "Des formations courtes, par métier, sur des missions réalistes, avec des outils Claude réglés par des experts.",
-    secondary: "Comment ça marche",
+    // Lien secondaire du haut de page : le diagnostic (« Comment ça marche » reste dans le menu).
+    secondary: "Faire le diagnostic (2 min)",
+    secondaryHref: "/diagnostic",
   },
 
   constat: {

@@ -18,7 +18,7 @@ export type Exemple = {
 export const EXEMPLES: Exemple[] = [
   {
     id: "audit",
-    metier: "Audit",
+    metier: "Auditeur",
     mission: {
       de: "Claire Moreau, cheffe de mission",
       objet: "Nordelia : revue analytique avant jeudi",
@@ -173,7 +173,7 @@ export const EXEMPLES: Exemple[] = [
   },
   {
     id: "vc",
-    metier: "VC analyst",
+    metier: "VC Analyst",
     mission: { de: "Hugo Lambert, partner", objet: "Dossier Nexa avant le comité", message: "Peux-tu analyser le dossier Nexa : marché, concurrence, unit economics, et préparer le mémo pour le comité ?", livrable: "Le mémo d'investissement" },
     outil: { nom: "Mémo d'investissement", regles: ["Chiffres sourcés", "Risques explicites", "Hypothèses séparées"], regleActive: 2, avec: "Les hypothèses de croissance isolées et testées.", sans: "Des projections du fondateur reprises comme des faits." },
     verifs: ["Chaque chiffre sourcé", "Les risques listés", "Les hypothèses séparées des faits"],
@@ -189,7 +189,7 @@ export const EXEMPLES: Exemple[] = [
   },
   {
     id: "conseil",
-    metier: "Conseil",
+    metier: "Consultant",
     mission: { de: "Paul Henry, manager", objet: "Diagnostic achats Orbis", message: "Peux-tu analyser les dépenses achats d'Orbis et préparer trois pistes d'économies pour l'atelier de mardi ?", livrable: "Le diagnostic et les trois pistes" },
     outil: { nom: "Diagnostic", regles: ["Données d'abord", "Trois pistes maximum", "Hypothèses visibles"], regleActive: 1, avec: "Trois pistes chiffrées, avec leurs hypothèses.", sans: "Dix pistes génériques, non priorisées." },
     verifs: ["Les données nettoyées", "Les trois pistes chiffrées", "Les hypothèses visibles"],

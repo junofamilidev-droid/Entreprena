@@ -16,7 +16,7 @@ import { SectionPourQui } from "@/components/site/section-pourqui";
 import { Eyebrow, Frame, SectionHead } from "@/components/site/kit";
 import { MetierProvider } from "@/components/site/metier-context";
 import { listFormations } from "@/lib/content/source";
-import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
+import { METIERS_A_VENIR, libelleMetier } from "@/lib/vitrine/metiers";
 import { CTA_FORMATIONS, accueil } from "@/lib/vitrine/textes";
 
 export type HeroVariant = "abstrait" | "produit" | "illustration";
@@ -25,17 +25,17 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
   const formations = await listFormations();
   const { constat, etapes, produit, pourQui, faq, final } = accueil;
   // Un métier à venir disparaît de la liste dès qu'une formation publiée porte ce métier.
-  const published = new Set(formations.map((f) => f.domain.toLowerCase()));
+  const published = new Set(formations.map((f) => libelleMetier(f.domain).toLowerCase()));
   const upcoming = METIERS_A_VENIR.filter((m) => !published.has(m.nom.toLowerCase()));
   const tracks: HeroTrack[] = formations.map((f) => ({
     slug: f.slug,
-    domain: f.domain,
+    domain: libelleMetier(f.domain),
     title: f.title,
     tasks: f.modules.map((m) => ({ title: m.title, open: m.availability === "open" })),
   }));
 
   return (
-    <MetierProvider disponibles={formations.map((f) => f.domain)}>
+    <MetierProvider disponibles={formations.map((f) => libelleMetier(f.domain))}>
       {/* a. Haut de page : plusieurs versions à comparer (voir HeroSection plus bas). */}
       <HeroSection variant={variant} tracks={tracks} upcoming={upcoming.map((m) => m.nom)} />
 
@@ -77,12 +77,17 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         <div className="site-container pt-[var(--section-space)]">
           <SectionHead eyebrow="Les formations" title={accueil.formations.title}>
             <p>{accueil.formations.intro}</p>
+            <p className="mt-4">
+              <Link href="/diagnostic" className="link-quiet type-body">
+                Pas sûr de votre métier face à l&apos;IA ? Faire le diagnostic (2 min)
+              </Link>
+            </p>
           </SectionHead>
         </div>
         <div className="mt-4 pb-[var(--section-space)]">
           <div>
             <FormationsCarousel
-              labels={[...formations.map((f) => f.domain), ...upcoming.map((m) => m.nom)]}
+              labels={[...formations.map((f) => libelleMetier(f.domain)), ...upcoming.map((m) => m.nom)]}
               slides={[
                 ...formations.map((f) => <FormationFeature key={f.id} formation={f} />),
                 ...upcoming.map((m, i) => <FormationUpcoming key={m.nom} metier={m} index={i} />),
@@ -143,7 +148,7 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
             <div className="mt-7">
               <HeroBox tracks={tracks} upcoming={upcoming} cta={CTA_FORMATIONS} tone="light" />
             </div>
-            <Link href="#comment-ca-marche" className="link-quiet mt-6 inline-block">
+            <Link href={hero.secondaryHref} className="link-quiet mt-6 inline-block">
               {hero.secondary}
             </Link>
           </div>
@@ -170,7 +175,7 @@ function HeroSection({ variant, tracks, upcoming }: { variant: HeroVariant; trac
               <Link href="/formations" className="btn-primary">
                 {CTA_FORMATIONS}
               </Link>
-              <Link href="#comment-ca-marche" className="link-quiet">
+              <Link href={hero.secondaryHref} className="link-quiet">
                 {hero.secondary}
               </Link>
             </div>

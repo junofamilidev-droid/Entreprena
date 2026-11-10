@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { listFormations } from "@/lib/content/source";
 import { accueil } from "@/lib/vitrine/textes";
-import { METIERS_A_VENIR } from "@/lib/vitrine/metiers";
+import { METIERS_A_VENIR, libelleMetier } from "@/lib/vitrine/metiers";
 import { FormationsCarousel } from "@/components/site/formations-carousel";
 import { FormationFeature } from "@/components/site/formation-feature";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function CataloguePage() {
   const formations = await listFormations();
-  const published = new Set(formations.map((f) => f.domain.toLowerCase()));
+  const published = new Set(formations.map((f) => libelleMetier(f.domain).toLowerCase()));
   const upcoming = METIERS_A_VENIR.filter((m) => !published.has(m.nom.toLowerCase()));
   return (
     <>
@@ -24,7 +24,7 @@ export default async function CataloguePage() {
     <div className="pb-[var(--section-space)]">
       <div className="mt-6">
         <FormationsCarousel
-          labels={[...formations.map((f) => f.domain), ...upcoming.map((m) => m.nom)]}
+          labels={[...formations.map((f) => libelleMetier(f.domain)), ...upcoming.map((m) => m.nom)]}
           slides={[
             ...formations.map((f) => <FormationFeature key={f.id} formation={f} />),
             ...upcoming.map((m, i) => <FormationUpcoming key={m.nom} metier={m} index={i} />),

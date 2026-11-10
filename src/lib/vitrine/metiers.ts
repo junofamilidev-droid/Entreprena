@@ -15,6 +15,13 @@ export const METIERS_A_VENIR: MetierAVenir[] = [
   { nom: "Commercial B2B", phrase: "Préparer un rendez-vous, une proposition et ses relances avec l'IA." },
   { nom: "Juriste / avocat", phrase: "Rechercher, analyser et rédiger avec l'IA, en vérifiant chaque source." },
   { nom: "Marketing / communication", phrase: "Produire et tester des contenus avec l'IA, en gardant votre ton." },
-  { nom: "VC analyst", phrase: "Analyser un dossier d'investissement et rédiger le mémo avec l'IA." },
-  { nom: "Conseil", phrase: "Structurer une mission, analyser les données et livrer des recommandations avec l'IA." },
+  { nom: "VC Analyst", phrase: "Analyser un dossier d'investissement et rédiger le mémo avec l'IA." },
+  { nom: "Consultant", phrase: "Structurer une mission, analyser les données et livrer des recommandations avec l'IA." },
 ];
+
+/**
+ * Libellé affiché d'un métier à partir du champ « métier » d'une formation publiée.
+ * Les formations gardent leur surtitre (ex. « Audit ») ; la vitrine affiche le nom du métier.
+ */
+const LIBELLES: Record<string, string> = { audit: "Auditeur" };
+export const libelleMetier = (domaine: string) => LIBELLES[domaine.toLowerCase()] ?? domaine;
