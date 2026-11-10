@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 import { AUTRE, type MetierPublic } from "@/lib/diagnostic-metier/public";
 import { calculer, type Cadre, type Frequence, type Objectif } from "@/lib/diagnostic-metier/calcul";
-import { enregistrerDiagnostic } from "@/app/(diagnostic)/diagnostic/actions";
+import { enregistrerDiagnostic, noterEvenement } from "@/app/(diagnostic)/diagnostic/actions";
 import type { Plan } from "@/lib/diagnostic-metier/plan";
 import { ResultatDiagnostic } from "./resultat";
 import { CaptureEmail, PlanAction } from "./plan-action";
@@ -118,6 +118,14 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
     avance.current = setTimeout(() => aller(suivante), 250);
   };
 
+  // Mesure : chaque écran de question n'est compté qu'une fois par visite de la page.
+  const vus = React.useRef(new Set<number>());
+  React.useEffect(() => {
+    if (!pret || etat.etape < 1 || etat.etape > 5 || vus.current.has(etat.etape)) return;
+    vus.current.add(etat.etape);
+    void noterEvenement({ event: "question", question: etat.etape, utm: etat.utm?.source }).catch(() => {});
+  }, [pret, etat.etape, etat.utm?.source]);
+
   if (!pret) return <div className="min-h-dvh" aria-busy="true" />;
 
   const question = etat.etape >= 1 && etat.etape <= 5;
@@ -142,7 +150,14 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
 
       <main className="site-container flex flex-1 flex-col pt-6 pb-10 sm:pt-12">
         <div key={etat.etape} className={cn("diag-ecran mx-auto flex w-full max-w-[52rem] flex-1 flex-col", sens < 0 && "diag-retour")}>
-          {etat.etape === 0 && <Intro onStart={() => aller(1)} />}
+          {etat.etape === 0 && (
+            <Intro
+              onStart={() => {
+                void noterEvenement({ event: "start", utm: etat.utm?.source }).catch(() => {});
+                aller(1);
+              }}
+            />
+          )}
 
           {etat.etape === 1 && (
             <Question numero={1} titre="Quel est votre métier ?" onRetour={() => aller(0)}>

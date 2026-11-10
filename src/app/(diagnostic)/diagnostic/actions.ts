@@ -76,7 +76,22 @@ export async function enregistrerDiagnostic(entree: unknown): Promise<Enregistre
     })
     .select("id")
     .single();
+  if (!error) await db.from("diagnostic_events").insert({ event: "result", metier: metier.id, niveau: resultat.niveau, utm_source: r.utm?.source ?? null });
   return { ok: true, id: error ? null : (data.id as string), resultat };
+}
+
+/**
+ * Mesure sans cookie, pour l'entonnoir de l'espace réservé : démarrage et questions vues.
+ * (Résultat, email, avis d'ouverture et clic sur la formation sont notés par les actions ci-dessus.)
+ */
+export async function noterEvenement(entree: unknown): Promise<void> {
+  const parse = z
+    .object({ event: z.enum(["start", "question"]), question: z.number().int().min(1).max(5).optional(), utm: z.string().max(100).optional() })
+    .safeParse(entree);
+  if (!parse.success || (parse.data.event === "question") !== (parse.data.question !== undefined)) return;
+  await adminClient()
+    ?.from("diagnostic_events")
+    .insert({ event: parse.data.event, question: parse.data.question ?? null, utm_source: parse.data.utm ?? null });
 }
 
 // ---------- Étape 3 : l'email, puis le plan d'action ----------

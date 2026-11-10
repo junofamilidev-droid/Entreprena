@@ -8,6 +8,7 @@
 //   navigateur avant que le visiteur ait laissé son email : n'importer ce fichier que côté serveur
 //   (pages et Server Actions), et ne passer aux composants que `metiersPublics()`.
 
+import type { Cadre, Objectif } from "./calcul";
 import { AUTRE, type MetierPublic } from "./public";
 
 export { AUTRE };
@@ -239,3 +240,41 @@ export function metiersPublics(): MetierPublic[] {
     taches: m.taches.map(({ id, libelle, exposition }) => ({ id, libelle, exposition })),
   }));
 }
+
+// ---------- Textes du plan d'action (versions définitives) ----------
+// Comme les lignes des tâches, ils ne sont envoyés au navigateur qu'après la saisie de l'email.
+
+/** Étape 1 du plan, « Votre cadre », selon la question 4 (encadrement de l'IA par l'employeur). */
+export const PLAN_CADRE: Record<Cadre, { titre: string; texte: string }> = {
+  outil: {
+    titre: "Votre cadre : un outil fourni, à utiliser avec méthode",
+    texte:
+      "Un outil fourni par votre employeur règle une partie de la question de la confidentialité, pas celle de la fiabilité : vérifiez quelles données il autorise, et relisez chaque résultat comme un premier jet à contrôler.",
+  },
+  autorise: {
+    titre: "Votre cadre : liberté sous condition d'anonymisation",
+    texte:
+      "Sur un outil grand public, une règle avant chaque essai : aucun nom de client ou de personne, aucun numéro d'identification, aucune information qui permette de reconnaître une entreprise.",
+  },
+  interdit: {
+    titre: "Votre cadre : progresser sans enfreindre la règle",
+    texte:
+      "Vérifiez d'abord ce qui est interdit exactement : l'outil, les données clients, ou tout usage de l'IA. Ensuite, entraînez-vous uniquement sur des cas fictifs, en dehors de vos dossiers, pour être prêt quand la règle évoluera.",
+  },
+  ne_sait_pas: {
+    titre: "Votre cadre : la prudence maximale par défaut",
+    texte:
+      "Cette semaine, demandez la règle par écrit à votre responsable. En attendant sa réponse, agissez comme si l'envoi de données clients était interdit : travaillez uniquement sur des données fictives ou anonymisées.",
+  },
+};
+
+/** Phrase d'introduction du plan, selon la question 5 (ce que le visiteur cherche). */
+export const PLAN_INTRO: Record<Objectif, string> = {
+  temps:
+    "Pour gagner du temps dès cette semaine, ne cherchez pas à tout automatiser : confiez à l'IA la préparation de votre tâche la plus lourde, et gardez le contrôle final.",
+  indispensable:
+    "L'IA rend le premier jet banal, pas la responsabilité : voici comment déplacer votre temps vers l'analyse, le contrôle et le jugement, là où se joue votre valeur.",
+  evoluer:
+    "Savoir piloter l'IA sur les tâches de votre poste actuel est une compétence concrète, que vous pourrez montrer : c'est le point de départ le plus solide pour évoluer.",
+  comprendre: "Sans discours théorique : voici ce que l'IA sait déjà faire sur votre tâche principale, et ce qui reste entre vos mains.",
+};
