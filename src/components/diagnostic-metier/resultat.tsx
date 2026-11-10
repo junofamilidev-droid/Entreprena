@@ -13,8 +13,7 @@ import { cn } from "@/lib/utils";
 const PHRASES: Record<NiveauExposition, string> = {
   moderee: "Votre métier évolue, sans urgence. C'est le bon moment pour prendre de l'avance.",
   marquee: "Une partie importante de vos tâches va changer. Ceux qui apprennent à piloter l'IA garderont la main.",
-  forte:
-    "Plusieurs de vos tâches principales sont déjà en partie faisables par une IA. Votre valeur se déplace vers le contrôle et le jugement. Voici comment vous y préparer.",
+  forte: "Plusieurs de vos tâches principales sont déjà en partie faisables par une IA. Votre valeur se déplace vers le contrôle et le jugement. Voici comment vous y préparer.",
 };
 
 const PREPARATION_DETAIL = {
@@ -59,12 +58,15 @@ export function ResultatDiagnostic({
   metier,
   resultat,
   metierAutre,
+  debloque,
   onRefaire,
   children,
 }: {
   metier: MetierPublic;
   resultat: Resultat;
   metierAutre?: string;
+  /** Plan reçu : l'aperçu flouté laisse place à un renvoi vers le plan. */
+  debloque?: boolean;
   onRefaire: () => void;
   /** Suite de la page (capture de l'email, plan d'action). */
   children?: React.ReactNode;
@@ -77,9 +79,7 @@ export function ResultatDiagnostic({
     <div className="mx-auto w-full max-w-[44rem] pb-16">
       {/* 1. Le niveau et la jauge */}
       <section className="text-center">
-        <p className="text-[0.9375rem] font-medium text-muted-foreground">
-          Votre résultat · {metier.id === "autre" && metierAutre ? metierAutre : metier.libelle}
-        </p>
+        <p className="text-[0.9375rem] font-medium text-muted-foreground">Votre résultat · {metier.id === "autre" && metierAutre ? metierAutre : metier.libelle}</p>
         <div className="relative mx-auto mt-6 w-full max-w-[19rem] text-foreground">
           <Jauge score={resultat.score} />
           <p className="absolute inset-x-0 bottom-0 font-display text-[2.5rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">
@@ -93,9 +93,7 @@ export function ResultatDiagnostic({
         <p className="mt-2 type-small text-muted-foreground">Score indicatif : {resultat.score}/100. Estimation à partir de vos réponses.</p>
 
         {/* 2. La phrase */}
-        <p className="mx-auto mt-8 max-w-[36rem] font-display text-[clamp(1.25rem,1.05rem+0.8vw,1.625rem)] leading-[1.3] font-medium tracking-[-0.02em]">
-          {PHRASES[resultat.niveau]}
-        </p>
+        <p className="mx-auto mt-8 max-w-[36rem] font-display text-[clamp(1.25rem,1.05rem+0.8vw,1.625rem)] leading-[1.3] font-medium tracking-[-0.02em]">{PHRASES[resultat.niveau]}</p>
       </section>
 
       <div className="mt-12 grid gap-4">
@@ -106,33 +104,37 @@ export function ResultatDiagnostic({
               <p className="type-small text-muted-foreground">Votre tâche la plus exposée</p>
               <h2 className="mt-1 font-display text-[1.5rem] leading-[1.2] font-semibold tracking-[-0.025em]">{tache.libelle}</h2>
             </div>
-            <span className="rounded-full bg-[oklch(0.94_0.05_70)] px-3 py-1.5 text-[0.875rem] font-semibold text-[oklch(0.42_0.1_55)] tabular-nums">
-              Exposition {tache.exposition}/5
-            </span>
+            <span className="rounded-full bg-[oklch(0.94_0.05_70)] px-3 py-1.5 text-[0.875rem] font-semibold text-[oklch(0.42_0.1_55)] tabular-nums">Exposition {tache.exposition}/5</span>
           </div>
-          <div className="relative mt-6 overflow-hidden rounded-[16px] bg-muted/60 p-5">
-            {/* Aperçu factice : le vrai texte n'est envoyé qu'après la saisie de l'email. */}
-            <div aria-hidden className="space-y-3 blur-[5px] select-none">
-              {[
-                ["Ce que l'IA sait déjà faire", "w-[92%]"],
-                ["Ce qui reste sous votre responsabilité", "w-[78%]"],
-                ["L'action à tester cette semaine", "w-[85%]"],
-              ].map(([label, w]) => (
-                <div key={label}>
-                  <p className="type-small font-semibold">{label}</p>
-                  <div className={cn("mt-1.5 h-3 rounded-full bg-foreground/25", w)} />
+          {debloque ? (
+            <p className="mt-4 type-small text-muted-foreground">Le détail de cette tâche est dans votre plan, juste en dessous.</p>
+          ) : (
+            <>
+              <div className="relative mt-6 overflow-hidden rounded-[16px] bg-muted/60 p-5">
+                {/* Aperçu factice : le vrai texte n'est envoyé qu'après la saisie de l'email. */}
+                <div aria-hidden className="space-y-3 blur-[5px] select-none">
+                  {[
+                    ["Ce que l'IA sait déjà faire", "w-[92%]"],
+                    ["Ce qui reste sous votre responsabilité", "w-[78%]"],
+                    ["L'action à tester cette semaine", "w-[85%]"],
+                  ].map(([label, w]) => (
+                    <div key={label}>
+                      <p className="type-small font-semibold">{label}</p>
+                      <div className={cn("mt-1.5 h-3 rounded-full bg-foreground/25", w)} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="absolute inset-0 grid place-items-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/90 px-4 py-2 type-small font-medium shadow-sm">
-                <LockIcon className="size-3.5" aria-hidden /> Dans votre plan d&apos;action
-              </span>
-            </div>
-          </div>
-          <p className="mt-4 type-small text-muted-foreground">
-            Dans votre plan : ce que l&apos;IA sait déjà faire sur cette tâche, ce qui reste sous votre responsabilité, et l&apos;action à tester cette semaine.
-          </p>
+                <div className="absolute inset-0 grid place-items-center">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/90 px-4 py-2 type-small font-medium shadow-sm">
+                    <LockIcon className="size-3.5" aria-hidden /> Dans votre plan d&apos;action
+                  </span>
+                </div>
+              </div>
+              <p className="mt-4 type-small text-muted-foreground">
+                Dans votre plan : ce que l&apos;IA sait déjà faire sur cette tâche, ce qui reste sous votre responsabilité, et l&apos;action à tester cette semaine.
+              </p>
+            </>
+          )}
         </section>
 
         {/* 4. La préparation */}

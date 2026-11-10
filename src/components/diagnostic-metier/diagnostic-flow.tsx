@@ -8,7 +8,9 @@ import { site } from "@/lib/site";
 import { AUTRE, type MetierPublic } from "@/lib/diagnostic-metier/public";
 import { calculer, type Cadre, type Frequence, type Objectif } from "@/lib/diagnostic-metier/calcul";
 import { enregistrerDiagnostic } from "@/app/(diagnostic)/diagnostic/actions";
+import type { Plan } from "@/lib/diagnostic-metier/plan";
 import { ResultatDiagnostic } from "./resultat";
+import { CaptureEmail, PlanAction } from "./plan-action";
 
 // Parcours du diagnostic : intro, 5 questions (une par écran), puis le résultat.
 // - Choix unique : la carte se sélectionne, puis passage automatique après 250 ms.
@@ -27,6 +29,9 @@ type Etat = {
   utm?: { source?: string; medium?: string; campaign?: string };
   /** Identifiant renvoyé par le serveur après l'enregistrement du résultat. */
   diagnosticId?: string | null;
+  /** Plan d'action reçu après la saisie de l'email (effacé si une réponse change). */
+  plan?: Plan;
+  email?: string;
 };
 
 const CLE = "diagnostic-metier-v1";
@@ -74,10 +79,17 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
   // Reprise : le visiteur qui revient retrouve ses réponses ; les paramètres utm de l'arrivée sont gardés.
   React.useEffect(() => {
     const q = new URLSearchParams(window.location.search);
-    const utm = { source: q.get("utm_source") ?? undefined, medium: q.get("utm_medium") ?? undefined, campaign: q.get("utm_campaign") ?? undefined };
+    const utm = {
+      source: q.get("utm_source") ?? undefined,
+      medium: q.get("utm_medium") ?? undefined,
+      campaign: q.get("utm_campaign") ?? undefined,
+    };
     const sauve = lire();
     const t = setTimeout(() => {
-      setEtat({ ...(sauve ?? VIDE), utm: utm.source || utm.medium || utm.campaign ? utm : sauve?.utm });
+      setEtat({
+        ...(sauve ?? VIDE),
+        utm: utm.source || utm.medium || utm.campaign ? utm : sauve?.utm,
+      });
       setPret(true);
     }, 0);
     return () => clearTimeout(t);
@@ -96,7 +108,12 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
     });
   }, []);
   const choisirPuisAvancer = (patch: Partial<Etat>, suivante: number) => {
-    setEtat((e) => ({ ...e, ...patch, diagnosticId: undefined }));
+    setEtat((e) => ({
+      ...e,
+      ...patch,
+      diagnosticId: undefined,
+      plan: undefined,
+    }));
     clearTimeout(avance.current);
     avance.current = setTimeout(() => aller(suivante), 250);
   };
@@ -107,16 +124,17 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
 
   return (
     <div className="relative isolate flex min-h-dvh flex-col overflow-hidden">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_0%,rgb(241_212_163/0.45),transparent),radial-gradient(55%_50%_at_95%_100%,rgb(134_181_173/0.4),transparent)]" />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_15%_0%,rgb(241_212_163/0.45),transparent),radial-gradient(55%_50%_at_95%_100%,rgb(134_181_173/0.4),transparent)]"
+      />
 
       <header className="site-container flex h-16 items-center gap-6">
         <span className="font-display text-[1.375rem] font-semibold tracking-tight" aria-label={site.name}>
           {site.name.replace(/\.$/, "")}
           <span className="text-primary">.</span>
         </span>
-        <div className="flex flex-1 justify-center">
-          {question && <Progression etape={etat.etape} />}
-        </div>
+        <div className="flex flex-1 justify-center">{question && <Progression etape={etat.etape} />}</div>
         <Link href="/" className="rounded-md px-2 py-2 text-[0.9375rem] text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
           Quitter
         </Link>
@@ -132,9 +150,30 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
                 metiers={metiers}
                 valeur={etat.metier}
                 autre={etat.metierAutre ?? ""}
-                onChoisir={(id) => choisirPuisAvancer({ metier: id, taches: id === etat.metier ? etat.taches : [] }, 2)}
-                onAutre={() => setEtat((e) => ({ ...e, metier: AUTRE, taches: e.metier === AUTRE ? e.taches : [] }))}
-                onAutreTexte={(v) => setEtat((e) => ({ ...e, metierAutre: v, diagnosticId: undefined }))}
+                onChoisir={(id) =>
+                  choisirPuisAvancer(
+                    {
+                      metier: id,
+                      taches: id === etat.metier ? etat.taches : [],
+                    },
+                    2,
+                  )
+                }
+                onAutre={() =>
+                  setEtat((e) => ({
+                    ...e,
+                    metier: AUTRE,
+                    taches: e.metier === AUTRE ? e.taches : [],
+                  }))
+                }
+                onAutreTexte={(v) =>
+                  setEtat((e) => ({
+                    ...e,
+                    metierAutre: v,
+                    diagnosticId: undefined,
+                    plan: undefined,
+                  }))
+                }
                 onContinuer={() => aller(2)}
               />
             </Question>
@@ -142,7 +181,19 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
 
           {etat.etape === 2 && metier && (
             <Question numero={2} titre="Quelles tâches occupent le plus votre semaine ?" aide="3 au maximum, au moins 1." onRetour={() => aller(1)}>
-              <ChoixTaches metier={metier} valeur={etat.taches} onChange={(taches) => setEtat((e) => ({ ...e, taches, diagnosticId: undefined }))} onContinuer={() => aller(3)} />
+              <ChoixTaches
+                metier={metier}
+                valeur={etat.taches}
+                onChange={(taches) =>
+                  setEtat((e) => ({
+                    ...e,
+                    taches,
+                    diagnosticId: undefined,
+                    plan: undefined,
+                  }))
+                }
+                onContinuer={() => aller(3)}
+              />
             </Question>
           )}
 
@@ -167,8 +218,15 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
           {etat.etape === 6 && metier && etat.frequence && etat.cadre && etat.objectif && (
             <EcranResultat
               metier={metier}
-              etat={etat as Etat & { frequence: Frequence; cadre: Cadre; objectif: Objectif }}
+              etat={
+                etat as Etat & {
+                  frequence: Frequence;
+                  cadre: Cadre;
+                  objectif: Objectif;
+                }
+              }
               onId={(id) => setEtat((e) => ({ ...e, diagnosticId: id }))}
+              onPlan={(plan, email) => setEtat((e) => ({ ...e, plan, email }))}
               onRefaire={() => {
                 setEtat({ ...VIDE, utm: etat.utm });
                 setSens(-1);
@@ -222,7 +280,11 @@ function Question({ numero, titre, aide, onRetour, children }: { numero: number;
   React.useEffect(() => ref.current?.focus(), []);
   return (
     <div className="flex flex-1 flex-col">
-      <button type="button" onClick={onRetour} className="inline-flex min-h-11 items-center gap-2 self-start rounded-md text-[0.9375rem] text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+      <button
+        type="button"
+        onClick={onRetour}
+        className="inline-flex min-h-11 items-center gap-2 self-start rounded-md text-[0.9375rem] text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+      >
         <ArrowLeftIcon className="size-4" aria-hidden /> Retour
       </button>
       <p className="mt-6 text-[0.9375rem] font-medium text-muted-foreground">Question {numero} sur 5</p>
@@ -284,9 +346,7 @@ function Carte({
       onClick={onClick}
       className={cn(
         "group flex min-h-16 w-full items-center gap-4 rounded-[18px] border px-5 py-4 text-left type-body transition-[background-color,border-color,box-shadow,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.99]",
-        checked
-          ? "border-primary bg-primary/[0.06] shadow-[0_10px_30px_-18px_rgb(20_70_70/0.6)]"
-          : "border-border bg-card/80 hover:border-foreground/25 hover:bg-card",
+        checked ? "border-primary bg-primary/[0.06] shadow-[0_10px_30px_-18px_rgb(20_70_70/0.6)]" : "border-border bg-card/80 hover:border-foreground/25 hover:bg-card",
       )}
     >
       <span
@@ -390,7 +450,11 @@ function ChoixTaches({ metier, valeur, onChange, onContinuer }: { metier: Metier
     else onChange([...valeur, id]);
   };
   const ok = valeur.length >= 1;
-  useRaccourcis(metier.taches.length, (i) => basculer(metier.taches[i].id), () => ok && onContinuer());
+  useRaccourcis(
+    metier.taches.length,
+    (i) => basculer(metier.taches[i].id),
+    () => ok && onContinuer(),
+  );
   return (
     <div>
       <div role="group" aria-label="Vos tâches principales" className="grid gap-3 sm:grid-cols-2">
@@ -420,14 +484,23 @@ function EcranResultat({
   metier,
   etat,
   onId,
+  onPlan,
   onRefaire,
 }: {
   metier: MetierPublic;
   etat: Etat & { frequence: Frequence; cadre: Cadre; objectif: Objectif };
   onId: (id: string | null) => void;
+  onPlan: (plan: Plan, email: string) => void;
   onRefaire: () => void;
 }) {
-  const reponses = { metier: metier.id, metierAutre: etat.metierAutre, taches: etat.taches, frequence: etat.frequence, cadre: etat.cadre, objectif: etat.objectif };
+  const reponses = {
+    metier: metier.id,
+    metierAutre: etat.metierAutre,
+    taches: etat.taches,
+    frequence: etat.frequence,
+    cadre: etat.cadre,
+    objectif: etat.objectif,
+  };
   const resultat = calculer(reponses, metier.taches);
   const dejaEnregistre = etat.diagnosticId !== undefined;
   const envoye = React.useRef(false);
@@ -439,5 +512,14 @@ function EcranResultat({
       .catch(() => onId(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return <ResultatDiagnostic metier={metier} resultat={resultat} metierAutre={etat.metierAutre} onRefaire={onRefaire} />;
+  const pourPlan = { ...reponses, utm: etat.utm };
+  return (
+    <ResultatDiagnostic metier={metier} resultat={resultat} metierAutre={etat.metierAutre} debloque={!!etat.plan} onRefaire={onRefaire}>
+      {etat.plan && etat.email ? (
+        <PlanAction plan={etat.plan} email={etat.email} id={etat.diagnosticId} reponses={pourPlan} />
+      ) : (
+        <CaptureEmail id={etat.diagnosticId} reponses={pourPlan} onPlan={onPlan} />
+      )}
+    </ResultatDiagnostic>
+  );
 }
