@@ -2,25 +2,19 @@
 
 import * as React from "react";
 import { LockIcon } from "lucide-react";
-import { LIBELLE_EXPOSITION, LIBELLE_PREPARATION, type NiveauExposition, type Resultat } from "@/lib/diagnostic-metier/calcul";
+import { LIBELLE_EXPOSITION, type NiveauExposition, type Resultat } from "@/lib/diagnostic-metier/calcul";
 import type { MetierPublic } from "@/lib/diagnostic-metier/public";
 import { cn } from "@/lib/utils";
 
 // Page de résultat, partie visible sans email : le niveau et sa jauge, une phrase lucide puis rassurante,
 // la tâche la plus exposée (le détail est flouté : son texte n'est pas encore envoyé au navigateur),
-// et le niveau de préparation.
+// (le niveau de préparation reste calculé et enregistré, mais n'est plus affiché).
 
 const PHRASES: Record<NiveauExposition, string> = {
   moderee: "Votre métier évolue, sans urgence. C'est le bon moment pour prendre de l'avance.",
   marquee: "Une partie importante de vos tâches va changer. Ceux qui apprennent à piloter l'IA garderont la main.",
   forte: "Plusieurs de vos tâches principales sont déjà en partie faisables par une IA. Votre valeur se déplace vers le contrôle et le jugement. Voici comment vous y préparer.",
 };
-
-const PREPARATION_DETAIL = {
-  a_construire: "Vous utilisez peu l'IA, ou sans cadre clair : tout est à construire, et c'est normal.",
-  en_cours: "Vous avez commencé à utiliser l'IA : il reste à structurer votre façon de faire.",
-  avancee: "Vous utilisez déjà l'IA dans un cadre clair : il s'agit maintenant de la fiabiliser.",
-} as const;
 
 /** Jauge en demi-cercle : se remplit une seule fois en 700 ms (image fixe si l'on demande moins d'animations). */
 function Jauge({ score }: { score: number }) {
@@ -137,12 +131,6 @@ export function ResultatDiagnostic({
           )}
         </section>
 
-        {/* 4. La préparation */}
-        <section className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[24px] border border-border bg-card px-6 py-5 sm:px-8">
-          <p className="type-small text-muted-foreground">Votre préparation</p>
-          <p className="font-display text-[1.25rem] font-semibold tracking-[-0.02em]">{LIBELLE_PREPARATION[resultat.preparation]}</p>
-          <p className="w-full type-small text-foreground/70">{PREPARATION_DETAIL[resultat.preparation]}</p>
-        </section>
       </div>
 
       {children}

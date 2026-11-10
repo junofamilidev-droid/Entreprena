@@ -103,7 +103,7 @@ export function CaptureEmail({ id, reponses, onPlan }: { id: string | null | und
         )}
         <label className="mt-4 flex cursor-pointer items-start gap-3 type-small text-foreground/80">
           <input type="checkbox" checked={consentement} onChange={(e) => setConsentement(e.target.checked)} className="mt-1 size-4 shrink-0 accent-[var(--primary)]" />
-          <span>J&apos;accepte de recevoir de {NOM} deux emails de conseils sur mon métier, puis l&apos;annonce de l&apos;ouverture de la formation. Désinscription en un clic.</span>
+          <span>J&apos;accepte de recevoir {/^[aeiouyéèêàâîôûh]/i.test(NOM) ? `d'${NOM}` : `de ${NOM}`} deux emails de conseils sur mon métier, puis l&apos;annonce de l&apos;ouverture de la formation. Désinscription en un clic.</span>
         </label>
         <p className="mt-3 text-[0.875rem] leading-[1.5] text-muted-foreground">{site.emailNotice}</p>
       </form>
