@@ -1,11 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { MetierAVenir } from "@/lib/vitrine/metiers";
 
 // Fiche d'un métier dont la formation est en préparation : même gabarit que la fiche disponible,
 // programme masqué (lignes floues) et, à droite, la matière fluide floutée avec la mention « Bientôt ».
 const SCENES = ["nuit-1", "nuit-2", "nuit-3"] as const;
 
-export function FormationUpcoming({ metier, index }: { metier: MetierAVenir; index: number }) {
+export function FormationUpcoming({ metier, index, lien = true }: { metier: MetierAVenir; index: number; /** Lien vers la page du métier (absent sur cette page même). */ lien?: boolean }) {
   return (
     <article className="grid h-full overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_40px_80px_-50px_rgb(20_60_60/0.45)] lg:grid-cols-[1.15fr_1fr]">
       <div className="flex flex-col p-6 sm:px-10 sm:py-8">
@@ -25,6 +26,11 @@ export function FormationUpcoming({ metier, index }: { metier: MetierAVenir; ind
           ))}
         </div>
         <p className="mt-6 type-small text-muted-foreground">Le programme sera publié à l&apos;ouverture de la formation.</p>
+        {lien && (
+          <Link href={`/formations/${metier.slug}`} className="link-quiet mt-6 self-start">
+            Être prévenu de l&apos;ouverture
+          </Link>
+        )}
       </div>
       <div className="relative order-first h-36 overflow-hidden lg:order-none lg:h-auto lg:min-h-[22rem]">
         <Image src={`/paysages/${SCENES[index % SCENES.length]}.webp`} alt="" fill sizes="40vw" className="scale-150 object-cover blur-2xl" />

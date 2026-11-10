@@ -22,7 +22,7 @@ export function construirePlan(metier: Metier, resultat: Resultat, reponses: { c
     metier.statut === "disponible" && metier.formation
       ? {
           type: "formation",
-          href: "/formations",
+          href: `/formations/${metier.formation}`,
           libelle: `Découvrir la formation ${metier.libelle}`,
         }
       : prevenu

@@ -4,6 +4,7 @@ import { Crumbs } from "@/components/admin/kit";
 import { DiagnosticsAdmin } from "@/components/admin/diagnostics-admin";
 import { requireAdmin } from "@/lib/admin/guard";
 import { metiersPublics } from "@/lib/diagnostic-metier/metiers";
+import { PAGES_FORMATION } from "@/lib/vitrine/pages-formation";
 import type { LigneDiagnostic, Notification } from "@/lib/diagnostic-metier/stats";
 
 // Onglet « Diagnostics » : lecture seule, réservée aux administrateurs (règles d'accès de la base).
@@ -39,7 +40,11 @@ async function Donnees() {
   ]);
   const erreur = diagnostics.erreur ?? evenements.erreur ?? notifications.erreur;
   if (erreur) return <p className="text-sm text-destructive">Lecture des diagnostics impossible : {erreur}</p>;
-  const metiers = Object.fromEntries(metiersPublics().map((m) => [m.id, m.libelle]));
+  // Les inscriptions « ouverture des ventes » d'une formation publiée apparaissent sur leur propre ligne.
+  const metiers = {
+    ...Object.fromEntries(metiersPublics().map((m) => [m.id, m.libelle])),
+    ...Object.fromEntries(Object.keys(PAGES_FORMATION).map((s) => [`ventes:${s}`, `Ouverture des ventes · ${s}`])),
+  };
   return <DiagnosticsAdmin diagnostics={diagnostics.lignes} evenements={evenements.lignes} notifications={notifications.lignes} metiers={metiers} />;
 }
 
