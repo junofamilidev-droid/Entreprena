@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { adminClient } from "@/lib/supabase/admin";
 import { hasSupabase } from "@/lib/supabase/env";
 import { createPublicClient } from "@/lib/supabase/server";
 import type {
@@ -259,6 +260,13 @@ export async function getModule(formationSlug: string, moduleSlug: string): Prom
 
 /* ---------------- Sessions en blocs ---------------- */
 
+// Les sessions sont lues avec la clé secrète quand elle est configurée : une fois l'accès réservé
+// (migration « reserver_contenu »), la clé publique ne les lit plus. L'accès de l'apprenant est vérifié
+// par la page, avant d'afficher le contenu.
+function sessionsClient() {
+  return adminClient() ?? createPublicClient();
+}
+
 export interface SessionSummary {
   id: string;
   moduleId: string;
@@ -292,7 +300,7 @@ export async function listSessions(formationSlug: string, moduleSlug: string): P
   const formation = await getFormation(formationSlug);
   const mod = formation?.modules.find((m) => m.slug === moduleSlug);
   if (!mod) return [];
-  const { data, error } = await createPublicClient()
+  const { data, error } = await sessionsClient()
     .from("sessions")
     .select("id, module_id, number, title, duration_min, status")
     .eq("module_id", mod.id)
@@ -314,7 +322,7 @@ export async function getSession(formationSlug: string, moduleSlug: string, n: n
   const formation = await getFormation(formationSlug);
   const mod = formation?.modules.find((m) => m.slug === moduleSlug);
   if (!mod) return null;
-  const { data, error } = await createPublicClient()
+  const { data, error } = await sessionsClient()
     .from("sessions")
     .select("*")
     .eq("module_id", mod.id)

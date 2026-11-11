@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { ArrowRightIcon, CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, PackageIcon, BriefcaseIcon, XIcon } from "lucide-react";
+import { CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, PackageIcon, BriefcaseIcon, XIcon } from "lucide-react";
 import type { FormationWithModules } from "@/lib/content/types";
 import { plain } from "@/lib/vitrine/text";
 import { exempleDe } from "@/lib/vitrine/exemples";
 import { libelleMetier, type MetierAVenir } from "@/lib/vitrine/metiers";
-import { VENTES_OUVERTES, type PageFormation } from "@/lib/vitrine/pages-formation";
+import type { PageFormation } from "@/lib/vitrine/pages-formation";
+import { ventesOuvertes } from "@/lib/stripe";
+import { AchatForm } from "@/components/site/achat-form";
 import { AppWindow, Eyebrow, Frame, LightDot, LightNumber, SectionHead } from "@/components/site/kit";
 import { MockMission, MockOutil, MockVerifs } from "@/components/site/mock-screens";
 import { Faq } from "@/components/site/faq";
@@ -18,18 +20,13 @@ import { HeroAbstract } from "@/components/site/hero-abstract";
 
 const euros = (n: number) => `${n}\u00a0€`; // espace insécable : « 79 € » ne se coupe jamais
 
-/** Le bouton d'achat, ou « être prévenu » tant que le paiement n'est pas branché. */
-function Achat({ slug, prix, sombre }: { slug: string; prix: number; sombre?: boolean }) {
-  if (VENTES_OUVERTES)
-    return (
-      <Link href={`/formations/${slug}/acheter`} className="btn-primary">
-        Accéder au parcours ({euros(prix)}) <ArrowRightIcon className="size-4" aria-hidden />
-      </Link>
-    );
+/** Le bouton d'achat, ou « être prévenu » tant que le paiement n'est pas branché (pas de clé Stripe). */
+function Achat({ slug, prix }: { slug: string; prix: number }) {
+  if (ventesOuvertes()) return <AchatForm formation={slug} prix={euros(prix)} />;
   return (
     <div>
-      <p className={sombre ? "type-small text-white/75" : "type-small text-muted-foreground"}>Le paiement en ligne ouvre très bientôt.</p>
-      <PrevenirForm cle={`ventes:${slug}`} bouton="Être prévenu de l'ouverture" sombre={sombre} className="mt-3 max-w-[32rem]" />
+      <p className="type-small text-muted-foreground">Le paiement en ligne ouvre très bientôt.</p>
+      <PrevenirForm cle={`ventes:${slug}`} bouton="Être prévenu de l'ouverture" className="mt-3 max-w-[32rem]" />
     </div>
   );
 }

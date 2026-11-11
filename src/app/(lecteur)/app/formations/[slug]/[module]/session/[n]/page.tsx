@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { atLeastOne, PLACEHOLDER } from "@/lib/content/static-params";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { AccesSession } from "@/components/platform/acces-session";
 import { AnySessionPlayer } from "@/components/session/any-session-player";
 import { getFormation, getSession, listFormations, listSessions } from "@/lib/content/source";
 import { filesBase } from "@/lib/sessions/files";
@@ -37,12 +39,16 @@ export default async function SessionPage(props: Props) {
   const moduleHref = `/app/formations/${slug}/${module}`;
 
   return (
-    <AnySessionPlayer
-      session={record.content}
-      moduleLabel={`Module ${mod.position} : ${mod.title}`}
-      exitHref={moduleHref}
-      fileBase={filesBase(record.content)}
-      next={next ? { titre: next.title, duree_min: next.durationMin, href: `${moduleHref}/session/${next.number}` } : null}
-    />
+    <Suspense fallback={<div className="min-h-dvh" aria-busy="true" />}>
+      <AccesSession formation={slug} titre={formation.title} sessionTitre={record.title} retour={`${moduleHref}/session/${number}`}>
+        <AnySessionPlayer
+          session={record.content}
+          moduleLabel={`Module ${mod.position} : ${mod.title}`}
+          exitHref={moduleHref}
+          fileBase={filesBase(record.content)}
+          next={next ? { titre: next.title, duree_min: next.durationMin, href: `${moduleHref}/session/${next.number}` } : null}
+        />
+      </AccesSession>
+    </Suspense>
   );
 }

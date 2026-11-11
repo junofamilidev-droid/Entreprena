@@ -2,9 +2,6 @@
 // Le reste (titre, promesse, modules, méthode, « pour qui ») vient du contenu de la formation (espace réservé).
 // FICHIER DE TEXTES : modifiable sans toucher au reste du code. Tout est en BROUILLON, à relire.
 
-/** Ventes ouvertes : false tant que le paiement Stripe n'est pas branché (le bouton propose alors d'être prévenu). */
-export const VENTES_OUVERTES = false;
-
 export type FichierKit = { nom: string; role: string };
 export type CommandeKit = { commande: string; role: string };
 

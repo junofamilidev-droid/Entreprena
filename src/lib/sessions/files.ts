@@ -1,4 +1,3 @@
-import { supabaseUrl } from "@/lib/supabase/env";
 import type { Session } from "./types";
 import type { AtelierSession } from "./atelier";
 
@@ -11,9 +10,13 @@ export function filesPrefix(s: Pick<Session | AtelierSession, "formation" | "mod
   return `${s.formation}/${s.module}/${s.session}`;
 }
 
-/** Adresse publique du dossier de la session ; le lecteur y ajoute le nom de chaque fichier. */
+/**
+ * Adresse du dossier de la session ; le lecteur y ajoute le nom de chaque fichier.
+ * Les fichiers passent par le site (/app/fichiers/…), qui vérifie l'accès de l'apprenant
+ * avant de donner un lien temporaire vers le stockage.
+ */
 export function filesBase(s: Pick<Session | AtelierSession, "formation" | "module" | "session">) {
-  return `${supabaseUrl}/storage/v1/object/public/${FILES_BUCKET}/${filesPrefix(s)}`;
+  return `/app/fichiers/${filesPrefix(s)}`;
 }
 
 /** Noms de fichiers cités par la session (blocs, ou panneaux d'un atelier), dans l'ordre d'apparition. */
