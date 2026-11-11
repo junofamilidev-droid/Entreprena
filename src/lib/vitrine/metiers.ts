@@ -27,4 +27,8 @@ export const METIERS_A_VENIR: MetierAVenir[] = [
  * Les formations gardent leur surtitre (ex. « Audit ») ; la vitrine affiche le nom du métier.
  */
 const LIBELLES: Record<string, string> = { audit: "Auditeur" };
-export const libelleMetier = (domaine: string) => LIBELLES[domaine.toLowerCase()] ?? domaine;
+export const libelleMetier = (domaine: string) => {
+  const d = domaine.toLowerCase();
+  // « Audit », « Audit légal et commissariat aux comptes »… : le métier affiché reste « Auditeur ».
+  return LIBELLES[d] ?? (d.startsWith("audit") ? "Auditeur" : domaine);
+};

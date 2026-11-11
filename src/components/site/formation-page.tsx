@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ArrowRightIcon, CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon } from "lucide-react";
+import { ArrowRightIcon, CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, XIcon } from "lucide-react";
 import type { FormationWithModules } from "@/lib/content/types";
 import { plain } from "@/lib/vitrine/text";
 import { exempleDe } from "@/lib/vitrine/exemples";
 import { libelleMetier, type MetierAVenir } from "@/lib/vitrine/metiers";
 import { VENTES_OUVERTES, type PageFormation } from "@/lib/vitrine/pages-formation";
-import { AppWindow, Eyebrow, Frame, LightNumber, SectionHead } from "@/components/site/kit";
+import { AppWindow, Eyebrow, Frame, LightDot, LightNumber, SectionHead } from "@/components/site/kit";
 import { MockMission, MockOutil, MockVerifs } from "@/components/site/mock-screens";
 import { Faq } from "@/components/site/faq";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
@@ -41,30 +41,46 @@ function LienDiagnostic({ className }: { className?: string }) {
   );
 }
 
+/** Texte où les passages ==ainsi== ressortent : plus foncés, soulignés d'un trait de lumière. */
+function Surligne({ texte }: { texte: string }) {
+  return texte.split(/==(.+?)==/g).map((t, i) =>
+    i % 2 ? (
+      <span key={i} className="font-medium text-foreground [background:linear-gradient(90deg,rgb(233_184_114/0.55),rgb(79_158_152/0.45))_0_100%/100%_0.3em_no-repeat]">
+        {t}
+      </span>
+    ) : (
+      t
+    ),
+  );
+}
+
 export function PageFormationPubliee({ formation, page }: { formation: FormationWithModules; page: PageFormation }) {
   const ex = exempleDe(libelleMetier(formation.domain));
-  const ouverts = formation.modules.filter((m) => m.availability === "open");
-  const duree = ouverts[0]?.durationLabel;
+  const n = formation.modules.length;
   return (
     <>
-      {/* 1. Haut de page */}
-      <section className="site-container grid grid-cols-[minmax(0,1fr)] gap-12 pt-10 pb-16 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-16 lg:pb-24">
+      {/* 1. Haut de page : tient dans l'écran (titre, promesse, prix et bouton visibles sans défiler). */}
+      <section className="site-container grid grid-cols-[minmax(0,1fr)] gap-10 pt-8 pb-14 sm:pt-12 lg:min-h-[calc(100svh-4.5rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:items-center lg:gap-16 lg:py-10 [@media(min-width:1024px)_and_(max-height:720px)]:lg:py-6">
         <div>
           <Eyebrow>Formation disponible · {libelleMetier(formation.domain)}</Eyebrow>
-          <h1 className="mt-5 type-display">{formation.title}</h1>
-          <p className="mt-6 max-w-[34rem] type-lead text-foreground/80">
-            {plain(formation.promise)} {plain(formation.summary)}
+          <h1 className="mt-4 max-w-[13ch] font-display text-[clamp(2.75rem,1.5rem+3.6vw,4.75rem)] [@media(min-width:1024px)_and_(max-height:720px)]:text-[3.5rem] leading-[0.98] font-semibold tracking-[-0.045em] text-balance">{formation.title}</h1>
+          <p className="mt-6 max-w-[34rem] text-[clamp(1.25rem,1.1rem+0.55vw,1.5rem)] [@media(min-width:1024px)_and_(max-height:720px)]:mt-4 [@media(min-width:1024px)_and_(max-height:720px)]:text-[1.25rem] leading-[1.45] text-foreground/70 text-pretty">
+            <Surligne texte={formation.promise} />
           </p>
-          <div className="mt-8 flex items-baseline gap-3">
-            <span className="font-display text-[2.5rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">{euros(page.prix)}</span>
-            <span className="type-small text-muted-foreground">prix de lancement, paiement unique</span>
+          <p className="mt-4 max-w-[34rem] type-small text-muted-foreground text-pretty">{plain(formation.summary)}</p>
+
+          <div className="mt-8 max-w-[34rem] rounded-[22px] border border-border bg-card/80 p-5 [@media(min-width:1024px)_and_(max-height:720px)]:mt-5 shadow-[0_24px_60px_-40px_rgb(20_60_60/0.45)] backdrop-blur sm:p-6">
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="font-display text-[2.25rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">{euros(page.prix)}</span>
+              <span className="type-small text-muted-foreground">prix de lancement · paiement unique</span>
+            </p>
+            <div className="mt-4">
+              <Achat slug={formation.slug} prix={page.prix} />
+            </div>
           </div>
-          <div className="mt-5">
-            <Achat slug={formation.slug} prix={page.prix} />
-          </div>
-          <LienDiagnostic className="mt-6 inline-block" />
+          <LienDiagnostic className="mt-5 inline-block" />
         </div>
-        <Frame scene="nuit-2" caption="Une session de la formation">
+        <Frame scene="nuit-2" caption="Une session de la formation" bodyClassName="sm:px-8 sm:pt-6 sm:pb-8">
           <AppWindow address={`${formation.slug} · module 1`}>
             <div className="grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
               <MockMission ex={ex} />
@@ -74,47 +90,70 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
         </Frame>
       </section>
 
-      {/* Repères */}
+      {/* Repères : trois chiffres, sans cadre */}
       <div className="site-container">
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[20px] border border-border bg-border lg:grid-cols-4">
+        <dl className="grid border-y border-border sm:grid-cols-3">
           {[
-            [`${formation.modules.length} modules`, "une mission réelle chacun"],
-            [duree ? duree.replace(/^environ /, "≈ ") : "À votre rythme", ouverts.length ? "pour le module 1" : "par module"],
-            ["1 outil Claude", "par module, à garder"],
-            ["0 donnée client", "un dossier fictif complet"],
-          ].map(([a, b]) => (
-            <div key={a} className="bg-card px-5 py-5 sm:px-7">
-              <dt className="font-display text-[1.375rem] font-semibold tracking-[-0.02em]">{a}</dt>
-              <dd className="mt-1 type-small text-muted-foreground">{b}</dd>
+            [String(n), n > 1 ? "modules" : "module", "une tâche réelle de l'audit chacun"],
+            [String(n), n > 1 ? "outils Claude" : "outil Claude", "un par module, que vous gardez"],
+            ["0", "donnée client", "tout se fait sur un dossier fictif"],
+          ].map(([chiffre, unite, detail], i) => (
+            <div key={unite} className={`flex items-center gap-5 py-6 sm:px-8 sm:py-8 ${i > 0 ? "border-t border-border sm:border-t-0 sm:border-l" : "sm:pl-0"}`}>
+              <dt className="bg-[linear-gradient(135deg,#d9a35a,#4f9e98)] bg-clip-text font-display text-[3.5rem] leading-none font-semibold tracking-[-0.05em] text-transparent tabular-nums">{chiffre}</dt>
+              <dd>
+                <span className="block font-display text-[1.25rem] leading-tight font-semibold tracking-[-0.02em]">{unite}</span>
+                <span className="mt-1 block type-small text-muted-foreground">{detail}</span>
+              </dd>
             </div>
           ))}
         </dl>
       </div>
 
-      {/* 2. Le programme */}
-      <section className="site-container site-section" aria-labelledby="programme">
-        <SectionHead eyebrow="Le programme" title={<span id="programme">Une tâche réelle par module, un livrable à la fin.</span>}>
-          Chaque module part d&apos;une demande de votre chef de mission, sur le dossier fictif Nordelia, et se termine par un document que vous pourriez lui transmettre.
-        </SectionHead>
-        <ol className="mt-12 grid gap-3">
+      {/* 2. Le programme : frise verticale */}
+      <section className="site-container site-section grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20" aria-labelledby="programme">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <Eyebrow>Le programme</Eyebrow>
+          <h2 id="programme" className="mt-4 max-w-[16ch] font-display text-[clamp(2rem,1.2rem+2vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em]">
+            Une tâche réelle par module, un outil à la fin.
+          </h2>
+          <p className="mt-6 max-w-[30rem] type-lead text-foreground/70">
+            Chaque module part d&apos;une demande de votre chef de mission sur le dossier fictif Nordelia, et vous laisse un outil Claude prêt à servir.
+          </p>
+        </div>
+        <ol className="relative">
+          {/* Le fil de la frise : lumineux sur le module ouvert, puis en pointillé. */}
+          <span aria-hidden className="absolute top-3 bottom-3 left-[0.6875rem] w-px bg-[linear-gradient(to_bottom,#e9b872,#4f9e98_22%,var(--border)_30%,var(--border))]" />
           {formation.modules.map((m) => {
             const ouvert = m.availability === "open";
             return (
-              <li key={m.id} className="grid gap-4 rounded-[22px] border border-border bg-card p-6 sm:grid-cols-[4rem_1fr_auto] sm:items-start sm:p-7">
-                <LightNumber n={m.position} className="text-[2rem] leading-none" />
+              <li key={m.id} className="relative grid grid-cols-[1.375rem_minmax(0,1fr)] gap-x-6 pb-12 last:pb-0">
+                <span aria-hidden className="relative mt-1.5 grid size-[1.375rem] place-items-center">
+                  {ouvert ? (
+                    <>
+                      <span className="absolute inset-[-6px] rounded-full bg-[radial-gradient(closest-side,rgb(233_184_114/0.5),transparent)]" />
+                      <span className="relative size-[1.375rem] rounded-full bg-[conic-gradient(from_200deg,#e9b872,#f6e7c8,#4f9e98,#e9b872)] ring-4 ring-background" />
+                    </>
+                  ) : (
+                    <span className="size-3.5 rounded-full border-2 border-foreground/20 bg-background ring-4 ring-background" />
+                  )}
+                </span>
                 <div>
-                  <h3 className="type-h3">{m.title}</h3>
-                  {m.summary && <p className="mt-2 max-w-[44rem] type-body text-foreground/75">{plain(m.summary)}</p>}
-                  <p className="mt-3 type-small">
-                    <span className="font-semibold">Vous repartez avec : </span>
-                    <span className="text-foreground/80">{plain(m.deliverable)}</span>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <span className="font-display text-[0.9375rem] font-semibold text-muted-foreground tabular-nums">Module {String(m.position).padStart(2, "0")}</span>
+                    {ouvert ? (
+                      <span className="rounded-full bg-primary px-2.5 py-0.5 text-[0.75rem] font-semibold text-primary-foreground">Disponible{m.durationLabel ? ` · ${m.durationLabel}` : ""}</span>
+                    ) : (
+                      <span className="rounded-full border border-border px-2.5 py-0.5 text-[0.75rem] text-muted-foreground">Prochainement</span>
+                    )}
+                  </div>
+                  <h3 className={`mt-2 font-display text-[clamp(1.375rem,1.2rem+0.6vw,1.75rem)] leading-[1.15] font-semibold tracking-[-0.025em] ${ouvert ? "" : "text-foreground/80"}`}>{m.title}</h3>
+                  {m.summary && <p className="mt-2 max-w-[40rem] type-body text-foreground/65">{plain(m.summary)}</p>}
+                  <p className="mt-4 flex max-w-[40rem] gap-3 border-l-2 border-[oklch(0.82_0.08_75)] pl-4 type-small">
+                    <span>
+                      <span className="block text-[0.8125rem] font-semibold tracking-wide text-muted-foreground uppercase">Vous repartez avec</span>
+                      <span className="mt-1 block text-foreground/85">{plain(m.deliverable)}</span>
+                    </span>
                   </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 sm:flex-col sm:items-end">
-                  <span className={ouvert ? "rounded-full bg-primary px-3 py-1 text-[0.8125rem] font-semibold text-primary-foreground" : "rounded-full border border-border px-3 py-1 text-[0.8125rem] text-muted-foreground"}>
-                    {ouvert ? "Disponible" : "Prochainement"}
-                  </span>
-                  {m.durationLabel && <span className="type-small text-muted-foreground">{m.durationLabel}</span>}
                 </div>
               </li>
             );
@@ -219,22 +258,47 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
       {/* 6. Comparatif */}
       <section className="site-container pb-[var(--section-space)]" aria-labelledby="comparatif">
         <SectionHead eyebrow="La différence" title={<span id="comparatif">Seul face à l&apos;IA, ou avec la formation.</span>} />
-        <div className="mt-12 overflow-hidden rounded-[24px] border border-border">
-          <div className="hidden grid-cols-[12rem_1fr_1fr] bg-muted/60 text-[0.875rem] font-semibold md:grid">
-            <span className="px-6 py-4" />
-            <span className="px-6 py-4 text-muted-foreground">Seul face à l&apos;IA</span>
-            <span className="bg-primary/[0.07] px-6 py-4 text-primary">Avec la formation</span>
-          </div>
+        {/* Ordinateur : 3 colonnes, la colonne « Avec la formation » forme un panneau sombre continu.
+            Mobile : une carte par critère. */}
+        <div className="mt-12 hidden md:grid md:grid-cols-[11rem_minmax(0,1fr)_minmax(0,1fr)]">
+          <span />
+          <span className="flex items-center gap-2 self-end px-7 pb-5 type-small font-semibold text-muted-foreground">
+            <XIcon className="size-4" aria-hidden /> Seul face à l&apos;IA
+          </span>
+          <span className="flex items-center gap-2 rounded-t-[24px] bg-[var(--night)] px-7 pt-6 pb-5 type-small font-semibold text-[var(--night-foreground)] shadow-[0_-20px_50px_-30px_rgb(20_60_60/0.5)]">
+            <LightDot /> Avec la formation
+          </span>
+          {page.comparatif.map((r, i) => {
+            const dernier = i === page.comparatif.length - 1;
+            return (
+              <div key={r.critere} className="contents">
+                <p className={`py-6 pr-4 font-display text-[1.125rem] font-semibold tracking-[-0.015em] ${dernier ? "" : "border-b border-border"}`}>{r.critere}</p>
+                <p className={`px-7 py-6 type-body text-foreground/60 ${dernier ? "" : "border-b border-border"}`}>{r.seul}</p>
+                <p className={`flex gap-3 bg-[var(--night)] px-7 py-6 type-body text-[var(--night-foreground)] ${dernier ? "rounded-b-[24px] pb-8" : "border-b border-white/10"}`}>
+                  <CheckIcon className="mt-1.5 size-4 shrink-0 text-[oklch(0.86_0.11_82)]" strokeWidth={2.5} aria-hidden />
+                  <span>{r.formation}</span>
+                </p>
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-10 grid gap-4 md:hidden">
           {page.comparatif.map((r) => (
-            <div key={r.critere} className="grid border-t border-border first:border-t-0 md:grid-cols-[12rem_1fr_1fr] md:first:border-t">
-              <p className="px-6 pt-5 font-semibold md:py-5">{r.critere}</p>
-              <p className="px-6 pt-2 type-small text-foreground/70 md:py-5">
-                <span className="font-medium md:hidden">Seul : </span>
-                {r.seul}
+            <div key={r.critere} className="overflow-hidden rounded-[20px] border border-border">
+              <p className="px-5 pt-5 font-display text-[1.125rem] font-semibold">{r.critere}</p>
+              <p className="flex gap-3 px-5 pt-2 pb-4 type-small text-foreground/60">
+                <XIcon className="mt-1 size-4 shrink-0" aria-hidden />
+                <span>
+                  <span className="sr-only">Seul face à l&apos;IA : </span>
+                  {r.seul}
+                </span>
               </p>
-              <p className="mt-2 bg-primary/[0.07] px-6 py-3 type-small md:mt-0 md:py-5">
-                <span className="font-medium text-primary md:hidden">Avec la formation : </span>
-                {r.formation}
+              <p className="flex gap-3 bg-[var(--night)] px-5 py-4 type-small text-[var(--night-foreground)]">
+                <CheckIcon className="mt-1 size-4 shrink-0 text-[oklch(0.86_0.11_82)]" strokeWidth={2.5} aria-hidden />
+                <span>
+                  <span className="sr-only">Avec la formation : </span>
+                  {r.formation}
+                </span>
               </p>
             </div>
           ))}

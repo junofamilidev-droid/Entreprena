@@ -63,8 +63,8 @@ export const PAGES_FORMATION: Record<string, PageFormation> = {
     ],
     faq: [
       {
-        q: "Faut-il un abonnement Claude ?",
-        a: "Oui, les outils de la formation s'installent dans Claude. Il faut un compte qui permet d'utiliser les skills. [À VÉRIFIER : offres de Claude qui donnent accès aux skills, et leur prix.]",
+        q: "Faut-il un compte Claude ?",
+        a: "Oui : les outils de la formation s'installent dans votre compte Claude. La première leçon vous montre comment faire, pas à pas.",
       },
       {
         q: "Puis-je utiliser l'outil sur mes vrais dossiers ?",

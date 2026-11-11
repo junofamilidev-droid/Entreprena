@@ -2,37 +2,22 @@
   "formation": {
     "slug": "auditeur-augmente-ia",
     "title": "Auditeur augmenté par l'IA",
-    "domain": "Audit",
-    "audience": "Auditeurs juniors et seniors",
-    "promise": "Utilisez l'IA en audit ==sans exposer une donnée client==.",
-    "summary": "Et rendez des feuilles de travail ==qu'un relecteur accepte==. Cinq modules, ==une tâche réelle par module==, sur des dossiers fictifs.",
+    "domain": "Audit légal et commissariat aux comptes",
+    "audience": "Auditeurs en cabinet, de l'assistant au manager",
+    "promise": "Installez dans Claude ==l'outil d'un auditeur senior== pour chaque tâche de l'audit, et apprenez à le piloter sur ==un dossier fictif réaliste==.",
+    "summary": "Cinq modules, une tâche réelle de l'audit par module. Chaque module vous livre un outil Claude d'expert (méthode, référentiel, livrable prêt à transmettre) et vous apprend à le lancer, le piloter, le vérifier et le personnaliser pour votre cabinet.",
     "forWhom": [
-      "Vous êtes auditeur junior ou senior, avec 0 à 5 ans d'expérience.",
-      "Votre cabinet autorise l'IA, l'encadre ou l'interdit : la première leçon traite cette question.",
-      "Vous voulez pratiquer sur un cas, pas suivre une présentation générale de l'IA."
+      "Vous êtes auditeur en cabinet, de l'assistant au manager.",
+      "Vous passez des heures sur la revue analytique, les tests et la documentation des dossiers (À valider)."
     ],
     "notThis": [
-      "Ce n'est pas une formation homologuée. Nous n'avons pas vérifié si elle peut entrer dans les obligations de formation continue de la profession : considérez que non.",
-      "Le certificat de fin de formation est adossé à vos livrables. Elle n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle."
+      "Ce n'est pas une formation certifiante : l'attestation, adossée à votre livrable, n'a aucune valeur officielle.",
+      "Ce n'est pas une préparation au DEC ni au CAFCAC.",
+      "Ce n'est pas un cours d'introduction à l'IA.",
+      "Vous ne traitez jamais de données réelles sur la plateforme : tous les cas sont fictifs.",
+      "Ce n'est pas un avis sur les règles de votre cabinet : sa charte IA prime toujours."
     ],
-    "method": [
-      {
-        "title": "Ai-je le droit ?",
-        "text": "Je vérifie les règles de mon cabinet et je retire tout ce qui identifie le client."
-      },
-      {
-        "title": "Je fais",
-        "text": "Je confie à l'IA le calcul et le premier tri."
-      },
-      {
-        "title": "Je vérifie",
-        "text": "Je recalcule un échantillon et je confronte chaque idée de l'IA à ce que je sais du client."
-      },
-      {
-        "title": "Je trace",
-        "text": "J'écris ce que j'ai fait, ce que l'IA a fait et ce qui reste à obtenir."
-      }
-    ],
+    "method": [],
     "tutorUrl": null,
     "presale": {
       "label": "Préacheter la formation",
@@ -45,10 +30,10 @@
     {
       "slug": "revue-analytique",
       "position": 1,
-      "title": "Revue analytique assistée par l'IA",
-      "summary": "Balance N/N-1 d'une PME fictive, 81 comptes, cinq anomalies cachées.",
-      "deliverable": "Une feuille de travail (variations significatives, hypothèses, éléments à obtenir, conclusion) et un journal d'usage de l'IA.",
-      "durationLabel": "environ 1 h 30",
+      "title": "Revue analytique",
+      "summary": "Nordelia Distribution, négociant B2B fictif : une balance 2025/2024 de 81 comptes, cinq anomalies cachées.",
+      "deliverable": "Le skill Claude « Revue analytique » : méthode, référentiel des risques, classeur Excel prêt à transmettre, personnalisé pour votre cabinet.",
+      "durationLabel": null,
       "availability": "open",
       "status": "published",
       "steps": [
@@ -2445,8 +2430,8 @@
       "slug": "tests-ecritures",
       "position": 2,
       "title": "Tests sur les écritures comptables",
-      "summary": "Un FEC d'environ 3 000 lignes.",
-      "deliverable": "Une note de sélection (critères, écritures retenues, travaux à mener).",
+      "summary": "Le FEC fictif de Nordelia, environ 3 000 écritures, dont quelques écritures inhabituelles.",
+      "deliverable": "Un skill Claude de sélection et de contrôle des écritures comptables à partir du FEC, avec sa note de sélection.",
       "durationLabel": null,
       "availability": "coming_soon",
       "status": "published"
@@ -2455,8 +2440,8 @@
       "slug": "tests-detail",
       "position": 3,
       "title": "Tests de détail et sondage",
-      "summary": "Un journal des ventes et 25 factures.",
-      "deliverable": "Une feuille de test (échantillon, écarts, conclusion).",
+      "summary": "Le journal des ventes de Nordelia et 25 factures fictives à pointer.",
+      "deliverable": "Un skill Claude de tirage d'échantillon et de pointage des pièces, avec sa feuille de test.",
       "durationLabel": null,
       "availability": "coming_soon",
       "status": "published"
@@ -2464,9 +2449,9 @@
     {
       "slug": "circularisation",
       "position": 4,
-      "title": "Circularisation",
-      "summary": "Une balance fournisseurs et 6 réponses de tiers.",
-      "deliverable": "Un dossier (sélection, lettre, suivi, rapprochements).",
+      "title": "Circularisation des tiers",
+      "summary": "La balance fournisseurs de Nordelia et les réponses de six tiers fictifs.",
+      "deliverable": "Un plugin Claude pour préparer les demandes de confirmation, suivre les réponses et relancer.",
       "durationLabel": null,
       "availability": "coming_soon",
       "status": "published"
@@ -2475,8 +2460,8 @@
       "slug": "synthese-mission",
       "position": 5,
       "title": "Synthèse de mission",
-      "summary": "Les quatre livrables précédents et un projet d'annexe.",
-      "deliverable": "Une note de synthèse au chef de mission, puis le certificat de fin de formation.",
+      "summary": "Les travaux des quatre premiers modules sur Nordelia, à synthétiser pour le chef de mission.",
+      "deliverable": "Un skill Claude qui rédige la note de synthèse de mission à partir des livrables des modules précédents.",
       "durationLabel": null,
       "availability": "coming_soon",
       "status": "published"
