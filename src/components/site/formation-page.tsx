@@ -220,29 +220,42 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
         </section>
       )}
 
-      {/* 5. Pour qui */}
-      <section className="site-container site-section grid gap-12 lg:grid-cols-2 lg:gap-20" aria-label="À qui s'adresse la formation">
-        <div>
-          <h2 className="type-h2">C&apos;est pour vous si…</h2>
-          <ul className="mt-8 grid gap-4">
-            {formation.forWhom.map((t) => (
-              <li key={t} className="flex gap-3 type-body">
-                <CheckIcon className="mt-1.5 size-4 shrink-0 text-primary" strokeWidth={2.5} aria-hidden />
-                {plain(t)}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h2 className="type-h2">Ce n&apos;est pas…</h2>
-          <ul className="mt-8 grid gap-4">
-            {formation.notThis.map((t) => (
-              <li key={t} className="flex gap-3 type-body text-foreground/80">
-                <MinusIcon className="mt-1.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-                {plain(t)}
-              </li>
-            ))}
-          </ul>
+      {/* 5. Pour qui : un seul panneau en deux moitiés, relié au reste par son surtitre. */}
+      <section className="site-container pb-[var(--section-space)]" aria-labelledby="pour-qui">
+        <SectionHead eyebrow="Pour qui" title={<span id="pour-qui">Est-ce la bonne formation pour vous ?</span>} />
+        <div className="mt-12 grid overflow-hidden rounded-[28px] border border-border lg:grid-cols-[1.15fr_1fr]">
+          <div className="bg-[linear-gradient(160deg,rgb(79_158_152/0.10),rgb(246_231_200/0.35))] p-7 sm:p-10">
+            <h3 className="flex items-center gap-3 type-h3">
+              <span className="grid size-8 place-items-center rounded-full bg-primary text-primary-foreground">
+                <CheckIcon className="size-4" strokeWidth={2.75} aria-hidden />
+              </span>
+              C&apos;est pour vous si…
+            </h3>
+            <ul className="mt-7 grid gap-4">
+              {formation.forWhom.map((t) => (
+                <li key={t} className="flex gap-3 type-body">
+                  <CheckIcon className="mt-1.5 size-4 shrink-0 text-primary" strokeWidth={2.5} aria-hidden />
+                  {plain(t)}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="border-t border-border bg-card p-7 sm:p-10 lg:border-t-0 lg:border-l">
+            <h3 className="flex items-center gap-3 type-h3 text-foreground/80">
+              <span className="grid size-8 place-items-center rounded-full border border-border text-muted-foreground">
+                <MinusIcon className="size-4" aria-hidden />
+              </span>
+              Ce n&apos;est pas…
+            </h3>
+            <ul className="mt-7 grid gap-4">
+              {formation.notThis.map((t) => (
+                <li key={t} className="flex gap-3 type-small text-foreground/70">
+                  <MinusIcon className="mt-1 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  {plain(t)}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
