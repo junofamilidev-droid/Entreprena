@@ -105,7 +105,16 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return s;
 }
 
-export function HeroAbstract({ className, focus = "left" }: { className?: string; focus?: "left" | "center" }) {
+export function HeroAbstract({
+  className,
+  focus = "left",
+  defilement = true,
+}: {
+  className?: string;
+  focus?: "left" | "center";
+  /** true (haut de page) : la matière s'évapore vers le haut quand on défile. false : elle reste entière (section plus bas). */
+  defilement?: boolean;
+}) {
   const ref = React.useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = React.useState(false);
 
@@ -265,8 +274,10 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
     if (!reduce) {
       host.addEventListener("pointermove", onMove);
       host.addEventListener("pointerleave", onLeave);
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
+      if (defilement) {
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+      }
     }
     const ro = new ResizeObserver(() => {
       setup();
@@ -290,7 +301,7 @@ export function HeroAbstract({ className, focus = "left" }: { className?: string
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [focus]);
+  }, [focus, defilement]);
 
   return (
     <canvas

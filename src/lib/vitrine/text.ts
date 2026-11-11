@@ -1,4 +1,6 @@
-/** Retire les marques de surlignage (==texte==) utilisées dans le contenu des formations. */
+import { stripReviewMarks } from "@/lib/sessions/display";
+
+/** Retire les marques de surlignage (==texte==) et les notes de relecture « (À valider) » du contenu des formations. */
 export function plain(s: string) {
-  return s.replace(/==/g, "");
+  return stripReviewMarks(s.replace(/==/g, ""));
 }

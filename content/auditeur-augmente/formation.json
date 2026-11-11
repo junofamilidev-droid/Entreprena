@@ -8,12 +8,14 @@
     "summary": "Cinq modules, une tâche réelle de l'audit par module. Chaque module vous livre un outil Claude d'expert (méthode, référentiel, livrable prêt à transmettre) et vous apprend à le lancer, le piloter, le vérifier et le personnaliser pour votre cabinet.",
     "forWhom": [
       "Vous êtes auditeur en cabinet, de l'assistant au manager.",
-      "Vous passez des heures sur la revue analytique, les tests et la documentation des dossiers (À valider)."
+      "Vous passez des heures sur la revue analytique, les tests et la documentation des dossiers (À valider).",
+      "Vous voulez utiliser l'IA sans jamais exposer une donnée de vos clients.",
+      "Vous voulez des livrables qu'un chef de mission accepte, pas un texte à reprendre.",
+      "Vous préférez apprendre sur un cas concret, à votre rythme, plutôt que dans une présentation générale de l'IA."
     ],
     "notThis": [
       "Ce n'est pas une formation certifiante : l'attestation, adossée à votre livrable, n'a aucune valeur officielle.",
       "Ce n'est pas une préparation au DEC ni au CAFCAC.",
-      "Ce n'est pas un cours d'introduction à l'IA.",
       "Vous ne traitez jamais de données réelles sur la plateforme : tous les cas sont fictifs.",
       "Ce n'est pas un avis sur les règles de votre cabinet : sa charte IA prime toujours."
     ],

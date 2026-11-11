@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRightIcon, CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, XIcon } from "lucide-react";
+import { ArrowRightIcon, CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, PackageIcon, BriefcaseIcon, XIcon } from "lucide-react";
 import type { FormationWithModules } from "@/lib/content/types";
 import { plain } from "@/lib/vitrine/text";
 import { exempleDe } from "@/lib/vitrine/exemples";
@@ -10,6 +10,7 @@ import { MockMission, MockOutil, MockVerifs } from "@/components/site/mock-scree
 import { Faq } from "@/components/site/faq";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
 import { PrevenirForm } from "@/components/site/prevenir-form";
+import { HeroAbstract } from "@/components/site/hero-abstract";
 
 // Pages de formation (/formations/[slug]).
 // - Formation publiée : page de vente complète (programme, kit, méthode, comparatif, tarif, FAQ).
@@ -121,43 +122,33 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
           </p>
         </div>
         <ol className="relative">
-          {/* Le fil de la frise : lumineux sur le module ouvert, puis en pointillé. */}
-          <span aria-hidden className="absolute top-3 bottom-3 left-[0.6875rem] w-px bg-[linear-gradient(to_bottom,#e9b872,#4f9e98_22%,var(--border)_30%,var(--border))]" />
-          {formation.modules.map((m) => {
-            const ouvert = m.availability === "open";
-            return (
-              <li key={m.id} className="relative grid grid-cols-[1.375rem_minmax(0,1fr)] gap-x-6 pb-12 last:pb-0">
-                <span aria-hidden className="relative mt-1.5 grid size-[1.375rem] place-items-center">
-                  {ouvert ? (
-                    <>
-                      <span className="absolute inset-[-6px] rounded-full bg-[radial-gradient(closest-side,rgb(233_184_114/0.5),transparent)]" />
-                      <span className="relative size-[1.375rem] rounded-full bg-[conic-gradient(from_200deg,#e9b872,#f6e7c8,#4f9e98,#e9b872)] ring-4 ring-background" />
-                    </>
-                  ) : (
-                    <span className="size-3.5 rounded-full border-2 border-foreground/20 bg-background ring-4 ring-background" />
+          {/* Le fil de la frise */}
+          <span aria-hidden className="absolute top-4 bottom-4 left-[0.4375rem] w-px bg-[linear-gradient(to_bottom,#e9b872,#4f9e98_45%,rgb(79_158_152/0.15))]" />
+          {formation.modules.map((m) => (
+            <li key={m.id} className="relative grid grid-cols-[0.875rem_minmax(0,1fr)] gap-x-6 pb-14 last:pb-0 sm:gap-x-8">
+              <span aria-hidden className="mt-2 size-[0.875rem] rounded-full bg-[conic-gradient(from_200deg,#e9b872,#f6e7c8,#4f9e98,#e9b872)] ring-[5px] ring-background" />
+              <div>
+                <p className="font-display text-[0.9375rem] font-semibold text-muted-foreground tabular-nums">Module {String(m.position).padStart(2, "0")}</p>
+                <h3 className="mt-1 font-display text-[clamp(1.375rem,1.2rem+0.6vw,1.75rem)] leading-[1.15] font-semibold tracking-[-0.025em]">{m.title}</h3>
+                <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+                  {m.summary && (
+                    <div>
+                      <dt className="flex items-center gap-2 text-[0.8125rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                        <BriefcaseIcon className="size-3.5" aria-hidden /> Le cas
+                      </dt>
+                      <dd className="mt-2 type-small text-foreground/75">{plain(m.summary)}</dd>
+                    </div>
                   )}
-                </span>
-                <div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <span className="font-display text-[0.9375rem] font-semibold text-muted-foreground tabular-nums">Module {String(m.position).padStart(2, "0")}</span>
-                    {ouvert ? (
-                      <span className="rounded-full bg-primary px-2.5 py-0.5 text-[0.75rem] font-semibold text-primary-foreground">Disponible{m.durationLabel ? ` · ${m.durationLabel}` : ""}</span>
-                    ) : (
-                      <span className="rounded-full border border-border px-2.5 py-0.5 text-[0.75rem] text-muted-foreground">Prochainement</span>
-                    )}
+                  <div>
+                    <dt className="flex items-center gap-2 text-[0.8125rem] font-semibold tracking-wide text-[oklch(0.5_0.08_190)] uppercase">
+                      <PackageIcon className="size-3.5" aria-hidden /> Vous repartez avec
+                    </dt>
+                    <dd className="mt-2 type-small font-medium text-foreground/90">{plain(m.deliverable)}</dd>
                   </div>
-                  <h3 className={`mt-2 font-display text-[clamp(1.375rem,1.2rem+0.6vw,1.75rem)] leading-[1.15] font-semibold tracking-[-0.025em] ${ouvert ? "" : "text-foreground/80"}`}>{m.title}</h3>
-                  {m.summary && <p className="mt-2 max-w-[40rem] type-body text-foreground/65">{plain(m.summary)}</p>}
-                  <p className="mt-4 flex max-w-[40rem] gap-3 border-l-2 border-[oklch(0.82_0.08_75)] pl-4 type-small">
-                    <span>
-                      <span className="block text-[0.8125rem] font-semibold tracking-wide text-muted-foreground uppercase">Vous repartez avec</span>
-                      <span className="mt-1 block text-foreground/85">{plain(m.deliverable)}</span>
-                    </span>
-                  </p>
-                </div>
-              </li>
-            );
-          })}
+                </dl>
+              </div>
+            </li>
+          ))}
         </ol>
       </section>
 
@@ -260,22 +251,27 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
         <SectionHead eyebrow="La différence" title={<span id="comparatif">Seul face à l&apos;IA, ou avec la formation.</span>} />
         {/* Ordinateur : 3 colonnes, la colonne « Avec la formation » forme un panneau sombre continu.
             Mobile : une carte par critère. */}
-        <div className="mt-12 hidden md:grid md:grid-cols-[11rem_minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="relative mt-12 hidden md:grid md:grid-cols-[11rem_minmax(0,1fr)_minmax(0,1fr)]" style={{ gridTemplateRows: `repeat(${page.comparatif.length + 1}, auto)` }}>
+          {/* Fond de la colonne « Avec la formation » : un voile de lumière léger, posé derrière toutes ses lignes. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 col-start-3 row-span-full row-start-1 rounded-[24px] border border-[rgb(79_158_152/0.22)] bg-[linear-gradient(170deg,rgb(79_158_152/0.13),rgb(246_231_200/0.35)_55%,rgb(233_184_114/0.16))] shadow-[0_30px_70px_-45px_rgb(20_80_80/0.45)]"
+          />
           <span />
           <span className="flex items-center gap-2 self-end px-7 pb-5 type-small font-semibold text-muted-foreground">
             <XIcon className="size-4" aria-hidden /> Seul face à l&apos;IA
           </span>
-          <span className="flex items-center gap-2 rounded-t-[24px] bg-[var(--night)] px-7 pt-6 pb-5 type-small font-semibold text-[var(--night-foreground)] shadow-[0_-20px_50px_-30px_rgb(20_60_60/0.5)]">
+          <span className="relative flex items-center gap-2 px-7 pt-6 pb-5 type-small font-semibold text-[oklch(0.38_0.07_195)]">
             <LightDot /> Avec la formation
           </span>
           {page.comparatif.map((r, i) => {
-            const dernier = i === page.comparatif.length - 1;
+            const ligne = i === page.comparatif.length - 1 ? "" : "border-b";
             return (
               <div key={r.critere} className="contents">
-                <p className={`py-6 pr-4 font-display text-[1.125rem] font-semibold tracking-[-0.015em] ${dernier ? "" : "border-b border-border"}`}>{r.critere}</p>
-                <p className={`px-7 py-6 type-body text-foreground/60 ${dernier ? "" : "border-b border-border"}`}>{r.seul}</p>
-                <p className={`flex gap-3 bg-[var(--night)] px-7 py-6 type-body text-[var(--night-foreground)] ${dernier ? "rounded-b-[24px] pb-8" : "border-b border-white/10"}`}>
-                  <CheckIcon className="mt-1.5 size-4 shrink-0 text-[oklch(0.86_0.11_82)]" strokeWidth={2.5} aria-hidden />
+                <p className={`${ligne} border-border py-6 pr-4 font-display text-[1.125rem] font-semibold tracking-[-0.015em]`}>{r.critere}</p>
+                <p className={`${ligne} border-border px-7 py-6 type-body text-foreground/55`}>{r.seul}</p>
+                <p className={`${ligne} relative mx-px flex gap-3 border-[rgb(79_158_152/0.15)] px-7 py-6 type-body ${ligne ? "" : "pb-8"}`}>
+                  <CheckIcon className="mt-1.5 size-4 shrink-0 text-[oklch(0.55_0.1_190)]" strokeWidth={2.5} aria-hidden />
                   <span>{r.formation}</span>
                 </p>
               </div>
@@ -293,8 +289,8 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
                   {r.seul}
                 </span>
               </p>
-              <p className="flex gap-3 bg-[var(--night)] px-5 py-4 type-small text-[var(--night-foreground)]">
-                <CheckIcon className="mt-1 size-4 shrink-0 text-[oklch(0.86_0.11_82)]" strokeWidth={2.5} aria-hidden />
+              <p className="flex gap-3 bg-[linear-gradient(170deg,rgb(79_158_152/0.13),rgb(246_231_200/0.4))] px-5 py-4 type-small">
+                <CheckIcon className="mt-1 size-4 shrink-0 text-[oklch(0.55_0.1_190)]" strokeWidth={2.5} aria-hidden />
                 <span>
                   <span className="sr-only">Avec la formation : </span>
                   {r.formation}
@@ -305,33 +301,34 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
         </div>
       </section>
 
-      {/* 7. Tarif */}
-      <section className="on-night site-section" aria-labelledby="tarif">
-        <div className="site-container grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-20">
+      {/* 7. Tarif : sur la matière fluide vivante, comme le haut de l'accueil (claire à gauche, sous le texte). */}
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(110deg,#faf6ee_0%,#f4e3c4_55%,#7fb0a9_100%)] text-[oklch(0.22_0.03_205)]" aria-labelledby="tarif">
+        <HeroAbstract className="absolute inset-0 -z-10 h-full w-full" defilement={false} />
+        <div className="site-container site-section grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-20">
           <div>
-            <Eyebrow className="text-white/75">Le tarif</Eyebrow>
+            <Eyebrow>Le tarif</Eyebrow>
             <h2 id="tarif" className="mt-4 type-h2">
               {formation.title}
             </h2>
-            <p className="mt-6 flex items-baseline gap-3">
+            <p className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span className="font-display text-[clamp(3rem,2rem+4vw,4.5rem)] leading-none font-semibold tracking-[-0.045em] tabular-nums">{euros(page.prix)}</span>
-              <span className="type-body text-white/70">prix de lancement, paiement unique</span>
+              <span className="type-body text-[oklch(0.3_0.03_205)]/75">prix de lancement, paiement unique</span>
             </p>
             <div className="mt-8">
-              <Achat slug={formation.slug} prix={page.prix} sombre />
+              <Achat slug={formation.slug} prix={page.prix} />
             </div>
           </div>
-          <div className="rounded-[24px] border border-white/15 bg-white/[0.06] p-6 sm:p-8">
-            <p className="type-small font-semibold text-white/80">Ce qui est inclus</p>
+          <div className="rounded-[24px] border border-white/60 bg-white/55 p-6 shadow-[0_30px_80px_-40px_rgb(20_60_60/0.45)] backdrop-blur-xl sm:p-8">
+            <p className="type-small font-semibold text-[oklch(0.3_0.03_205)]/80">Ce qui est inclus</p>
             <ul className="mt-5 grid gap-4">
               {page.inclus.map((t) => (
                 <li key={t} className="flex gap-3 type-body">
-                  <CheckIcon className="mt-1.5 size-4 shrink-0 text-[oklch(0.86_0.11_82)]" strokeWidth={2.5} aria-hidden />
+                  <CheckIcon className="mt-1.5 size-4 shrink-0 text-[oklch(0.5_0.09_190)]" strokeWidth={2.5} aria-hidden />
                   {t}
                 </li>
               ))}
             </ul>
-            <p className="mt-6 border-t border-white/15 pt-5 type-small text-white/65">Il vous faut aussi un compte Claude : voir les questions fréquentes.</p>
+            <p className="mt-6 border-t border-[oklch(0.3_0.03_205)]/10 pt-5 type-small text-[oklch(0.3_0.03_205)]/70">Il vous faut aussi un compte Claude : voir les questions fréquentes.</p>
           </div>
         </div>
       </section>
