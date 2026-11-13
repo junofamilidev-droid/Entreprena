@@ -10,9 +10,10 @@ type Ctx = { metier: string; exemple: Exemple; disponible: boolean; setMetier: (
 const MetierCtx = React.createContext<Ctx | null>(null);
 const KEY = "vitrine-metier";
 
-export function MetierProvider({ disponibles, children }: { disponibles: string[]; children: React.ReactNode }) {
+export function MetierProvider({ disponibles, fixe, children }: { disponibles: string[]; /** Page d'une formation : le métier ne change pas (pas de reprise du choix précédent). */ fixe?: boolean; children: React.ReactNode }) {
   const [metier, set] = React.useState(disponibles[0] ?? EXEMPLES[0].metier);
   React.useEffect(() => {
+    if (fixe) return;
     try {
       const saved = localStorage.getItem(KEY);
       if (saved && EXEMPLES.some((e) => e.metier === saved)) {
@@ -20,7 +21,7 @@ export function MetierProvider({ disponibles, children }: { disponibles: string[
         return () => clearTimeout(t);
       }
     } catch {}
-  }, []);
+  }, [fixe]);
   const setMetier = React.useCallback((m: string) => {
     set(m);
     try {

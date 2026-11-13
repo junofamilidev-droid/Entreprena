@@ -138,10 +138,14 @@ export function DiagnosticFlow({ metiers }: { metiers: MetierPublic[] }) {
       />
 
       <header className="site-container flex h-16 items-center gap-6">
-        <span className="font-display text-[1.375rem] font-semibold tracking-tight" aria-label={site.name}>
+        <Link
+          href="/"
+          className="rounded-md font-display text-[1.375rem] font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-ring"
+          aria-label={`${site.name} : retour à l'accueil`}
+        >
           {site.name.replace(/\.$/, "")}
           <span className="text-primary">.</span>
-        </span>
+        </Link>
         <div className="flex flex-1 justify-center">{question && <Progression etape={etat.etape} />}</div>
         <Link href="/" className="rounded-md px-2 py-2 text-[0.9375rem] text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
           Quitter
@@ -479,13 +483,17 @@ function ChoixTaches({ metier, valeur, onChange, onContinuer }: { metier: Metier
           </Carte>
         ))}
       </div>
-      <div className="sticky bottom-0 mt-6 flex flex-wrap items-center justify-between gap-4 bg-[linear-gradient(to_top,var(--background)_60%,transparent)] py-4">
-        <p className="type-small text-muted-foreground" aria-live="polite">
-          {alerte ? <span className="font-medium text-[oklch(0.5_0.13_55)]">Choisissez-en 3 au maximum.</span> : `${valeur.length} sur 3 choisie${valeur.length > 1 ? "s" : ""}`}
-        </p>
-        <button type="button" onClick={onContinuer} disabled={!ok} className="btn-primary disabled:cursor-not-allowed disabled:opacity-40">
-          Continuer
-        </button>
+      {/* Barre d'action fixée en bas de l'écran : « Continuer » reste toujours visible, sans défiler. */}
+      <div aria-hidden className="h-24" />
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border/70 bg-background/85 backdrop-blur-md">
+        <div className="site-container mx-auto flex max-w-[52rem] items-center justify-between gap-4 py-3 sm:py-4">
+          <p className="type-small text-muted-foreground" aria-live="polite">
+            {alerte ? <span className="font-medium text-[oklch(0.5_0.13_55)]">Choisissez-en 3 au maximum.</span> : `${valeur.length} sur 3 choisie${valeur.length > 1 ? "s" : ""}`}
+          </p>
+          <button type="button" onClick={onContinuer} disabled={!ok} className="btn-primary disabled:cursor-not-allowed disabled:opacity-40">
+            Continuer
+          </button>
+        </div>
       </div>
     </div>
   );

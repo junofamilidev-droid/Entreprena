@@ -5,15 +5,12 @@ import { HeroImage } from "@/components/site/hero-image";
 import { HeroScrollFx, ScrollCue } from "@/components/site/hero-scroll";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { ProductShowcase } from "@/components/site/product-showcase";
 import { FormationFeature } from "@/components/site/formation-feature";
-import { Faq } from "@/components/site/faq";
 import { SectionConstat } from "@/components/site/section-constat";
 import { SectionSteps } from "@/components/site/section-steps";
 import { FormationsCarousel } from "@/components/site/formations-carousel";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
-import { SectionPourQui } from "@/components/site/section-pourqui";
-import { Eyebrow, Frame, SectionHead } from "@/components/site/kit";
+import { Frame, SectionHead } from "@/components/site/kit";
 import { MetierProvider } from "@/components/site/metier-context";
 import { listFormations } from "@/lib/content/source";
 import { METIERS_A_VENIR, libelleMetier } from "@/lib/vitrine/metiers";
@@ -23,7 +20,7 @@ export type HeroVariant = "abstrait" | "produit" | "illustration";
 
 export async function HomeView({ variant = "produit" }: { variant?: HeroVariant }) {
   const formations = await listFormations();
-  const { constat, etapes, produit, pourQui, faq, final } = accueil;
+  const { constat, etapes, final } = accueil;
   // Un métier à venir disparaît de la liste dès qu'une formation publiée porte ce métier.
   const published = new Set(formations.map((f) => libelleMetier(f.domain).toLowerCase()));
   const upcoming = METIERS_A_VENIR.filter((m) => !published.has(m.nom.toLowerCase()));
@@ -67,19 +64,14 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
         </div>
       </section>
 
-      {/* d. Le produit : captures réelles en cartes de verre flottantes */}
-      <section aria-label="Aperçu de la plateforme">
-        <ProductShowcase title={produit.title} text={produit.text} word={produit.word} />
-      </section>
-
-      {/* e. Les formations par métier : une fiche par métier, à faire défiler. */}
+      {/* d. Les formations par métier : une fiche par métier, à faire défiler. */}
       <section id="formations">
         <div className="site-container pt-[var(--section-space)]">
           <SectionHead eyebrow="Les formations" title={accueil.formations.title}>
             <p>{accueil.formations.intro}</p>
             <p className="mt-4">
               <Link href="/diagnostic" className="link-quiet type-body">
-                Pas sûr de votre métier face à l&apos;IA ? Faire le diagnostic (2 min)
+                Pas sûr de votre métier face à l&apos;IA ? Faire le diagnostic
               </Link>
             </p>
           </SectionHead>
@@ -94,24 +86,6 @@ export async function HomeView({ variant = "produit" }: { variant?: HeroVariant 
               ]}
             />
           </div>
-        </div>
-      </section>
-
-      {/* f. Pour qui / ce que ce n'est pas */}
-      <section className="border-t border-border">
-        <div className="site-container site-section">
-          <SectionPourQui yesTitle={pourQui.title} yes={pourQui.forWhom} noTitle={pourQui.notThisTitle} no={pourQui.notThis} />
-        </div>
-      </section>
-
-      {/* g. FAQ courte */}
-      <section className="border-t border-border">
-        <div className="site-container site-section grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-20">
-          <div>
-            <Eyebrow>Aide</Eyebrow>
-            <h2 className="mt-5 font-display text-[clamp(2rem,1.2rem+2vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em]">{faq.title}</h2>
-          </div>
-          <Faq items={faq.items} />
         </div>
       </section>
 

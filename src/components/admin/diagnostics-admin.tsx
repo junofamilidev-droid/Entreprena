@@ -17,6 +17,7 @@ const PERIODES = [
 ] as const;
 
 const NIVEAUX = [
+  { k: "faible", l: "Faible", c: "bg-[#cfe3df]" },
   { k: "moderee", l: "Modérée", c: "bg-[#9fd1c9]" },
   { k: "marquee", l: "Marquée", c: "bg-[#e9b872]" },
   { k: "forte", l: "Forte", c: "bg-[#d9824f]" },

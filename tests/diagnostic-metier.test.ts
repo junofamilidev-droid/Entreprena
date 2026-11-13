@@ -8,12 +8,16 @@ const taches = (id: string) => metierParId(id)!.taches;
 describe("score d'exposition", () => {
   it("ramène la moyenne sur 100 et arrondit à 5", () => {
     expect(scoreExposition([5])).toBe(100);
-    expect(scoreExposition([1])).toBe(0);
-    expect(scoreExposition([5, 4, 3])).toBe(75); // moyenne 4 → 75
-    expect(scoreExposition([5, 4])).toBe(90); // 4,5 → 87,5 → 90
-    expect(scoreExposition([3, 2, 2])).toBe(35); // 2,33 → 33,3 → 35
+    expect(scoreExposition([1])).toBe(10); // jamais 0
+    expect(scoreExposition([5, 4, 3])).toBe(80); // moyenne 4 → 77,5 → 80
+    expect(scoreExposition([5, 4])).toBe(90); // 4,5 → 88,75 → 90
+    expect(scoreExposition([3, 2, 2])).toBe(40); // 2,33 → 40
+    expect(scoreExposition([2, 2, 1])).toBe(25); // 1,67 → 25
   });
-  it("classe les niveaux aux seuils 40 et 70", () => {
+  it("classe les niveaux aux seuils 30, 40 et 70", () => {
+    expect(niveauExposition(10)).toBe("faible");
+    expect(niveauExposition(25)).toBe("faible");
+    expect(niveauExposition(30)).toBe("moderee");
     expect(niveauExposition(35)).toBe("moderee");
     expect(niveauExposition(40)).toBe("marquee");
     expect(niveauExposition(65)).toBe("marquee");
@@ -40,17 +44,17 @@ describe("profils", () => {
   });
   it("toutes à 1 (autre métier, tâche relationnelle)", () => {
     const r: Reponses = { ...base, metier: AUTRE, metierAutre: "Pharmacien", taches: ["relations"] };
-    expect(calculer(r, taches(AUTRE))).toMatchObject({ score: 0, niveau: "moderee", tachePlusExposee: "relations" });
+    expect(calculer(r, taches(AUTRE))).toMatchObject({ score: 10, niveau: "faible", tachePlusExposee: "relations" });
   });
   it("métier « Autre » avec trois tâches mixtes", () => {
     const r: Reponses = { ...base, metier: AUTRE, taches: ["reunions", "recherche", "relations"], frequence: "semaine", cadre: "autorise" };
     // notes 2, 4, 1 → moyenne 2,33 → 33,3 → 35
-    expect(calculer(r, taches(AUTRE))).toMatchObject({ score: 35, niveau: "moderee", preparation: "en_cours", tachePlusExposee: "recherche" });
+    expect(calculer(r, taches(AUTRE))).toMatchObject({ score: 40, niveau: "marquee", preparation: "en_cours", tachePlusExposee: "recherche" });
   });
   it("exposition marquée (juriste)", () => {
     const r: Reponses = { ...base, metier: "juriste", taches: ["contrats", "echeances", "veille"] };
     // 4, 2, 4 → 3,33 → 58,3 → 60
-    expect(calculer(r, taches("juriste"))).toMatchObject({ score: 60, niveau: "marquee", tachePlusExposee: "contrats" });
+    expect(calculer(r, taches("juriste"))).toMatchObject({ score: 65, niveau: "marquee", tachePlusExposee: "contrats" });
   });
   it("égalité : la première de la liste du métier gagne, quel que soit l'ordre des clics", () => {
     const r: Reponses = { ...base, metier: "auditeur", taches: ["documentation", "revue-analytique"] };

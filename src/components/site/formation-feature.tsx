@@ -3,9 +3,13 @@ import Link from "next/link";
 import type { FormationWithModules } from "@/lib/content/types";
 import { plain } from "@/lib/vitrine/text";
 import { libelleMetier } from "@/lib/vitrine/metiers";
+import { PAGES_FORMATION } from "@/lib/vitrine/pages-formation";
+import { ventesOuvertes } from "@/lib/stripe";
+import { AchatRapide } from "@/components/site/achat-rapide";
 
 // Formation mise en avant sur l'accueil : sa promesse, ses modules et leur disponibilité, une capture.
 export function FormationFeature({ formation }: { formation: FormationWithModules }) {
+  const page = PAGES_FORMATION[formation.slug];
   return (
     <article className="grid h-full overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_40px_80px_-50px_rgb(20_60_60/0.45)] lg:grid-cols-[1.15fr_1fr]">
       <div className="flex flex-col p-6 sm:px-10 sm:py-8">
@@ -23,9 +27,12 @@ export function FormationFeature({ formation }: { formation: FormationWithModule
             </li>
           ))}
         </ol>
-        <Link href={`/formations/${formation.slug}`} className="link-quiet mt-8 self-start">
-          Découvrir la formation
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          {page && <AchatRapide formation={formation.slug} titre={formation.title} prix={`${page.prix}\u00a0€`} ventesOuvertes={ventesOuvertes()} />}
+          <Link href={`/formations/${formation.slug}`} className="link-quiet">
+            Découvrir la formation
+          </Link>
+        </div>
       </div>
       <div className="relative hidden min-h-[22rem] overflow-hidden bg-[url(/paysages/nuit-2.webp)] bg-cover lg:block">
         <div className="absolute top-12 left-12 w-[115%]">

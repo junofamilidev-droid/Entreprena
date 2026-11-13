@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 // (le niveau de préparation reste calculé et enregistré, mais n'est plus affiché).
 
 const PHRASES: Record<NiveauExposition, string> = {
+  faible: "Vos tâches principales restent surtout humaines. L'IA peut tout de même vous faire gagner du temps sur les plus répétitives.",
   moderee: "Votre métier évolue, sans urgence. C'est le bon moment pour prendre de l'avance.",
   marquee: "Une partie importante de vos tâches va changer. Ceux qui apprennent à piloter l'IA garderont la main.",
   forte: "Plusieurs de vos tâches principales sont déjà en partie faisables par une IA. Votre valeur se déplace vers le contrôle et le jugement. Voici comment vous y préparer.",
@@ -95,7 +96,9 @@ export function ResultatDiagnostic({
         <section className="rounded-[24px] border border-border bg-card p-6 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="type-small text-muted-foreground">Votre tâche la plus exposée</p>
+              <p className="type-small text-muted-foreground">
+                {tache.exposition <= 2 ? "Aucune de vos tâches n'est fortement exposée. Celle qui l'est le plus :" : "Votre tâche la plus exposée"}
+              </p>
               <h2 className="mt-1 font-display text-[1.5rem] leading-[1.2] font-semibold tracking-[-0.025em]">{tache.libelle}</h2>
             </div>
             <span className="rounded-full bg-[oklch(0.94_0.05_70)] px-3 py-1.5 text-[0.875rem] font-semibold text-[oklch(0.42_0.1_55)] tabular-nums">Exposition {tache.exposition}/5</span>

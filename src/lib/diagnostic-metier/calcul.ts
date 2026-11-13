@@ -14,10 +14,11 @@ export type Reponses = {
   objectif: Objectif;
 };
 
-export type NiveauExposition = "moderee" | "marquee" | "forte";
+export type NiveauExposition = "faible" | "moderee" | "marquee" | "forte";
 export type NiveauPreparation = "a_construire" | "en_cours" | "avancee";
 
 export const LIBELLE_EXPOSITION: Record<NiveauExposition, string> = {
+  faible: "Exposition faible",
   moderee: "Exposition modérée",
   marquee: "Exposition marquée",
   forte: "Exposition forte",
@@ -34,25 +35,29 @@ const POINTS_CADRE: Record<Cadre, number> = { outil: 2, autorise: 1, interdit: 0
 export type TacheNotee = { id: string; exposition: number };
 
 export type Resultat = {
-  score: number; // 0 à 100, arrondi à 5
+  score: number; // 10 à 100, arrondi à 5
   niveau: NiveauExposition;
   preparation: NiveauPreparation;
   pointsPreparation: number; // 0 à 5
   tachePlusExposee: string; // id de la tâche
 };
 
-/** Score d'exposition : moyenne des notes (1 à 5) ramenée sur 100, arrondie à 5 près. */
+/**
+ * Score d'exposition : moyenne des notes (1 à 5) ramenée entre 10 et 100, arrondie à 5 près.
+ * Le minimum est 10 et non 0 : même une tâche surtout humaine n'est jamais totalement à l'abri.
+ */
 export function scoreExposition(notes: number[]): number {
   if (!notes.length) throw new Error("Au moins une tâche est nécessaire");
   const moyenne = notes.reduce((a, b) => a + b, 0) / notes.length;
-  const brut = ((moyenne - 1) / 4) * 100;
-  return Math.min(100, Math.max(0, Math.round(brut / 5) * 5));
+  const brut = 10 + ((moyenne - 1) / 4) * 90;
+  return Math.min(100, Math.max(10, Math.round(brut / 5) * 5));
 }
 
 export function niveauExposition(score: number): NiveauExposition {
   if (score >= 70) return "forte";
   if (score >= 40) return "marquee";
-  return "moderee";
+  if (score >= 30) return "moderee";
+  return "faible";
 }
 
 export function preparation(frequence: Frequence, cadre: Cadre): { points: number; niveau: NiveauPreparation } {

@@ -12,6 +12,9 @@ import { MockMission, MockOutil, MockVerifs } from "@/components/site/mock-scree
 import { Faq } from "@/components/site/faq";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
 import { PrevenirForm } from "@/components/site/prevenir-form";
+import { ProductShowcase } from "@/components/site/product-showcase";
+import { MetierProvider } from "@/components/site/metier-context";
+import { accueil } from "@/lib/vitrine/textes";
 import { HeroAbstract } from "@/components/site/hero-abstract";
 
 // Pages de formation (/formations/[slug]).
@@ -62,21 +65,21 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
         <div>
           <Eyebrow>Formation disponible · {libelleMetier(formation.domain)}</Eyebrow>
           <h1 className="mt-4 max-w-[13ch] font-display text-[clamp(2.75rem,1.5rem+3.6vw,4.75rem)] [@media(min-width:1024px)_and_(max-height:720px)]:text-[3.5rem] leading-[0.98] font-semibold tracking-[-0.045em] text-balance">{formation.title}</h1>
-          <p className="mt-6 max-w-[34rem] text-[clamp(1.25rem,1.1rem+0.55vw,1.5rem)] [@media(min-width:1024px)_and_(max-height:720px)]:mt-4 [@media(min-width:1024px)_and_(max-height:720px)]:text-[1.25rem] leading-[1.45] text-foreground/70 text-pretty">
+          <p className="mt-7 max-w-[34rem] text-[clamp(1.25rem,1.1rem+0.55vw,1.5rem)] [@media(min-width:1024px)_and_(max-height:720px)]:mt-4 [@media(min-width:1024px)_and_(max-height:720px)]:text-[1.25rem] leading-[1.45] text-foreground/70 text-pretty">
             <Surligne texte={formation.promise} />
           </p>
-          <p className="mt-4 max-w-[34rem] type-small text-muted-foreground text-pretty">{plain(formation.summary)}</p>
 
-          <div className="mt-8 max-w-[34rem] rounded-[22px] border border-border bg-card/80 p-5 [@media(min-width:1024px)_and_(max-height:720px)]:mt-5 shadow-[0_24px_60px_-40px_rgb(20_60_60/0.45)] backdrop-blur sm:p-6">
+          {/* Prix et bouton, sans cadre : un filet fin les sépare du texte. */}
+          <div className="mt-10 max-w-[34rem] border-t border-border pt-8 [@media(min-width:1024px)_and_(max-height:720px)]:mt-6 [@media(min-width:1024px)_and_(max-height:720px)]:pt-5">
             <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="font-display text-[2.25rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">{euros(page.prix)}</span>
+              <span className="font-display text-[2.5rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">{euros(page.prix)}</span>
               <span className="type-small text-muted-foreground">prix de lancement · paiement unique</span>
             </p>
-            <div className="mt-4">
+            <div className="mt-5">
               <Achat slug={formation.slug} prix={page.prix} />
             </div>
           </div>
-          <LienDiagnostic className="mt-5 inline-block" />
+          <LienDiagnostic className="mt-6 inline-block" />
         </div>
         <Frame scene="nuit-2" caption="Une session de la formation" bodyClassName="sm:px-8 sm:pt-6 sm:pb-8">
           <AppWindow address={`${formation.slug} · module 1`}>
@@ -114,9 +117,7 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
           <h2 id="programme" className="mt-4 max-w-[16ch] font-display text-[clamp(2rem,1.2rem+2vw,3rem)] leading-[1.02] font-semibold tracking-[-0.04em]">
             Une tâche réelle par module, un outil à la fin.
           </h2>
-          <p className="mt-6 max-w-[30rem] type-lead text-foreground/70">
-            Chaque module part d&apos;une demande de votre chef de mission sur le dossier fictif Nordelia, et vous laisse un outil Claude prêt à servir.
-          </p>
+          <p className="mt-6 max-w-[30rem] type-lead text-foreground/70">{plain(formation.summary)}</p>
         </div>
         <ol className="relative">
           {/* Le fil de la frise */}
@@ -149,8 +150,15 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
         </ol>
       </section>
 
+      {/* « En mission » : à quoi ressemble une vraie session, au moment où le visiteur se pose la question. */}
+      <section aria-label="Une session en images">
+        <MetierProvider disponibles={[libelleMetier(formation.domain)]} fixe>
+          <ProductShowcase title={accueil.produit.title} text={accueil.produit.text} word={accueil.produit.word} />
+        </MetierProvider>
+      </section>
+
       {/* 3. Le kit téléchargeable, à côté de l'écran d'exercice */}
-      <section className="site-container pb-[var(--section-space)]" aria-labelledby="kit">
+      <section className="site-container site-section" aria-labelledby="kit">
         <SectionHead eyebrow="Le kit téléchargeable" title={<span id="kit">L&apos;outil que vous installez dans Claude.</span>}>
           {page.kit.intro}
         </SectionHead>

@@ -68,7 +68,7 @@ export type ParMetier = {
   emails: number;
   consentements: number;
   scoreMoyen: number | null;
-  niveaux: { moderee: number; marquee: number; forte: number };
+  niveaux: { faible: number; moderee: number; marquee: number; forte: number };
   notifications: number;
 };
 
@@ -85,7 +85,7 @@ export function parMetier(lignes: LigneDiagnostic[], notifications: Notification
   return [...ids]
     .map((id) => {
       const g = groupes.get(id) ?? [];
-      const niveaux = { moderee: 0, marquee: 0, forte: 0 };
+      const niveaux = { faible: 0, moderee: 0, marquee: 0, forte: 0 };
       for (const l of g) if (l.niveau in niveaux) niveaux[l.niveau as keyof typeof niveaux]++;
       return {
         metier: libelle(id),

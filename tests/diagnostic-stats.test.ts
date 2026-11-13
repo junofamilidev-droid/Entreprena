@@ -53,7 +53,7 @@ describe("parMetier", () => {
       ],
       (id) => id.toUpperCase(),
     );
-    expect(r[0]).toEqual({ metier: "AUDITEUR", diagnostics: 2, emails: 1, consentements: 1, scoreMoyen: 70, niveaux: { moderee: 0, marquee: 1, forte: 1 }, notifications: 0 });
+    expect(r[0]).toEqual({ metier: "AUDITEUR", diagnostics: 2, emails: 1, consentements: 1, scoreMoyen: 70, niveaux: { faible: 0, moderee: 0, marquee: 1, forte: 1 }, notifications: 0 });
     expect(r[1]).toMatchObject({ metier: "RH", diagnostics: 1, notifications: 1 });
     expect(r[2]).toMatchObject({ metier: "AUTRE", diagnostics: 0, scoreMoyen: null, notifications: 1 });
   });
