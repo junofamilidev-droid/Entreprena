@@ -97,7 +97,7 @@ export const accueil = {
     notThisTitle: "Ce que ce n'est pas",
     notThis: [
       "Une formation à l'IA en général : chaque formation traite un métier précis.",
-      "Un diplôme : l'attestation de fin de formation est adossée à vos livrables et n'a pas de valeur officielle.",
+      "Un diplôme : c'est une formation opérationnelle continue, non rattachée au RNCP, avec un certificat pratique adossé à vos livrables.",
       "Un outil qui travaille à votre place : c'est vous qui vérifiez et qui signez.",
     ],
   },
@@ -122,8 +122,8 @@ export const accueil = {
         a: "Sa date d'ouverture est affichée avant l'achat. Vous accédez tout de suite aux modules disponibles ; les suivants s'ouvrent automatiquement à leur date.",
       },
       {
-        q: "L'attestation a-t-elle une valeur officielle ?",
-        a: "Non. Elle atteste que vous avez rendu les livrables de la formation. Ce n'est ni un diplôme ni une certification professionnelle.",
+        q: "Que vaut le certificat ?",
+        a: "C'est un certificat de fin de formation pratique, adossé à vos livrables : il atteste ce que vous avez produit. Il s'agit d'une formation opérationnelle continue, non rattachée au RNCP.",
       },
     ],
   },

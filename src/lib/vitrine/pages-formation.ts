@@ -30,7 +30,7 @@ export const PAGES_FORMATION: Record<string, PageFormation> = {
       "Un outil Claude prêt à installer par module, que vous gardez",
       "Un dossier fictif complet (Nordelia) pour vous entraîner sans données clients",
       "Les mises à jour des modules et des outils",
-      "Le certificat de fin de formation, adossé à vos livrables",
+      "Un certificat de fin de formation pratique, adossé à vos livrables",
     ],
     kit: {
       nom: "revue-analytique",
@@ -76,8 +76,8 @@ export const PAGES_FORMATION: Record<string, PageFormation> = {
         a: "Ils sont compris dans le prix. Vous y accédez dès leur sortie, sans rien payer de plus.",
       },
       {
-        q: "Est-ce une formation certifiante ?",
-        a: "Non. Le certificat de fin de formation atteste vos livrables, mais n'a pas de valeur officielle : ce n'est ni un diplôme ni une certification professionnelle.",
+        q: "Que vaut le certificat ?",
+        a: "C'est un certificat de fin de formation pratique, adossé à vos livrables : il montre ce que vous savez produire, documents à l'appui. Il s'agit d'une formation opérationnelle continue, non rattachée au RNCP.",
       },
       {
         q: "Est-ce un abonnement ?",
