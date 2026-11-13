@@ -56,7 +56,6 @@ export async function acheter(formData: FormData): Promise<{ erreur: string } | 
   const slug = String(formData.get("formation") ?? "");
   const page = PAGES_FORMATION[slug];
   if (!page) return { erreur: "Formation inconnue." };
-  if (formData.get("renonciation") !== "on") return { erreur: "Cochez la case pour accéder tout de suite à la formation." };
   if (!ventesOuvertes()) return { erreur: "Le paiement en ligne n'est pas encore ouvert." };
   const formation = await getFormation(slug);
   if (!formation) return { erreur: "Formation inconnue." };
@@ -70,10 +69,13 @@ export async function acheter(formData: FormData): Promise<{ erreur: string } | 
       origine: await origineDuSite(),
       email: user?.email ?? undefined,
       userId: user?.id,
-      renonciation: new Date().toISOString(),
     });
     url = s.url;
-  } catch {
+  } catch (e) {
+    if (e instanceof Error && /terms of service/i.test(e.message)) {
+      // L'adresse des CGV n'est pas encore renseignée dans Stripe (voir MISE-EN-LIGNE.md).
+      return { erreur: "Le paiement n'est pas encore configuré (adresse des CGV à renseigner dans Stripe)." };
+    }
     return { erreur: "Le paiement n'a pas pu démarrer. Réessayez dans un instant." };
   }
   if (!url) return { erreur: "Le paiement n'a pas pu démarrer. Réessayez dans un instant." };

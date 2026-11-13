@@ -22,6 +22,7 @@ export async function enregistrerAchat(s: CheckoutSession) {
     userId: s.client_reference_id,
     stripeSessionId: s.id,
     montantCents: s.amount_total,
-    renonciationAt: s.metadata?.renonciation ?? null,
+    // Case des CGV cochée sur la page Stripe (les CGV contiennent la clause d'accès immédiat).
+    renonciationAt: s.consent?.terms_of_service === "accepted" ? new Date(s.created * 1000).toISOString() : null,
   });
 }

@@ -25,6 +25,13 @@ export function SiteFooter() {
         </nav>
         <div className="type-small">
           <ThemeSwitch />
+          <ul className="mt-3 space-y-1">
+            <li>
+              <Link href="/cgv" className="inline-flex min-h-9 items-center text-muted-foreground hover:text-foreground">
+                Conditions générales de vente
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </footer>

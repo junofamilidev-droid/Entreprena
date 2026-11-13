@@ -43,16 +43,25 @@ export type CheckoutSession = {
   client_reference_id: string | null;
   customer_details: { email: string | null } | null;
   metadata: Record<string, string>;
+  /** « accepted » quand l'acheteur a coché la case des CGV sur la page de paiement. */
+  consent: { terms_of_service: "accepted" | null } | null;
 };
 
-export function creerCheckout(p: { formation: string; titre: string; prixCents: number; origine: string; email?: string; userId?: string; renonciation: string }) {
+/**
+ * Page de paiement Stripe. La case standard « J'accepte les conditions générales de vente » y est obligatoire :
+ * les CGV contiennent la clause d'accès immédiat au contenu numérique (renonciation au droit de rétractation).
+ * Prérequis : l'adresse des CGV renseignée dans Stripe (Paramètres → Informations publiques → Conditions d'utilisation).
+ */
+export function creerCheckout(p: { formation: string; titre: string; prixCents: number; origine: string; email?: string; userId?: string }) {
   return stripe<CheckoutSession>("checkout/sessions", {
     mode: "payment",
     locale: "fr",
     line_items: [{ quantity: 1, price_data: { currency: "eur", unit_amount: p.prixCents, product_data: { name: p.titre } } }],
     customer_email: p.email,
     client_reference_id: p.userId,
-    metadata: { formation: p.formation, renonciation: p.renonciation },
+    metadata: { formation: p.formation },
+    consent_collection: { terms_of_service: "required" },
+    custom_text: { terms_of_service_acceptance: { message: `J'accepte les [conditions générales de vente](${p.origine}/cgv).` } },
     payment_intent_data: { metadata: { formation: p.formation } },
     success_url: `${p.origine}/achat/confirmation?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${p.origine}/formations/${p.formation}?paiement=annule`,

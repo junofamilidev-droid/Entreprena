@@ -7,7 +7,7 @@ ce qui est listé plus bas, dans l'ordre.
 
 - Diagnostic « Votre métier face à l'IA », avec son onglet de suivi dans l'espace réservé.
 - Pages des formations (Auditeur + les 10 métiers en préparation).
-- Paiement par carte (Stripe) : bouton, case de renonciation au droit de rétractation, création du compte,
+- Paiement par carte (Stripe) : bouton, case « J'accepte les CGV » sur la page Stripe, création du compte,
   connexion automatique, arrivée sur la session 1. **Il reste éteint tant que la clé Stripe n'est pas ajoutée**
   (le site affiche alors « Être prévenu de l'ouverture »).
 - Sessions et outils réservés aux acheteurs et aux testeurs.
