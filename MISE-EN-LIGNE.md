@@ -10,7 +10,7 @@ ce qui est listé plus bas, dans l'ordre.
 - Paiement par carte (Stripe) : bouton, case « J'accepte les CGV » sur la page Stripe, création du compte,
   connexion automatique, arrivée sur la session 1. **Il reste éteint tant que la clé Stripe n'est pas ajoutée**
   (le site affiche alors « Être prévenu de l'ouverture »).
-- Sessions et outils réservés aux acheteurs et aux testeurs.
+- Espace apprenant (/app) réservé aux comptes connectés ; plus d'inscription libre ; sessions et outils réservés aux acheteurs et aux testeurs ; démos et anciennes étapes réservées à l'administrateur.
 - Onglet « Accès et achats » de l'espace réservé : offrir un accès à un testeur, retirer un accès.
 - Clé secrète Supabase : déjà réglée dans Vercel.
 - Emails automatiques (textes v1) : plan d'action, 2 conseils (J+2, J+5), annonce d'ouverture, confirmation de commande,
@@ -37,6 +37,9 @@ ce qui est listé plus bas, dans l'ordre.
 4. Compléter l'adresse de contact et l'identité du vendeur dans `src/lib/vitrine/legal.ts`.
 
 ## Le jour J (après votre « mets en ligne »)
+
+0. Supabase → Authentication → Sign In / Providers → Email : désactiver « Allow new users to sign up »
+   (le site n'a plus de bouton « Créer un compte » ; ce réglage ferme aussi la porte côté base).
 
 1. Offrir un accès à vos testeurs actuels (Espace réservé → Accès et achats) : sinon ils perdent l'accès aux sessions.
 2. Coller la **vraie** clé Stripe dans Vercel (Production) : c'est l'interrupteur qui fait apparaître le bouton d'achat.

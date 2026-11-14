@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ReserveAdmin } from "@/components/platform/reserve-admin";
 import { atLeastOne, PLACEHOLDER } from "@/lib/content/static-params";
 import { notFound } from "next/navigation";
 import { StepView } from "@/components/reader/step-view";
@@ -28,7 +30,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return s ? { title: s.title } : {};
 }
 
-export default async function StepPage(props: Props) {
+async function Contenu(props: Props) {
   const { slug, module, step } = await props.params;
   const [formation, mod] = await Promise.all([getFormation(slug), getModule(slug, module)]);
   if (!formation || !mod || mod.availability !== "open") notFound();
@@ -46,5 +48,16 @@ export default async function StepPage(props: Props) {
       hrefOf={(s) => `${moduleHref}/${s.slug}`}
       exitHref={moduleHref}
     />
+  );
+}
+
+// Réservé à l'administrateur (page de test).
+export default function StepPage(props: Props) {
+  return (
+    <Suspense fallback={<div className="min-h-dvh" aria-busy="true" />}>
+      <ReserveAdmin>
+        <Contenu {...props} />
+      </ReserveAdmin>
+    </Suspense>
   );
 }

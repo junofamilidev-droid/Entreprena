@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ReserveAdmin } from "@/components/platform/reserve-admin";
 import { AtelierPlayer } from "@/components/atelier/atelier-player";
 import { parseSessionFile } from "@/lib/sessions/validate";
 import { isAtelier } from "@/lib/sessions/atelier";
@@ -7,7 +9,7 @@ import demo from "../../../../../content/demo/session-atelier-nordelia.json";
 export const metadata: Metadata = { title: "Session atelier de démonstration", robots: { index: false } };
 
 // Démonstration du format « atelier » : la session est lue depuis content/demo, sans passer par la base.
-export default function DemoAtelierPage() {
+function Contenu() {
   const parsed = parseSessionFile(demo);
   if (!parsed.ok || !isAtelier(parsed.session)) {
     return (
@@ -22,4 +24,15 @@ export default function DemoAtelierPage() {
     );
   }
   return <AtelierPlayer session={parsed.session} moduleLabel="Module 1 : Revue analytique" exitHref="/app" fileBase="/demo" />;
+}
+
+// Réservé à l'administrateur (page de test).
+export default function DemoAtelierPage() {
+  return (
+    <Suspense fallback={<div className="min-h-dvh" aria-busy="true" />}>
+      <ReserveAdmin>
+        <Contenu />
+      </ReserveAdmin>
+    </Suspense>
+  );
 }

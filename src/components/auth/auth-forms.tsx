@@ -7,11 +7,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { hasSupabase } from "@/lib/supabase/env";
 import { supabase, useAuth } from "@/lib/auth/session";
-import { site } from "@/lib/site";
 
 export const MIN_PASSWORD = 8;
 
@@ -88,7 +86,6 @@ export function SignInPanel() {
   const params = useSearchParams();
   const next = safeNext(params.get("next"));
   const auth = useAuth();
-  const [tab, setTab] = React.useState(params.get("mode") === "inscription" ? "inscription" : "connexion");
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(params.get("erreur") === "lien" ? "Ce lien n'est plus valable. Recommencez la démarche." : null);
   const [sentTo, setSentTo] = React.useState<string | null>(null);
@@ -111,28 +108,6 @@ export function SignInPanel() {
     toast.success("Vous êtes connecté. Votre progression est rattachée à votre compte.");
   }
 
-  async function signUp(form: FormData) {
-    const password = String(form.get("new-password"));
-    if (password.length < MIN_PASSWORD) return setError(`Le mot de passe doit contenir au moins ${MIN_PASSWORD} caractères.`);
-    setBusy(true);
-    setError(null);
-    const email = String(form.get("signup-email")).trim();
-    const { data, error } = await supabase().auth.signUp({
-      email,
-      password,
-      options: {
-        data: { display_name: String(form.get("name")).trim() },
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(next)}`,
-      },
-    });
-    setBusy(false);
-    if (error) return setError(authMessage(error));
-    // Adresse déjà inscrite : Supabase renvoie un compte sans identité, sans le dire.
-    if (data.user && data.user.identities?.length === 0) return setError(authMessage({ message: "already registered" }));
-    if (!data.session) return setSentTo(email);
-    toast.success("Compte créé. Votre progression sur cet appareil y est rattachée.");
-  }
-
   if (sentTo) {
     return (
       <div className="space-y-4" role="status">
@@ -148,63 +123,38 @@ export function SignInPanel() {
     );
   }
 
+  // Pas d'inscription libre : un compte est créé par un achat, ou par un accès offert depuis l'espace réservé.
   return (
-    <Tabs
-      value={tab}
-      onValueChange={(v) => {
-        setTab(v);
-        setError(null);
-      }}
-      className="gap-6"
-    >
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="connexion">Se connecter</TabsTrigger>
-        <TabsTrigger value="inscription">Créer un compte</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="connexion">
-        <form onSubmit={submitWith(signIn)} className="space-y-5">
-          <Field id="email" label="Adresse email" type="email" autoComplete="email" required />
-          <Field
-            id="password"
-            label="Mot de passe"
-            type="password"
-            autoComplete="current-password"
-            required
-            hint={
-              <Link href="/app/mot-de-passe-oublie" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
-                Mot de passe oublié ?
-              </Link>
-            }
-          />
-          <ErrorLine message={error} />
-          <Button type="submit" size="lg" className="w-full" disabled={busy}>
-            {busy ? "Connexion…" : "Se connecter"}
-          </Button>
-        </form>
-      </TabsContent>
-
-      <TabsContent value="inscription">
-        <form onSubmit={submitWith(signUp)} className="space-y-5">
-          <Field id="name" label="Prénom et nom" autoComplete="name" required />
-          <Field id="signup-email" label="Adresse email" type="email" autoComplete="email" required />
-          <Field
-            id="new-password"
-            label="Mot de passe"
-            type="password"
-            autoComplete="new-password"
-            minLength={MIN_PASSWORD}
-            required
-            hint={<span className="text-caption text-muted-foreground">{MIN_PASSWORD} caractères au moins</span>}
-          />
-          <ErrorLine message={error} />
-          <Button type="submit" size="lg" className="w-full" disabled={busy}>
-            {busy ? "Création…" : "Créer mon compte"}
-          </Button>
-          <p className="text-caption text-muted-foreground">{site.emailNotice}</p>
-        </form>
-      </TabsContent>
-    </Tabs>
+    <div className="space-y-6">
+      <form onSubmit={submitWith(signIn)} className="space-y-5">
+        <Field id="email" label="Adresse email" type="email" autoComplete="email" required />
+        <Field
+          id="password"
+          label="Mot de passe"
+          type="password"
+          autoComplete="current-password"
+          required
+          hint={
+            <Link href="/app/mot-de-passe-oublie" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
+              Mot de passe oublié ?
+            </Link>
+          }
+        />
+        <ErrorLine message={error} />
+        <Button type="submit" size="lg" className="w-full" disabled={busy}>
+          {busy ? "Connexion…" : "Se connecter"}
+        </Button>
+      </form>
+      <p className="text-sm text-muted-foreground">
+        Première connexion après un achat ? Cliquez sur « Mot de passe oublié » pour créer votre mot de passe.
+      </p>
+      <p className="border-t pt-5 text-sm text-muted-foreground">
+        Pas encore de compte ?{" "}
+        <Link href="/formations" className="font-medium text-foreground underline underline-offset-4">
+          Découvrir les formations
+        </Link>
+      </p>
+    </div>
   );
 }
 

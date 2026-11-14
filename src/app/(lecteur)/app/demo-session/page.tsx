@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ReserveAdmin } from "@/components/platform/reserve-admin";
 import { SessionPlayer } from "@/components/session/session-player";
 import { parseSession } from "@/lib/sessions/validate";
 import demo from "../../../../../content/demo/session-demo.json";
@@ -6,7 +8,7 @@ import demo from "../../../../../content/demo/session-demo.json";
 export const metadata: Metadata = { title: "Session de démonstration", robots: { index: false } };
 
 // Démonstration du format en blocs : la session est lue depuis content/demo, sans passer par la base.
-export default function DemoSessionPage() {
+function Contenu() {
   const parsed = parseSession(demo);
   if (!parsed.ok) {
     return (
@@ -28,5 +30,16 @@ export default function DemoSessionPage() {
       fileBase="/demo"
       next={{ titre: "Qualifier les écarts avec le client", duree_min: 15 }}
     />
+  );
+}
+
+// Réservé à l'administrateur (page de test).
+export default function DemoSessionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-dvh" aria-busy="true" />}>
+      <ReserveAdmin>
+        <Contenu />
+      </ReserveAdmin>
+    </Suspense>
   );
 }
