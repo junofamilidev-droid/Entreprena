@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Votre achat", robots: { index: false
 const MESSAGES: Record<string, { titre: string; texte: string; lien: { href: string; label: string } }> = {
   connexion: {
     titre: "Merci, votre accès est ouvert.",
-    texte: "Connectez-vous avec l'adresse email utilisée pour le paiement. Première connexion : choisissez « Mot de passe oublié » pour créer votre mot de passe.",
+    texte: "Connectez-vous avec l'adresse email utilisée pour le paiement : vous recevez un code à 6 chiffres, sans mot de passe à créer.",
     lien: { href: "/app/connexion", label: "Se connecter" },
   },
   attente: {

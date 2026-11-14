@@ -87,14 +87,46 @@ export function SignInPanel() {
   const next = safeNext(params.get("next"));
   const auth = useAuth();
   const [busy, setBusy] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(params.get("erreur") === "lien" ? "Ce lien n'est plus valable. Recommencez la démarche." : null);
-  const [sentTo, setSentTo] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(params.get("erreur") === "lien" ? "Ce lien n'est plus valable. Demandez un nouveau code." : null);
+  // Connexion sans mot de passe : 1. l'email, 2. le code à 6 chiffres reçu (le lien de l'email marche aussi).
+  // Le mot de passe reste possible en secours (administrateur, ou compte qui en a créé un).
+  const [mode, setMode] = React.useState<"code" | "motdepasse">("code");
+  const [codeEnvoyeA, setCodeEnvoyeA] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (auth.status === "user" && !sentTo) router.replace(next);
-  }, [auth.status, next, router, sentTo]);
+    if (auth.status === "user") router.replace(next);
+  }, [auth.status, next, router]);
 
   if (!hasSupabase) return <AccountsClosed />;
+
+  async function envoyerCode(form: FormData) {
+    const email = String(form.get("email")).trim();
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase().auth.signInWithOtp({
+      email,
+      // Pas de création de compte ici : un compte naît d'un achat ou d'un accès offert.
+      options: { shouldCreateUser: false, emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(next)}` },
+    });
+    setBusy(false);
+    if (error) {
+      const m = (error.message ?? "").toLowerCase();
+      if (m.includes("signups not allowed") || m.includes("not found") || m.includes("user not found"))
+        return setError("Aucun compte n'existe avec cette adresse. Utilisez l'email saisi lors de votre achat.");
+      return setError(authMessage(error));
+    }
+    setCodeEnvoyeA(email);
+  }
+
+  async function verifierCode(form: FormData) {
+    if (!codeEnvoyeA) return;
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase().auth.verifyOtp({ email: codeEnvoyeA, token: String(form.get("code")).replace(/\s/g, ""), type: "email" });
+    setBusy(false);
+    if (error) return setError("Ce code n'est pas valable ou a expiré. Vérifiez-le, ou demandez-en un nouveau.");
+    toast.success("Vous êtes connecté.");
+  }
 
   async function signIn(form: FormData) {
     setBusy(true);
@@ -105,55 +137,89 @@ export function SignInPanel() {
     });
     setBusy(false);
     if (error) return setError(authMessage(error));
-    toast.success("Vous êtes connecté. Votre progression est rattachée à votre compte.");
+    toast.success("Vous êtes connecté.");
   }
 
-  if (sentTo) {
+  const basculer = (
+    <button
+      type="button"
+      onClick={() => {
+        setMode(mode === "code" ? "motdepasse" : "code");
+        setCodeEnvoyeA(null);
+        setError(null);
+      }}
+      className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+    >
+      {mode === "code" ? "Se connecter avec un mot de passe" : "Recevoir un code par email"}
+    </button>
+  );
+  const pasDeCompte = (
+    <p className="border-t pt-5 text-sm text-muted-foreground">
+      Pas encore de compte ?{" "}
+      <Link href="/formations" className="font-medium text-foreground underline underline-offset-4">
+        Découvrir les formations
+      </Link>
+    </p>
+  );
+
+  if (mode === "motdepasse")
     return (
-      <div className="space-y-4" role="status">
-        <h2 className="text-heading">Confirmez votre adresse</h2>
-        <p className="text-body text-muted-foreground">
-          Un email vient de partir vers <span className="font-medium text-foreground">{sentTo}</span>. Ouvrez le lien
-          qu&apos;il contient pour activer votre compte. Pensez à regarder dans les indésirables.
-        </p>
-        <Button variant="outline" onClick={() => setSentTo(null)}>
-          Revenir à la connexion
-        </Button>
+      <div className="space-y-6">
+        <form onSubmit={submitWith(signIn)} className="space-y-5">
+          <Field id="email" label="Adresse email" type="email" autoComplete="email" required />
+          <Field
+            id="password"
+            label="Mot de passe"
+            type="password"
+            autoComplete="current-password"
+            required
+            hint={
+              <Link href="/app/mot-de-passe-oublie" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
+                Mot de passe oublié ?
+              </Link>
+            }
+          />
+          <ErrorLine message={error} />
+          <Button type="submit" size="lg" className="w-full" disabled={busy}>
+            {busy ? "Connexion…" : "Se connecter"}
+          </Button>
+        </form>
+        {basculer}
+        {pasDeCompte}
       </div>
     );
-  }
 
-  // Pas d'inscription libre : un compte est créé par un achat, ou par un accès offert depuis l'espace réservé.
+  if (codeEnvoyeA)
+    return (
+      <div className="space-y-6">
+        <form onSubmit={submitWith(verifierCode)} className="space-y-5">
+          <p className="text-body text-muted-foreground" role="status">
+            Un code à 6 chiffres vient de partir vers <span className="font-medium text-foreground">{codeEnvoyeA}</span>. Pensez à regarder dans les indésirables.
+          </p>
+          <Field id="code" label="Code reçu par email" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]{6,8}" maxLength={8} required autoFocus />
+          <ErrorLine message={error} />
+          <Button type="submit" size="lg" className="w-full" disabled={busy}>
+            {busy ? "Vérification…" : "Se connecter"}
+          </Button>
+        </form>
+        <button type="button" onClick={() => setCodeEnvoyeA(null)} className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+          Changer d&apos;adresse ou renvoyer un code
+        </button>
+        {pasDeCompte}
+      </div>
+    );
+
   return (
     <div className="space-y-6">
-      <form onSubmit={submitWith(signIn)} className="space-y-5">
-        <Field id="email" label="Adresse email" type="email" autoComplete="email" required />
-        <Field
-          id="password"
-          label="Mot de passe"
-          type="password"
-          autoComplete="current-password"
-          required
-          hint={
-            <Link href="/app/mot-de-passe-oublie" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
-              Mot de passe oublié ?
-            </Link>
-          }
-        />
+      <form onSubmit={submitWith(envoyerCode)} className="space-y-5">
+        <Field id="email" label="Adresse email" type="email" autoComplete="email" required hint={<span className="text-caption text-muted-foreground">celle de votre achat</span>} />
         <ErrorLine message={error} />
         <Button type="submit" size="lg" className="w-full" disabled={busy}>
-          {busy ? "Connexion…" : "Se connecter"}
+          {busy ? "Envoi…" : "Recevoir un code de connexion"}
         </Button>
       </form>
-      <p className="text-sm text-muted-foreground">
-        Première connexion après un achat ? Cliquez sur « Mot de passe oublié » pour créer votre mot de passe.
-      </p>
-      <p className="border-t pt-5 text-sm text-muted-foreground">
-        Pas encore de compte ?{" "}
-        <Link href="/formations" className="font-medium text-foreground underline underline-offset-4">
-          Découvrir les formations
-        </Link>
-      </p>
+      {basculer}
+      {pasDeCompte}
     </div>
   );
 }

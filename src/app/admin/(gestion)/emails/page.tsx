@@ -18,7 +18,8 @@ const ORDRE: { nom: NomEmail; quand: string }[] = [
   { nom: "commande", quand: "5. Confirmation de commande, après chaque achat" },
   { nom: "testeur", quand: "6. Accès offert à un testeur (onglet Accès et achats)" },
   { nom: "compteConfirmation", quand: "7a. Confirmation d'adresse : à coller dans Supabase (Authentication → Emails → Confirm signup)" },
-  { nom: "compteMotDePasse", quand: "7b. Mot de passe : à coller dans Supabase (Authentication → Emails → Reset password)" },
+  { nom: "compteCode", quand: "7c. Code de connexion : à coller dans Supabase (Authentication → Emails → Magic Link)" },
+  { nom: "compteMotDePasse", quand: "7b. Mot de passe (secours) : à coller dans Supabase (Authentication → Emails → Reset password)" },
 ];
 
 async function Apercus() {
@@ -30,8 +31,8 @@ async function Apercus() {
         {emailsActifs() ? "L'envoi d'emails est actif sur ce déploiement." : "L'envoi d'emails n'est pas encore actif : aucun email ne part. Il s'activera avec le nom de domaine et la clé du service d'envoi."}
       </p>
       {ORDRE.map(({ nom, quand }) => {
-        const supabase = nom === "compteConfirmation" || nom === "compteMotDePasse";
-        const e = construireEmail(EMAILS[nom], supabase ? { lien_connexion: "{{ .ConfirmationURL }}" } : EXEMPLE, pied);
+        const supabase = nom.startsWith("compte");
+        const e = construireEmail(EMAILS[nom], supabase ? { lien_connexion: "{{ .ConfirmationURL }}", code: "{{ .Token }}" } : EXEMPLE, pied);
         return (
           <section key={nom} className="space-y-3">
             <p className="text-sm text-muted-foreground">{quand}</p>

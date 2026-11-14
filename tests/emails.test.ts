@@ -15,6 +15,8 @@ describe("emails automatiques", () => {
   it("les emails de compte gardent le lien de Supabase", () => {
     const e = construireEmail(EMAILS.compteConfirmation, { lien_connexion: "{{ .ConfirmationURL }}" }, "p");
     expect(e.html).toContain('href="{{ .ConfirmationURL }}"');
+    const c = construireEmail(EMAILS.compteCode, { lien_connexion: "{{ .ConfirmationURL }}", code: "{{ .Token }}" }, "p");
+    expect(c.html).toContain("{{ .Token }}");
   });
   it("une variable absente bloque l'envoi", () => {
     expect(() => remplir("Bonjour {{inconnue}}", {})).toThrow("Variable manquante : inconnue");

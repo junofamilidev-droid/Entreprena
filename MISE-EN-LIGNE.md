@@ -32,8 +32,9 @@ ce qui est listé plus bas, dans l'ordre.
 1. Créer un compte Resend (gratuit jusqu'à 3 000 emails par mois), y ajouter le domaine et copier les lignes DNS qu'il donne.
 2. Dans Vercel → Settings → Environment Variables (Production) : `RESEND_API_KEY`, `EMAIL_EXPEDITEUR`,
    `EMAIL_REPONSE`, `SITE_URL`, `CRON_SECRET` (voir .env.example).
-3. Dans Supabase → Authentication → Emails : coller les 2 modèles (copie depuis Espace réservé → Emails automatiques)
-   et brancher l'envoi sur Resend (SMTP) pour lever la limite de quelques emails par heure.
+3. Dans Supabase → Authentication → Emails : coller les 3 modèles (dont « Magic Link », qui contient le code de connexion) (copie depuis Espace réservé → Emails automatiques)
+   et brancher l'envoi sur Resend (SMTP). **Indispensable** : sans cela, Supabase n'envoie les codes de connexion
+   qu'aux membres de votre équipe Supabase (vous), et seulement quelques emails par heure. Les acheteurs ne pourraient pas se reconnecter.
 4. Compléter l'adresse de contact et l'identité du vendeur dans `src/lib/vitrine/legal.ts`.
 
 ## Le jour J (après votre « mets en ligne »)

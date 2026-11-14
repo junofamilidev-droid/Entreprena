@@ -133,7 +133,7 @@ export const EMAILS = {
       },
       { discret: "Conditions générales de vente", lien: "{{lien_cgv}}" },
       { bouton: "Accéder à ma formation", lien: "{{lien_connexion}}" },
-      { p: "Pour vous reconnecter plus tard : sur la page de connexion, cliquez sur « Mot de passe oublié » et indiquez cette adresse email. Vous recevrez un lien pour créer votre mot de passe." },
+      { p: "Pour vous reconnecter plus tard : sur la page de connexion, indiquez cette adresse email. Vous recevrez un code à 6 chiffres, sans mot de passe à retenir." },
       { discret: "Vendeur : {{vendeur}}" },
     ],
   },
@@ -153,7 +153,7 @@ export const EMAILS = {
         ],
       },
       { bouton: "Accéder à la formation", lien: "{{lien_connexion}}" },
-      { discret: "Ce lien ne fonctionne qu'une fois. Ensuite, utilisez « Mot de passe oublié » sur la page de connexion." },
+      { discret: "Ce lien ne fonctionne qu'une fois. Ensuite, connectez-vous avec cette adresse email : vous recevrez un code à 6 chiffres." },
     ],
   },
 
@@ -166,6 +166,19 @@ export const EMAILS = {
       { p: "Pour activer votre compte Entreprena, confirmez votre adresse email." },
       { bouton: "Confirmer mon adresse", lien: "{{lien_connexion}}" },
       { discret: "Si vous n'êtes pas à l'origine de cette inscription, ignorez cet email : aucun compte ne sera activé." },
+    ],
+  },
+  /** 7c. Code de connexion (envoyé par Supabase : modèle « Magic Link », code {{ .Token }} et lien {{ .ConfirmationURL }}). */
+  compteCode: {
+    objet: "Votre code de connexion : {{code}}",
+    apercu: "Valable quelques minutes, une seule fois.",
+    blocs: [
+      BONJOUR,
+      { p: "Voici votre code pour vous connecter à Entreprena :" },
+      { titre: "{{code}}" },
+      { p: "Saisissez-le sur la page de connexion. Vous pouvez aussi simplement cliquer sur le bouton ci-dessous." },
+      { bouton: "Me connecter", lien: "{{lien_connexion}}" },
+      { discret: "Ce code n'est valable qu'une fois, pendant quelques minutes. Si vous n'avez rien demandé, ignorez cet email." },
     ],
   },
   /** 7b. Réinitialisation du mot de passe (envoyé par Supabase, même principe). */

@@ -13,7 +13,7 @@ const faq = [
   },
   {
     q: "J'ai oublié mon mot de passe.",
-    a: "Sur la page de connexion, cliquez sur « Mot de passe oublié ? » : un lien vous est envoyé par email.",
+    a: "Pas besoin de mot de passe : sur la page de connexion, indiquez votre email et saisissez le code à 6 chiffres reçu.",
   },
   {
     q: "Puis-je utiliser les exercices avec les données d'un vrai client ?",
