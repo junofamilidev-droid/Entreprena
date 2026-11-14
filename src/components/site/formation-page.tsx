@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, PackageIcon, BriefcaseIcon, XIcon } from "lucide-react";
 import type { FormationWithModules } from "@/lib/content/types";
@@ -7,10 +6,12 @@ import { libelleMetier, type MetierAVenir } from "@/lib/vitrine/metiers";
 import type { PageFormation } from "@/lib/vitrine/pages-formation";
 import { ventesOuvertes } from "@/lib/stripe";
 import { AchatForm } from "@/components/site/achat-form";
-import { AppWindow, Eyebrow, Frame, LightDot, LightNumber, SectionHead } from "@/components/site/kit";
+import { Eyebrow, Frame, LightDot, LightNumber, SectionHead } from "@/components/site/kit";
 import { Faq } from "@/components/site/faq";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
 import { PrevenirForm } from "@/components/site/prevenir-form";
+import { MockMission, MockOutil } from "@/components/site/mock-screens";
+import { exempleDe } from "@/lib/vitrine/exemples";
 import { ProductShowcase } from "@/components/site/product-showcase";
 import { MetierProvider } from "@/components/site/metier-context";
 import { accueil } from "@/lib/vitrine/textes";
@@ -55,6 +56,7 @@ function Surligne({ texte }: { texte: string }) {
 }
 
 export function PageFormationPubliee({ formation, page }: { formation: FormationWithModules; page: PageFormation }) {
+  const ex = exempleDe(libelleMetier(formation.domain));
   const n = formation.modules.length;
   return (
     <>
@@ -79,12 +81,13 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
           </div>
           <LienDiagnostic className="mt-6 inline-block" />
         </div>
-        <Frame scene="nuit-2" caption="Une session du module 1" bodyClassName="sm:px-8 sm:pt-6 sm:pb-8">
-          <AppWindow address={`${formation.slug} · module 1`}>
-            {/* Capture réelle, servie telle quelle (nette sur les écrans haute définition). */}
-            <Image src="/captures/session-clair.webp" width={1800} height={1125} unoptimized priority alt="Une session de la formation : la consigne à gauche, la vérification de la réponse de Claude à droite." className="block w-full dark:hidden" />
-            <Image src="/captures/session-sombre.webp" width={1800} height={1125} unoptimized alt="Une session de la formation : la consigne à gauche, la vérification de la réponse de Claude à droite." className="hidden w-full dark:block" />
-          </AppWindow>
+        {/* Les deux écrans clés d'une session, assez grands pour être lus : la demande, puis l'outil qui y répond.
+            L'outil chevauche la mission, comme une fenêtre posée par-dessus. */}
+        <Frame scene="nuit-2" caption="Une session du module 1" bodyClassName="px-4 pt-5 pb-8 sm:px-8 sm:pt-6 sm:pb-10">
+          <div className="grid gap-3 sm:block">
+            <MockMission ex={ex} className="shadow-[0_24px_60px_-30px_rgb(0_0_0/0.6)] sm:w-[72%]" />
+            <MockOutil ex={ex} className="shadow-[0_30px_70px_-25px_rgb(0_0_0/0.65)] ring-1 ring-black/5 sm:relative sm:z-10 sm:-mt-14 sm:ml-auto sm:w-[70%]" />
+          </div>
         </Frame>
       </section>
 
