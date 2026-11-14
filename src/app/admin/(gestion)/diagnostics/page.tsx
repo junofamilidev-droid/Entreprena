@@ -36,7 +36,7 @@ async function Donnees() {
       "id, created_at, metier, metier_autre, taches, frequence_ia, cadre, objectif, score, niveau, preparation, email, consentement_emails, utm_source, utm_medium, utm_campaign, a_clique_formation",
     ),
     toutLire<{ created_at: string; event: string; question: number | null; metier: string | null }>(client, "diagnostic_events", "created_at, event, question, metier"),
-    toutLire<Notification>(client, "notifications_metier", "email, metier, created_at"),
+    toutLire<Notification>(client, "notifications_metier", "email, metier, created_at, annonce_envoyee_at"),
   ]);
   const erreur = diagnostics.erreur ?? evenements.erreur ?? notifications.erreur;
   if (erreur) return <p className="text-sm text-destructive">Lecture des diagnostics impossible : {erreur}</p>;

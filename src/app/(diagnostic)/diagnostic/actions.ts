@@ -7,6 +7,7 @@ import { calculer, type Resultat } from "@/lib/diagnostic-metier/calcul";
 import { metierParId } from "@/lib/diagnostic-metier/metiers";
 import { construirePlan, type Plan } from "@/lib/diagnostic-metier/plan";
 import { adminClient } from "@/lib/supabase/admin";
+import { envoyerPlan } from "@/lib/emails/envois";
 
 // Enregistrement du diagnostic, appelé à l'affichage du résultat.
 // Le serveur recalcule le score à partir des réponses : il ne fait pas confiance au navigateur.
@@ -140,8 +141,10 @@ export async function obtenirPlan(entree: unknown): Promise<ReponsePlan> {
       consentement_emails: consentement,
       consentement_at: consentement ? maintenant : null,
     };
+    let ligneId: string | null = null;
     if (id) {
-      await db.from("diagnostics_metier").update(champs).eq("id", id).is("email", null);
+      const { data: maj } = await db.from("diagnostics_metier").update(champs).eq("id", id).is("email", null).select("id");
+      ligneId = maj?.[0]?.id ?? null;
     } else {
       // Pas d'identifiant (limite atteinte ou enregistrement échoué) : on garde au moins la demande.
       await db.from("diagnostics_metier").insert({
@@ -158,10 +161,12 @@ export async function obtenirPlan(entree: unknown): Promise<ReponsePlan> {
         utm_medium: r.utm?.medium ?? null,
         utm_campaign: r.utm?.campaign ?? null,
         ...champs,
-      });
+      }).select("id").single().then(({ data }) => (ligneId = data?.id ?? null));
     }
     // Consentement coché et formation pas encore ouverte : on le note pour prévenir à l'ouverture.
     if (consentement && enPreparation) await noter(email, metier.id === "autre" ? `autre:${r.metierAutre ?? ""}` : metier.id);
+    // « Votre plan d'action » par email (ne part que si l'envoi d'emails est configuré).
+    if (ligneId) await envoyerPlan(ligneId).catch(() => false);
     await db.from("diagnostic_events").insert({
       event: "email",
       metier: metier.id,

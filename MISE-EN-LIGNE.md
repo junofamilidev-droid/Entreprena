@@ -13,6 +13,9 @@ ce qui est listé plus bas, dans l'ordre.
 - Sessions et outils réservés aux acheteurs et aux testeurs.
 - Onglet « Accès et achats » de l'espace réservé : offrir un accès à un testeur, retirer un accès.
 - Clé secrète Supabase : déjà réglée dans Vercel.
+- Emails automatiques (textes v1) : plan d'action, 2 conseils (J+2, J+5), annonce d'ouverture, confirmation de commande,
+  accès testeur, page de désinscription, page de plan personnelle. **Éteints tant que l'envoi n'est pas branché.**
+  Aperçu : Espace réservé → Emails automatiques.
 
 ## À faire avant le lancement (dans cet ordre)
 
@@ -23,6 +26,15 @@ ce qui est listé plus bas, dans l'ordre.
 | 3 | Passer Vercel en offre **Pro** | ≈ 20 $ par mois | L'offre gratuite est interdite pour un site qui vend |
 | 4 | Activer votre compte Stripe (identité, SIRET, IBAN) | Gratuit, puis ≈ 1,5 % + 0,25 € par vente | Recevoir l'argent des ventes |
 | 5 | Donner vos informations légales (nom, adresse, SIRET, régime de TVA) | — | Pour remplir les pages légales préparées |
+
+## Brancher les emails (après l'achat du nom de domaine)
+
+1. Créer un compte Resend (gratuit jusqu'à 3 000 emails par mois), y ajouter le domaine et copier les lignes DNS qu'il donne.
+2. Dans Vercel → Settings → Environment Variables (Production) : `RESEND_API_KEY`, `EMAIL_EXPEDITEUR`,
+   `EMAIL_REPONSE`, `SITE_URL`, `CRON_SECRET` (voir .env.example).
+3. Dans Supabase → Authentication → Emails : coller les 2 modèles (copie depuis Espace réservé → Emails automatiques)
+   et brancher l'envoi sur Resend (SMTP) pour lever la limite de quelques emails par heure.
+4. Compléter l'adresse de contact et l'identité du vendeur dans `src/lib/vitrine/legal.ts`.
 
 ## Le jour J (après votre « mets en ligne »)
 

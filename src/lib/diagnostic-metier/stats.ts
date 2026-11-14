@@ -21,7 +21,7 @@ export type LigneDiagnostic = {
 };
 
 export type Evenement = { event: string; question: number | null; metier: string | null };
-export type Notification = { email: string; metier: string; created_at: string };
+export type Notification = { email: string; metier: string; created_at: string; annonce_envoyee_at?: string | null };
 
 export type Etape = { libelle: string; nombre: number; /** part par rapport aux démarrages */ part: number | null; /** perte depuis l'étape précédente */ perte: number | null };
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { BarChart3Icon,
-  MessageSquareTextIcon, GaugeIcon, KeyRoundIcon, DownloadIcon, FileJsonIcon, PlusIcon } from "lucide-react";
+  MessageSquareTextIcon, GaugeIcon, KeyRoundIcon, MailIcon, DownloadIcon, FileJsonIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createFormation, importFromFiles } from "@/lib/admin/actions";
@@ -103,6 +103,11 @@ export function AdminHome({
           <Button asChild variant="outline">
             <Link href="/admin/acces">
               <KeyRoundIcon /> Accès et achats
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/emails">
+              <MailIcon /> Emails automatiques
             </Link>
           </Button>
         </div>

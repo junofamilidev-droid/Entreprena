@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, SendIcon } from "lucide-react";
+import { annoncerOuverture } from "@/lib/admin/acces-actions";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/admin/kit";
 import { cn } from "@/lib/utils";
@@ -174,6 +175,13 @@ export function DiagnosticsAdmin({
         </p>
       </Section>
 
+      <Section title="Annoncer une ouverture">
+        <p className="text-sm text-muted-foreground">
+          Le jour où une formation ouvre (ou ses ventes), envoyez l&apos;annonce aux personnes inscrites à « Être prévenu ». Chacune ne la reçoit qu&apos;une fois.
+        </p>
+        <Annonces notifications={notifications} libelle={libelle} />
+      </Section>
+
       <Section title="Métiers saisis dans « Autre »">
         {autres.length === 0 ? (
           <p className="text-sm text-muted-foreground">Aucun sur cette période.</p>
@@ -187,6 +195,56 @@ export function DiagnosticsAdmin({
           </ul>
         )}
       </Section>
+    </div>
+  );
+}
+
+function Annonces({ notifications, libelle }: { notifications: Notification[]; libelle: (id: string) => string }) {
+  const [pending, start] = React.useTransition();
+  const [message, setMessage] = React.useState<{ ok: boolean; texte: string } | null>(null);
+  const groupes = React.useMemo(() => {
+    const m = new Map<string, { total: number; restants: number }>();
+    for (const n of notifications) {
+      if (n.metier.startsWith("autre:")) continue; // métiers libres : pas de formation à annoncer
+      const g = m.get(n.metier) ?? { total: 0, restants: 0 };
+      g.total++;
+      if (!n.annonce_envoyee_at) g.restants++;
+      m.set(n.metier, g);
+    }
+    return [...m.entries()].sort((a, b) => b[1].restants - a[1].restants);
+  }, [notifications]);
+  if (!groupes.length) return <p className="text-sm text-muted-foreground">Personne n&apos;est inscrit pour l&apos;instant.</p>;
+  return (
+    <div className="space-y-3">
+      <ul className="divide-y rounded-md border bg-background">
+        {groupes.map(([cle, g]) => (
+          <li key={cle} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
+            <span>
+              <span className="font-medium">{libelle(cle)}</span>
+              <span className="text-muted-foreground">
+                {" "}
+                · {g.total} inscrit{g.total > 1 ? "s" : ""}, {g.restants} à prévenir
+              </span>
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={pending || g.restants === 0}
+              onClick={() => {
+                if (!confirm(`Envoyer l'annonce d'ouverture à ${g.restants} personne(s) pour « ${libelle(cle)} » ?`)) return;
+                setMessage(null);
+                start(async () => {
+                  const r = await annoncerOuverture(cle);
+                  setMessage(r.ok ? { ok: true, texte: r.message ?? "Envoyé." } : { ok: false, texte: r.erreur });
+                });
+              }}
+            >
+              <SendIcon /> Envoyer l&apos;annonce
+            </Button>
+          </li>
+        ))}
+      </ul>
+      {message && <p className={message.ok ? "text-sm text-emerald-700 dark:text-emerald-400" : "text-sm text-destructive"}>{message.texte}</p>}
     </div>
   );
 }

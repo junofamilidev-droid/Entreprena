@@ -23,6 +23,7 @@ const euros = (c: number | null) => (c == null ? "–" : `${(c / 100).toLocaleSt
 export function AccesAdmin({ lignes, formations }: { lignes: LigneAdmin[]; formations: { slug: string; titre: string }[] }) {
   const [email, setEmail] = React.useState("");
   const [formation, setFormation] = React.useState(formations[0]?.slug ?? "");
+  const [envoyerEmail, setEnvoyerEmail] = React.useState(true);
   const [message, setMessage] = React.useState<{ ok: boolean; texte: string } | null>(null);
   const [lien, setLien] = React.useState<{ id: string; url: string } | null>(null);
   const [pending, start] = React.useTransition();
@@ -52,7 +53,7 @@ export function AccesAdmin({ lignes, formations }: { lignes: LigneAdmin[]; forma
             e.preventDefault();
             setMessage(null);
             start(async () => {
-              const r = await offrirAcces({ email, formation });
+              const r = await offrirAcces({ email, formation, envoyerEmail });
               setMessage(r.ok ? { ok: true, texte: r.message ?? "Fait." } : { ok: false, texte: r.erreur });
               if (r.ok) setEmail("");
             });
@@ -76,6 +77,10 @@ export function AccesAdmin({ lignes, formations }: { lignes: LigneAdmin[]; forma
             <GiftIcon /> Offrir l&apos;accès
           </Button>
         </form>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={envoyerEmail} onChange={(e) => setEnvoyerEmail(e.target.checked)} className="size-4" />
+          Lui envoyer l&apos;email de bienvenue avec son lien de connexion
+        </label>
         {message && <p className={message.ok ? "text-sm text-emerald-700 dark:text-emerald-400" : "text-sm text-destructive"}>{message.texte}</p>}
         <p className="text-sm text-muted-foreground">
           Le compte est créé s&apos;il n&apos;existe pas. Pour que le testeur se connecte sans mot de passe, cliquez ensuite sur « Lien de connexion » dans la liste et envoyez-lui le lien (valable une fois, environ une heure).
