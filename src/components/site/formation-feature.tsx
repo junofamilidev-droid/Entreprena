@@ -36,8 +36,8 @@ export function FormationFeature({ formation }: { formation: FormationWithModule
       </div>
       <div className="relative hidden min-h-[22rem] overflow-hidden bg-[url(/paysages/nuit-2.webp)] bg-cover lg:block">
         <div className="absolute top-12 left-12 w-[115%]">
-          <Image src="/captures/session-clair.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="rounded-lg shadow-[0_30px_60px_-20px_rgb(0_0_0/0.5)] dark:hidden" />
-          <Image src="/captures/session-sombre.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." sizes="40vw" className="hidden rounded-lg dark:block" />
+          <Image src="/captures/session-clair.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." unoptimized className="rounded-lg shadow-[0_30px_60px_-20px_rgb(0_0_0/0.5)] dark:hidden" />
+          <Image src="/captures/session-sombre.webp" width={1800} height={1125} alt="Une session de la formation : le tuteur à gauche, l'étape en cours au centre." unoptimized className="hidden rounded-lg dark:block" />
         </div>
       </div>
     </article>

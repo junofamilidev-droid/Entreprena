@@ -55,7 +55,7 @@ export const accueil = {
   },
 
   etapes: {
-    title: "Comment ça marche",
+    title: "Trois temps, à chaque module.",
     eyebrow: "Comment ça marche",
     intro: "Chaque module suit les trois mêmes temps, sur une vraie mission de votre métier.",
     labels: ["La mission", "L'outil", "Vos dossiers"],

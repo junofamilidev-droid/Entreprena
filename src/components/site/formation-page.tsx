@@ -1,14 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import { CheckIcon, FileCodeIcon, FileTextIcon, FolderIcon, MinusIcon, PackageIcon, BriefcaseIcon, XIcon } from "lucide-react";
 import type { FormationWithModules } from "@/lib/content/types";
 import { plain } from "@/lib/vitrine/text";
-import { exempleDe } from "@/lib/vitrine/exemples";
 import { libelleMetier, type MetierAVenir } from "@/lib/vitrine/metiers";
 import type { PageFormation } from "@/lib/vitrine/pages-formation";
 import { ventesOuvertes } from "@/lib/stripe";
 import { AchatForm } from "@/components/site/achat-form";
 import { AppWindow, Eyebrow, Frame, LightDot, LightNumber, SectionHead } from "@/components/site/kit";
-import { MockMission, MockOutil, MockVerifs } from "@/components/site/mock-screens";
 import { Faq } from "@/components/site/faq";
 import { FormationUpcoming } from "@/components/site/formation-upcoming";
 import { PrevenirForm } from "@/components/site/prevenir-form";
@@ -56,7 +55,6 @@ function Surligne({ texte }: { texte: string }) {
 }
 
 export function PageFormationPubliee({ formation, page }: { formation: FormationWithModules; page: PageFormation }) {
-  const ex = exempleDe(libelleMetier(formation.domain));
   const n = formation.modules.length;
   return (
     <>
@@ -81,12 +79,11 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
           </div>
           <LienDiagnostic className="mt-6 inline-block" />
         </div>
-        <Frame scene="nuit-2" caption="Une session de la formation" bodyClassName="sm:px-8 sm:pt-6 sm:pb-8">
+        <Frame scene="nuit-2" caption="Une session du module 1" bodyClassName="sm:px-8 sm:pt-6 sm:pb-8">
           <AppWindow address={`${formation.slug} · module 1`}>
-            <div className="grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
-              <MockMission ex={ex} />
-              <MockOutil ex={ex} />
-            </div>
+            {/* Capture réelle, servie telle quelle (nette sur les écrans haute définition). */}
+            <Image src="/captures/session-clair.webp" width={1800} height={1125} unoptimized priority alt="Une session de la formation : la consigne à gauche, la vérification de la réponse de Claude à droite." className="block w-full dark:hidden" />
+            <Image src="/captures/session-sombre.webp" width={1800} height={1125} unoptimized alt="Une session de la formation : la consigne à gauche, la vérification de la réponse de Claude à droite." className="hidden w-full dark:block" />
           </AppWindow>
         </Frame>
       </section>
@@ -163,14 +160,8 @@ export function PageFormationPubliee({ formation, page }: { formation: Formation
           {page.kit.intro}
         </SectionHead>
         <Frame scene="nuit-1" caption={page.kit.module} className="mt-12">
-          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-            <div className="grid content-start gap-3">
-              <p className="text-[0.8125rem] font-medium text-white/80">L&apos;exercice</p>
-              <MockMission ex={ex} />
-              <MockVerifs ex={ex} />
-            </div>
-            <div className="grid content-start gap-3">
-              <p className="text-[0.8125rem] font-medium text-white/80">Ce que contient le kit</p>
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
+            <div className="contents">
               <div className="rounded-[14px] bg-[oklch(0.99_0.003_85)] p-4 text-[oklch(0.22_0.02_200)] sm:p-5">
                 <p className="flex items-center gap-2 font-mono text-[0.8125rem] font-semibold">
                   <FolderIcon className="size-4 text-[oklch(0.55_0.09_200)]" aria-hidden /> {page.kit.nom}/

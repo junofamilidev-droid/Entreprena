@@ -103,7 +103,7 @@ export function ProductShowcase({ title, text, word }: { title: string; text: st
       </div>
 
       <div className="site-container site-section">
-        <div className="relative lg:h-[980px]">
+        <div className="relative lg:h-[61.25rem]">
           {/* Mot géant en fond, comme une signature */}
           <p
             aria-hidden
